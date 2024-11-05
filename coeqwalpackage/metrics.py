@@ -63,7 +63,7 @@ def create_subset_unit(df, varname, units):
 
 """MEAN, SD, IQR FUNCTIONS"""
 
-def compute_annual_means(df, var, study_lst = None, units = "TAF", months = None):
+def compute_annual_sums(df, var, study_lst = None, units = "TAF", months = None):
     subset_df = create_subset_unit(df, var, units)
     if study_lst is not None:
         subset_df = subset_df.iloc[:, study_lst]
@@ -75,6 +75,19 @@ def compute_annual_means(df, var, study_lst = None, units = "TAF", months = None
         
     annual_sum = subset_df.groupby('WaterYear').sum()
     return annual_sum
+
+def compute_annual_means(df, var, study_lst = None, units = "TAF", months = None):
+    subset_df = create_subset_unit(df, var, units)
+    if study_lst is not None:
+        subset_df = subset_df.iloc[:, study_lst]
+    
+    subset_df = add_water_year_column(subset_df)
+    
+    if months is not None:
+        subset_df = subset_df[subset_df.index.month.isin(months)]
+        
+    annual_mean = subset_df.groupby('WaterYear').mean()
+    return annual_mean
 
 def compute_mean(df, variable_list, study_lst, units, months = None):
     df = compute_annual_means(df, variable_list, study_lst, units, months)
