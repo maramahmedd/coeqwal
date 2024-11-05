@@ -182,3 +182,58 @@ def exceedance_metric(df, var, exceedance_percent, vartitle, unit):
     reshaped_df = result_df.melt(value_name=vartitle).reset_index(drop=True)[[vartitle]]
 
     return reshaped_df
+
+
+"""SPECIFIC FUNCTIONS"""
+
+# Annual Avg (using dss_names)
+def ann_avg(df, dss_names, var_name):
+    metrics = []
+    for study_index in np.arange(0, len(dss_names)):
+        metric_value = compute_mean(df, var_name, [study_index], "TAF", months=None)
+        metrics.append(metric_value)
+
+    ann_avg_delta_df = pd.DataFrame(metrics, columns=['Ann_Avg_' + var_name])
+    return ann_avg_delta_df
+
+# Annual X Percentile outflow of a Delta or X Percentile Resevoir Storage
+def ann_pct(df, dss_names, pct, var_name, df_title):
+    study_list = np.arange(0, len(dss_names))
+    return compute_iqr_value(df, pct, var_name, "TAF", df_title, study_list, months=None, annual=True)
+
+# 1 Month Avg using dss_names
+def mnth_avg(df, dss_names, var_name, mnth_num):
+    metrics = []
+    for study_index in np.arange(0, len(dss_names)):
+        metric_value = compute_mean(df, var_name, [study_index], "TAF", months=[mnth_num])
+        metrics.append(metric_value)
+
+    mnth_str = calendar.month_abbr[mnth_num]
+    mnth_avg_df = pd.DataFrame(metrics, columns=[mnth_str + '_Avg_' + var_name])
+    return mnth_avg_df
+
+def moy_avgs(df, var_name, dss_names):
+    """
+    The function assumes the DataFrame columns follow a specific naming
+    convention where the last part of the name indicates the study. 
+    """
+    var_df = create_subset_var(df, varname=var_name)
+    
+    all_months_avg = {}
+    for mnth_num in range(1, 13):
+        metrics = []
+
+        for study_index in np.arange(0, len(dss_names)):
+            metric_val = compute_mean(var_df, var_name, [study_index], "TAF", months=[mnth_num])
+            metrics.append(metric_val)
+
+        mnth_str = calendar.month_abbr[mnth_num]
+        all_months_avg[mnth_str] = np.mean(metrics)
+    
+    moy_df = pd.DataFrame(list(all_months_avg.items()), columns=['Month', f'Avg_{var_name}'])
+    return moy_df
+
+# Monthly X Percentile Resevoir Storage or X Percentile Delta Outflow
+def mnth_pct(df, dss_names, pct, var_name, df_title, mnth_num):
+    study_list = np.arange(0, len(dss_names))
+    return compute_iqr_value(df, pct, var_name, "TAF", df_title, study_list, months = [mnth_num], annual = True)
