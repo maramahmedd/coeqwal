@@ -28,6 +28,55 @@ def read_in_df(df_path, names_path):
     dss_names = pd.read_csv(names_path)["0"].tolist()
     return df, dss_names
 
+"""CONVERT UNITS"""
+
+def convert_cfs_to_taf(df, study_name = True):
+    date_column = df.index
+    months = date_column.strftime('%m')
+    years = date_column.strftime('%Y')
+
+    days_in_month = np.zeros(len(df))
+
+    # Compute the number of days in each month, considering leap years for February
+    for i in range(len(months)):
+        if months[i] in {"01", "03", "05", "07", "08", "10", "12"}:
+            days_in_month[i] = 31
+        elif months[i] == "02":
+            year = int(years[i])
+            if year % 4 == 0 and (year % 100 != 0 or year % 400 == 0):
+                days_in_month[i] = 29
+            else:
+                days_in_month[i] = 28
+        elif months[i] in {"04", "06", "09", "11"}:
+            days_in_month[i] = 30
+
+    columns_to_convert = [col for col in df.columns if ('DEL' in col[1] or 'NDO' in col[1] or 'D_TOTAL' in col[1]) and 'CFS' in col[6]]
+    
+    new_columns_dict = {}
+
+    for column in columns_to_convert:
+        new_values = df[column].values * 2.29568e-5 * 86400 * days_in_month / 1000
+        new_column_name = list(column)
+        new_column_name[1] = new_column_name[1] + '_TAF'
+        new_column_name[6] = 'TAF'
+        if study_name:
+            # Split the string into parts
+            parts = new_column_name[1].split('_')
+
+            # Invert the last two parts
+            if len(parts) >= 2:
+                parts[-1], parts[-2] = parts[-2], parts[-1]
+
+        # Join the parts back together
+        new_column_name[1] = '_'.join(parts)
+
+        new_column_name = tuple(new_column_name)
+        new_columns_dict[new_column_name] = new_values
+
+    for new_col, new_values in new_columns_dict.items():
+        df[new_col] = new_values
+
+    return df
 
 """SUBSET FUNCTIONS"""
 
@@ -89,10 +138,15 @@ def compute_annual_means(df, var, study_lst = None, units = "TAF", months = None
     annual_mean = subset_df.groupby('WaterYear').mean()
     return annual_mean
 
+#def compute_mean(df, variable_list, study_lst, units, months = None):
+#    df = compute_annual_means(df, variable_list, study_lst, units, months)
+#    num_years = len(df)
+#    return (df.sum() / num_years).iloc[-1]
+
 def compute_mean(df, variable_list, study_lst, units, months = None):
     df = compute_annual_means(df, variable_list, study_lst, units, months)
-    num_years = len(df)
-    return (df.sum() / num_years).iloc[-1]
+    len_nonnull_yrs = df.dropna().shape[0]
+    return (df.sum() / len_nonnull_yrs).iloc[-1]
 
 def compute_sd(df, variable_list, units, varname, months = None):
     subset_df = create_subset_unit(df, variable_list, units)
@@ -101,6 +155,15 @@ def compute_sd(df, variable_list, units, varname, months = None):
 
     standard_deviation = subset_df.std().to_frame(name=varname).reset_index(drop=True)
     return standard_deviation
+
+def compute_iqr(df, variable, units, varname, upper_quantile=0.75, lower_quantile=0.25, months=None):
+    subset_df = create_subset_unit(df, variable, units)
+    if months is not None:
+        subset_df = subset_df[subset_df.index.month.isin(months)]
+    iqr_values = subset_df.apply(lambda x: x.quantile(upper_quantile) - x.quantile(lower_quantile), axis=0)
+    iqr_df = pd.DataFrame(iqr_values, columns=['IQR']).reset_index()[["IQR"]].rename(columns = {"IQR": varname})
+
+    return iqr_df
 
 def compute_iqr_value(df, iqr_value, variable, units, varname, study_list, months=None, annual=True):
     if annual:
@@ -149,24 +212,43 @@ def calculate_flow_sum_per_year(flow_data):
 
     return flow_sum_per_year
 
-def calculate_exceedance_probabilities(df):
+"""def calculate_exceedance_probabilities(df):
     exceedance_df = pd.DataFrame(index=df.index)
 
     for column in df.columns:
-        sorted_values = df[column].sort_values(ascending=False)
-        exceedance_probs = (sorted_values.rank(method='first', ascending=False)) / (1 + len(sorted_values))
-        exceedance_df[column] = exceedance_probs.sort_index()
+       sorted_values = df[column].sort_values(ascending=False)
+       exceedance_probs = (sorted_values.rank(method='first', ascending=False)) / (1 + len(sorted_values))
+       exceedance_df[column] = exceedance_probs.sort_index()
 
+    return exceedance_df"""
+
+def calculate_exceedance_probabilities(df):
+    exceedance_df = pd.DataFrame(index=df.index)
+    for column in df.columns:
+        sorted_values = df[column].dropna().sort_values(ascending=False)
+        exceedance_probs = sorted_values.rank(method='first', ascending=False) / (1 + len(sorted_values))
+        exceedance_df[column] = exceedance_probs.reindex(df.index)
     return exceedance_df
 
-def exceedance_probability(df, var, threshold, month, vartitle):
+"""def exceedance_probability(df, var, threshold, month, vartitle):
     var_df = create_subset_var(df, var)
     var_month_df = var_df[var_df.index.month.isin([month])]
     result_df = count_exceedance_days(var_month_df, threshold) / len(var_month_df) * 100
     reshaped_df = result_df.melt(value_name=vartitle).reset_index(drop=True)[[vartitle]]
+    return reshaped_df"""
+
+def exceedance_probability(df, var, threshold, month, vartitle):
+    # Subset data for the specific variable
+    var_df = create_subset_var(df, var)
+    # Filter by the specified month and drop NaNs --> only valid values are used in calculating the exceedance probability
+    var_month_df = var_df[var_df.index.month.isin([month])].dropna()
+    # Count how often the values exceed the threshold and calculate the percentage
+    result_df = count_exceedance_days(var_month_df, threshold) / len(var_month_df) * 100
+    # Reshape the result to match the expected output format
+    reshaped_df = result_df.melt(value_name=vartitle).reset_index(drop=True)[[vartitle]]
     return reshaped_df
 
-def exceedance_metric(df, var, exceedance_percent, vartitle, unit):
+"""def exceedance_metric(df, var, exceedance_percent, vartitle, unit):
     var_df = create_subset_unit(df, var, unit)
     annual_flows = calculate_flow_sum_per_year(var_df).iloc[:, 1:]
     exceedance_probs = calculate_exceedance_probabilities(annual_flows)
@@ -181,10 +263,41 @@ def exceedance_metric(df, var, exceedance_percent, vartitle, unit):
     result_df = count_exceedance_days(annual_flows, baseline_threshold) / len(annual_flows) * 100
     reshaped_df = result_df.melt(value_name=vartitle).reset_index(drop=True)[[vartitle]]
 
+    return reshaped_df"""
+
+def exceedance_metric(df, var, exceedance_percent, vartitle, unit):
+    # Extract data for a specific variable in the desired units
+    var_df = create_subset_unit(df, var, unit)
+    # Drop NaNs and calculate annual flow sums
+    annual_flows = calculate_flow_sum_per_year(var_df).iloc[:, 1:].dropna()
+    # Calculate exceedance probabilities for valid data only
+    exceedance_probs = calculate_exceedance_probabilities(annual_flows)
+    # Sort annual flows and exceedance probabilities for thresholding
+    annual_flows_sorted = annual_flows.apply(np.sort, axis=0)[::-1]
+    """exceedance_prob_baseline = exceedance_probs.apply(np.sort, axis=0).iloc[:, 0].to_frame()
+    exceedance_prob_baseline.columns = [“Exceedance Sorted”]"""
+    exceedance_prob_baseline = exceedance_probs.apply(np.sort, axis=0)
+    if not exceedance_prob_baseline.empty:
+        exceedance_prob_baseline = exceedance_prob_baseline.iloc[:, 0].to_frame()
+        exceedance_prob_baseline.columns = ["Exceedance Sorted"]
+    else:
+        raise ValueError("No data available for exceedance probability calculation")
+    # Find the index where exceedance probability meets or exceeds the given percentage
+    #exceeding_index = exceedance_prob_baseline[exceedance_prob_baseline[‘Exceedance Sorted’] >= exceedance_percent].index[0]
+    if 'Exceedance Sorted' not in exceedance_prob_baseline.columns:
+        raise KeyError("Column 'Exceedance Sorted' not found in DataFrame")
+    filtered_indices = exceedance_prob_baseline.loc[exceedance_prob_baseline['Exceedance Sorted'] >= exceedance_percent].index
+    if len(filtered_indices) == 0:
+        raise ValueError("No values found meeting the exceedance criteria")
+    exceeding_index = filtered_indices[0]
+    baseline_threshold = annual_flows_sorted.iloc[len(annual_flows_sorted) - exceeding_index - 1, 0]
+    # Count exceedance days, ignoring NaNs
+    result_df = count_exceedance_days(annual_flows, baseline_threshold).dropna() / len(annual_flows) * 100
+    # Reshape the result for output format
+    reshaped_df = result_df.melt(value_name=vartitle).reset_index(drop=True)[[vartitle]]
     return reshaped_df
 
-
-"""SPECIFIC FUNCTIONS"""
+"""SPECIFIC FUNCTIONS using dss_names"""
 
 # Annual Avg (using dss_names)
 def ann_avg(df, dss_names, var_name):
@@ -197,7 +310,7 @@ def ann_avg(df, dss_names, var_name):
     return ann_avg_delta_df
 
 # Annual X Percentile outflow of a Delta or X Percentile Resevoir Storage
-def ann_pct(df, dss_names, pct, var_name, df_title):
+def ann_percentile(df, dss_names, pct, var_name, df_title):
     study_list = np.arange(0, len(dss_names))
     return compute_iqr_value(df, pct, var_name, "TAF", df_title, study_list, months=None, annual=True)
 
@@ -234,6 +347,6 @@ def moy_avgs(df, var_name, dss_names):
     return moy_df
 
 # Monthly X Percentile Resevoir Storage or X Percentile Delta Outflow
-def mnth_pct(df, dss_names, pct, var_name, df_title, mnth_num):
+def mnth_percentile(df, dss_names, pct, var_name, df_title, mnth_num):
     study_list = np.arange(0, len(dss_names))
     return compute_iqr_value(df, pct, var_name, "TAF", df_title, study_list, months = [mnth_num], annual = True)
