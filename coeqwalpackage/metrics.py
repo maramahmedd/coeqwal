@@ -109,10 +109,19 @@ def create_subset_unit(df, varname, units):
     filtered_columns = var_filter & unit_filter
     return df.loc[:, filtered_columns]
 
+def compute_annual_sums(df, var, study_lst, units, months):
+    subset_df = create_subset_unit(df, var, units).iloc[:, study_lst]
+    subset_df = add_water_year_column(subset_df)
+    
+    if months is not None:
+        subset_df = subset_df[subset_df.index.month.isin(months)]
+        
+    annual_sum = subset_df.groupby('WaterYear').sum()
 
+    return annual_sum
 """MEAN, SD, IQR FUNCTIONS"""
 
-def compute_annual_sums(df, var, study_lst = None, units = "TAF", months = None):
+"""def compute_annual_sums(df, var, study_lst = None, units = "TAF", months = None):
     subset_df = create_subset_unit(df, var, units)
     if study_lst is not None:
         subset_df = subset_df.iloc[:, study_lst]
@@ -123,7 +132,7 @@ def compute_annual_sums(df, var, study_lst = None, units = "TAF", months = None)
         subset_df = subset_df[subset_df.index.month.isin(months)]
         
     annual_sum = subset_df.groupby('WaterYear').sum()
-    return annual_sum
+    return annual_sum"""
 
 def compute_annual_means(df, var, study_lst = None, units = "TAF", months = None):
     subset_df = create_subset_unit(df, var, units)
@@ -325,6 +334,7 @@ def mnth_avg(df, dss_names, var_name, mnth_num):
     mnth_avg_df = pd.DataFrame(metrics, columns=[mnth_str + '_Avg_' + var_name])
     return mnth_avg_df
 
+# All Months Avg Resevoir Storage or Avg Delta Outflow
 def moy_avgs(df, var_name, dss_names):
     """
     The function assumes the DataFrame columns follow a specific naming
@@ -350,3 +360,49 @@ def moy_avgs(df, var_name, dss_names):
 def mnth_percentile(df, dss_names, pct, var_name, df_title, mnth_num):
     study_list = np.arange(0, len(dss_names))
     return compute_iqr_value(df, pct, var_name, "TAF", df_title, study_list, months = [mnth_num], annual = True)
+
+
+def compute_annual_sums(df, var, study_lst, units, months):
+    subset_df = create_subset_unit(df, var, units).iloc[:, study_lst]
+    subset_df = add_water_year_column(subset_df)
+    
+    if months is not None:
+        subset_df = subset_df[subset_df.index.month.isin(months)]
+        
+    annual_sum = subset_df.groupby('WaterYear').sum()
+    return annual_sum
+
+def compute_sum(df, variable_list, study_lst, units, months = None):
+    df = compute_annual_sums(df, variable_list, study_lst, units, months)
+    return (df.sum()).iloc[-1]
+
+def annual_totals(df, var_name, units):
+    """
+    Plots a time-series graph of annual totals for a given MultiIndex Dataframe that 
+    follows calsim conventions
+    
+    The function assumes the DataFrame columns follow a specific naming
+    convention where the last part of the name indicates the study. 
+    """
+    df = create_subset_unit(df, var_name, units)
+    
+    annualized_df = pd.DataFrame()
+    var = '_'.join(df.columns[0][1].split('_')[:-1])
+    studies = [col[1].split('_')[-1] for col in df.columns]
+        
+    #colormap = plt.cm.tab20
+    #colors = [colormap(i) for i in range(df.shape[1])]
+    #colors[-1] = [0,0,0,1]
+        
+    i=0
+    for study in studies:
+        study_cols = [col for col in df.columns if col[1].endswith(study)]
+        for col in study_cols:
+            with redirect_stdout(open(os.devnull, 'w')):
+                temp_df = df.loc[:,[df.columns[i]]]
+                temp_df["Year"] = df.index.year
+                df_ann = temp_df.groupby("Year").sum()
+                annualized_df = pd.concat([annualized_df, df_ann], axis=1)
+                i+=1
+                
+    return annualized_df 
