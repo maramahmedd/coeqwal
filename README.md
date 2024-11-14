@@ -1,2 +1,2 @@
-# coeqwal-libraries
-Importable libraries for metric calculations and plotting functions used by https://coeqwal.berkeley.edu/
+# COEQWAL
+Notebooks & importable modules for metrics calculations, plotting functions, and data extraction used by https://coeqwal.berkeley.edu/
