@@ -109,7 +109,16 @@ def create_subset_unit(df, varname, units):
     filtered_columns = var_filter & unit_filter
     return df.loc[:, filtered_columns]
 
-def compute_annual_sums(df, var, study_lst, units, months):
+def create_subset_list(df, var_names):
+    """ 
+    Filters df to return columns that contain any of the strings in var_names.
+    :param df: Dataframe to filter.
+    :param var_names: List of variables of interest, e.g. ['S_SHSTA', 'S_OROVL'].
+    """
+    filtered_columns = df.columns.get_level_values(1).str.contains('|'.join(var_names))
+    return df.loc[:, filtered_columns]
+
+def compute_annual_sums(df, var, study_lst = None, units = "TAF", months = None):
     subset_df = create_subset_unit(df, var, units).iloc[:, study_lst]
     subset_df = add_water_year_column(subset_df)
     
@@ -119,9 +128,10 @@ def compute_annual_sums(df, var, study_lst, units, months):
     annual_sum = subset_df.groupby('WaterYear').sum()
 
     return annual_sum
+
 """MEAN, SD, IQR FUNCTIONS"""
 
-"""def compute_annual_sums(df, var, study_lst = None, units = "TAF", months = None):
+"""def compute_annual_means(df, var, study_lst = None, units = "TAF", months = None):
     subset_df = create_subset_unit(df, var, units)
     if study_lst is not None:
         subset_df = subset_df.iloc[:, study_lst]
@@ -131,8 +141,8 @@ def compute_annual_sums(df, var, study_lst, units, months):
     if months is not None:
         subset_df = subset_df[subset_df.index.month.isin(months)]
         
-    annual_sum = subset_df.groupby('WaterYear').sum()
-    return annual_sum"""
+    annual_mean = subset_df.groupby('WaterYear').mean()
+    return annual_mean"""
 
 def compute_annual_means(df, var, study_lst = None, units = "TAF", months = None):
     subset_df = create_subset_unit(df, var, units)
@@ -361,17 +371,6 @@ def mnth_percentile(df, dss_names, pct, var_name, df_title, mnth_num):
     study_list = np.arange(0, len(dss_names))
     return compute_iqr_value(df, pct, var_name, "TAF", df_title, study_list, months = [mnth_num], annual = True)
 
-
-def compute_annual_sums(df, var, study_lst, units, months):
-    subset_df = create_subset_unit(df, var, units).iloc[:, study_lst]
-    subset_df = add_water_year_column(subset_df)
-    
-    if months is not None:
-        subset_df = subset_df[subset_df.index.month.isin(months)]
-        
-    annual_sum = subset_df.groupby('WaterYear').sum()
-    return annual_sum
-
 def compute_sum(df, variable_list, study_lst, units, months = None):
     df = compute_annual_sums(df, variable_list, study_lst, units, months)
     return (df.sum()).iloc[-1]
@@ -406,3 +405,36 @@ def annual_totals(df, var_name, units):
                 i+=1
                 
     return annualized_df 
+
+
+"""Calculate Frequency Hitting Floodzone/Deadpool Levels"""
+
+def frequency_hitting_level(df, var_res, var_fldzn, units, vartitle, floodzone = True, months = None):
+    """
+    Calculate the frequency of hitting the floodzone or deadpool levels
+    Use floodzone = True to calculate probability hitting floodzone, and False to calculate hitting deadpool levels
+    """
+    subset_df_res = create_subset_unit(df, var_res, units)
+    subset_df_floodzone = create_subset_unit(df, var_fldzn, units)
+
+    if months is not None:
+        subset_df_res = subset_df_res[subset_df_res.index.month.isin(months)]
+        subset_df_floodzone = subset_df_floodzone[subset_df_floodzone.index.month.isin(months)]
+
+    multiindex_columns = subset_df_res.columns
+
+    subset_df_res_comp_values = subset_df_res.values - subset_df_floodzone.values
+    if floodzone:
+        subset_df_res_comp_values += 0.000001
+
+    subset_df_res_comp = pd.DataFrame(subset_df_res_comp_values, index=subset_df_res.index, columns=multiindex_columns)
+
+    exceedance_days = count_exceedance_days(subset_df_res_comp, 0)
+    exceedance_days = exceedance_days / len(subset_df_res_comp) * 100
+    if not floodzone:
+        exceedance_days = 100 - exceedance_days
+
+
+    exceedance_days = exceedance_days.melt(value_name=vartitle).reset_index(drop=True)[[vartitle]]
+
+    return exceedance_days
