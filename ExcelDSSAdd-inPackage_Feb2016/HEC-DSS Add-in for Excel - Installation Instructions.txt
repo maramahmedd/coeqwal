@@ -1,0 +1,29 @@
+Installation Instructions
+1. Unzip the attached file to a folder in your system path, 
+    or add that folder to your path. 
+2. Verify your version of Microsoft Office
+     - Microsoft Office 2007 is 32-bit
+     - Microsoft Office 2010 has 32-bit and 64-bit versions
+3. Copy the libraries (*.dll) for your version of MS Office 
+    to your Windows system folder (e.g., C:/Windows/System32/)
+     - For 32-bit Office, copy the *.dll files in the 
+        libraries/32-bit/ folder to your system folder
+     - For 32-bit Office, copy the *.dll files in the 
+        libraries/32-bit/ folder to your system folder
+4. Copy the DSSExcel.xlam and the DSSExcel.chm files to your 
+    Microsoft Office folder (e.g., C:/Program Files/MicrosoftOffice/Office15/). 
+    It's important that you copy both files.
+5. Add the DSS add-in to Excel (see Microsoft's instructions)
+
+"C:\Program Files\Microsoft Office\Office14":
+    DSSEXCEL.xlam
+    DSSEXCEL.chm
+    heclib_x64.dll
+    libifcoremd.dll
+    libifportmd.dll
+    libmmd.dll
+    msvcr100.dll
+
+"C:\Windows\System32":
+    msvcr100.dll
+
