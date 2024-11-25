@@ -27,7 +27,7 @@ import AuxFunctions as af, cs3, csPlots, cs_util as util, dss3_functions_referen
 
 """PLOTTING FUNCTIONS"""
 
-def plot_ts(df, pTitle = 'Time Series', xLab = 'Date', lTitle = 'Studies', fTitle = 'mon_tot', pSave = True, fPath = fPath):
+def plot_ts(df, pTitle = 'Time Series', xLab = 'Date', lTitle = 'Studies', fTitle = 'mon_tot', pSave = True, fPath = 'fPath'):
     """
     Plots a time-series graph for a given MultiIndex dataframe (follows calsim conventions)
     
@@ -72,7 +72,7 @@ def plot_ts(df, pTitle = 'Time Series', xLab = 'Date', lTitle = 'Studies', fTitl
     plt.show()
    
 
-def plot_annual_totals(df, xLab = 'Date', pTitle = 'Annual Totals', lTitle = 'Studies', fTitle = 'ann_tot', pSave = True, fPath = fPath):
+def plot_annual_totals(df, xLab = 'Date', pTitle = 'Annual Totals', lTitle = 'Studies', fTitle = 'ann_tot', pSave = True, fPath = 'fPath'):
     """
     Plots a time-series graph of annual totals for a given MultiIndex Dataframe that 
     follows calsim conventions
@@ -125,7 +125,7 @@ def plot_annual_totals(df, xLab = 'Date', pTitle = 'Annual Totals', lTitle = 'St
     plt.show()
     return annualized_df 
 
-def plot_exceedance(df, month = "All Months", xLab = 'Probability', pTitle = 'Exceedance Probability', lTitle = 'Studies', fTitle = 'exceed', pSave = True, fPath = fPath):
+def plot_exceedance(df, month = "All Months", xLab = 'Probability', pTitle = 'Exceedance Probability', lTitle = 'Studies', fTitle = 'exceed', pSave = True, fPath = 'fPath'):
     """
     Plots an exceedance graph for a given MultiIndex Dataframe that follows calsim conventions
   
@@ -171,7 +171,7 @@ def plot_exceedance(df, month = "All Months", xLab = 'Probability', pTitle = 'Ex
         
     plt.show()
 
-def plot_moy_averages(df, xLab = 'Month of Year', pTitle = 'Month of Year Average Totals', lTitle = 'Studies', fTitle = 'moy_avg', fPath = fPath):
+def plot_moy_averages(df, xLab = 'Month of Year', pTitle = 'Month of Year Average Totals', lTitle = 'Studies', fTitle = 'moy_avg', fPath = 'fPath'):
     """
     Plots a time-series graph of month of year averages of a study for a given MultiIndex Dataframe that follows calsim conventions. Calculates mean for 12 months across all study years and uses the plot_ts function to produce a graph.
     
@@ -181,7 +181,7 @@ def plot_moy_averages(df, xLab = 'Month of Year', pTitle = 'Month of Year Averag
     df_copy = df.copy()
     df_copy["Month"] = df.index.month
     df_moy = df_copy.groupby('Month').mean()
-    plot_ts(df_moy, pTitle = pTitle, xLab = xLab, lTitle = lTitle, fTitle = fTitle, fPath = fPath)
+    plot_ts(df_moy, pTitle = pTitle, xLab = xLab, lTitle = lTitle, fTitle = fTitle, fPath = 'fPath')
 
 
 """DIFFERENCE FROM BASELINE"""
@@ -200,14 +200,14 @@ def get_difference_from_baseline(df):
 
     return df_diff
 
-def difference_from_baseline(df, plot_type, pTitle = 'Difference from Baseline ', xLab = 'Date', lTitle = 'Studies', fTitle = "___", pSave = True, fPath = fPath):
+def difference_from_baseline(df, plot_type, pTitle = 'Difference from Baseline ', xLab = 'Date', lTitle = 'Studies', fTitle = "___", pSave = True, fPath = 'fPath'):
     """
     Plots the difference from baseline of a single variable with a specific plot type
     plot_type parameter inputs: plot_ts, plot_exceedance, plot_moy_averages, plot_annual_totals
     """
     pTitle += plot_type.__name__
     diff_df = get_difference_from_baseline(df)
-    plot_type(diff_df, pTitle = pTitle, fTitle = fTitle, fPath = fPath)
+    plot_type(diff_df, pTitle = pTitle, fTitle = fTitle, fPath = 'fPath')
 
 """Looping Through All Variables to Create Plots???????include these?????"""
 
