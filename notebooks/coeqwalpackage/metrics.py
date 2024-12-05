@@ -142,7 +142,7 @@ def convert_cfs_to_taf(df, metadata_df):
     return df
 
 
-"""SUBSET FUNCTIONS"""
+"""SUBSET AND TRANSFORMATION FUNCTIONS"""
 
 def add_water_year_column(df):
     df_copy = df.copy().sort_index()
@@ -182,17 +182,6 @@ def create_subset_list(df, var_names):
     filtered_columns = df.columns.get_level_values(1).str.contains('|'.join(var_names))
     return df.loc[:, filtered_columns]
 
-def compute_annual_sums(df, var, study_lst = None, units = "TAF", months = None):
-    subset_df = create_subset_unit(df, var, units).iloc[:, study_lst]
-    subset_df = add_water_year_column(subset_df)
-    
-    if months is not None:
-        subset_df = subset_df[subset_df.index.month.isin(months)]
-        
-    annual_sum = subset_df.groupby('WaterYear').sum()
-
-    return annual_sum
-
 """FORMATTING HELPER FUNCTIONS"""
 def set_index(df, dss_names):
     scenario_names = []
@@ -201,7 +190,7 @@ def set_index(df, dss_names):
     df.index = scenario_names
     return df
 
-"""MEAN, SD, IQR FUNCTIONS"""
+"""MEAN, SD, IQR, SUM FUNCTIONS"""
 
 def compute_annual_means(df, var, study_lst = None, units = "TAF", months = None):
     subset_df = create_subset_unit(df, var, units)
@@ -261,6 +250,21 @@ def calculate_monthly_average(flow_data):
 
     monthly_avg.rename(columns={'Month': 'Month'}, inplace=True)
     return monthly_avg
+
+def compute_annual_sums(df, var, study_lst = None, units = "TAF", months = None):
+    subset_df = create_subset_unit(df, var, units).iloc[:, study_lst]
+    subset_df = add_water_year_column(subset_df)
+    
+    if months is not None:
+        subset_df = subset_df[subset_df.index.month.isin(months)]
+        
+    annual_sum = subset_df.groupby('WaterYear').sum()
+
+    return annual_sum
+
+def compute_sum(df, variable_list, study_lst, units, months = None):
+    df = compute_annual_sums(df, variable_list, study_lst, units, months)
+    return (df.sum()).iloc[-1]
 
 
 """EXCEEDANCE FUNCTIONS"""
@@ -342,7 +346,7 @@ def exceedance_metric(df, var, exceedance_percent, vartitle, unit):
     reshaped_df = result_df.melt(value_name=vartitle).reset_index(drop=True)[[vartitle]]
     return reshaped_df
 
-"""SPECIFIC FUNCTIONS using dss_names"""
+"""CUSTOM FUNCTIONS using dss_names"""
 
 # Annual Avg (using dss_names)
 def ann_avg(df, dss_names, var_name, units="TAF"):
@@ -403,10 +407,6 @@ def mnth_percentile(df, dss_names, pct, var_name, df_title, mnth_num, units="TAF
     iqr_df = compute_iqr_value(df, pct, var_name, units, df_title, study_list, months = [mnth_num], annual = True)
     iqr_df = set_index(iqr_df, dss_names)
     return iqr_df
-
-def compute_sum(df, variable_list, study_lst, units, months = None):
-    df = compute_annual_sums(df, variable_list, study_lst, units, months)
-    return (df.sum()).iloc[-1]
 
 def annual_totals(df, var_name, units):
     """
