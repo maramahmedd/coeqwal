@@ -356,6 +356,7 @@ def ann_avg(df, dss_names, var_name, units="TAF"):
         metrics.append(metric_value)
 
     ann_avg_delta_df = pd.DataFrame(metrics, columns=['Ann_Avg_' + var_name + units])
+    ann_avg_delta_df = set_index(ann_avg_delta_df, dss_names)
     return ann_avg_delta_df
 
 # Annual X Percentile outflow of a Delta or X Percentile Resevoir Storage
