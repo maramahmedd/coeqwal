@@ -53,7 +53,10 @@ def read_from_excel(xlfn, tabname, topleft, bottomright,hdr=True,dtypes=[]):
             data_list.append(tmp)
     return([hdr_values, data_list])
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 749f953a1c6172ff8b06c86f0e1b4d70162a5117
 def read_init_file(CtrlFile, CtrlTab):
 
     # Hard-coded file structure
