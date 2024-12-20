@@ -53,10 +53,7 @@ def read_from_excel(xlfn, tabname, topleft, bottomright,hdr=True,dtypes=[]):
             data_list.append(tmp)
     return([hdr_values, data_list])
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 749f953a1c6172ff8b06c86f0e1b4d70162a5117
 def read_init_file(CtrlFile, CtrlTab):
 
     # Hard-coded file structure
@@ -133,7 +130,7 @@ def read_init_file(CtrlFile, CtrlTab):
     Hdr, GroupDataDirName = read_from_excel(CtrlFile, CtrlTab, GroupDataDirInd, GroupDataDirInd, hdr=False) # directory name for group data extraction (Group_Data_Extraction in current structure)
     GroupDataDirName = GroupDataDirName[0][0]
     GroupDataDirPath = os.path.join(ScenarioDir, GroupDataDirName) # group data extraction directory (../../CalSim3_Model_Runs/Scenarios/Group_Data_Extraction in the current structure)
-    print(GroupDataDirPath)
+    #print(GroupDataDirPath)
     Hdr, VarListFileName = read_from_excel(CtrlFile, CtrlTab, VarFileNameInd, VarFileNameInd, hdr=False) # directory name for variable listing (trend_report_variables_v3.xlsx in current structure)
     VarListFileName = VarListFileName[0][0]
     Hdr, VarListTab = read_from_excel(CtrlFile, CtrlTab, VarFileTabInd, VarFileTabInd, hdr=False) # tab for variable listing (TrendReportVars_CS3 in current structure)
@@ -176,18 +173,18 @@ def read_init_file(CtrlFile, CtrlTab):
     ModelSubPath = os.path.join('Model_Files','DSS','output')
 
     # debug print
-    print(DssListFile)    
-    print(DssListTab)    
-    print(DssListPath)
-    print(DssNamesOutPath)
-    print(DssIndicesOutPath)
-    print(DssDirsOutPath)
-    print(VarListPath)
-    print(VarOutPath)
-    print(DataOutPath)
-    print(ExtractionSubPath)
-    print(ModelSubPath)
-    print(GroupDataDirPath)
+    # print(DssListFile)    
+    # print(DssListTab)    
+    # print(DssListPath)
+    # print(DssNamesOutPath)
+    # print(DssIndicesOutPath)
+    # print(DssDirsOutPath)
+    # print(VarListPath)
+    # print(VarOutPath)
+    # print(DataOutPath)
+    # print(ExtractionSubPath)
+    # print(ModelSubPath)
+    # print(GroupDataDirPath)
  
     # return info
     return DssListFile, DssListTab, DssListPath, DssNamesOutPath, DssIndicesOutPath, DssDirsOutPath, VarListPath, VarListFile, VarListTab, VarOutPath, DataOutPath, ConvertDataOutPath, ExtractionSubPath, ModelSubPath, GroupDataDirPath, ScenarioDir, DssMin, DssMax, DirMin, DirMax, IndexMin, IndexMax, StartMin, StartMax, EndMin, EndMax, VarMin, VarMax
