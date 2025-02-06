@@ -267,7 +267,7 @@ def plot_annual_totals(
         from contextlib import redirect_stdout
         with redirect_stdout(open(os.devnull, 'w')):
             single_col_df = df_plot[[col]]  #
-            df_ann = annualize_ts(single_col_df, freq='AS-OCT')
+            df_ann = annualize_ts(single_col_df, freq='YS-OCT')
 
         # Concatenate to the final annual DataFrame
         annualized_df = pd.concat([annualized_df, df_ann], axis=1)
@@ -465,7 +465,7 @@ def annualize_exceedance_plot(
         df,
         varname,
         units="TAF",
-        freq="AS-OCT",
+        freq="YS-OCT",
         # optional parameters for plot_exceedance
         pTitle='Annual Exceedance',
         month="All Months",
@@ -490,7 +490,7 @@ def annualize_exceedance_plot(
     units : str
         Desired units, e.g. "TAF"
     freq : str
-        Resampling frequency, e.g. "AS-OCT" for water year sums.
+        Resampling frequency, e.g. "YS-OCT" for water year sums.
     pTitle : str
         Plot title base.
     month : str
@@ -527,7 +527,7 @@ def annualize_exceedance_plot(
                 keep_cols.append(col)
         df_subset = df_subset[keep_cols]
 
-    # 3) Annualize each column by the freq (e.g. 'AS-OCT')
+    # 3) Annualize each column by the freq (e.g. 'YS-OCT')
     import pandas as pd
     annual_cols = []
     for col in df_subset.columns:
@@ -554,7 +554,7 @@ def annualize_exceedance_plot(
 
     return annual_df
 
-def annualize_ts(df_col, freq='AS-OCT'):
+def annualize_ts(df_col, freq='YS-OCT'):
     """
     Aggregate a single-column DataFrame to annual totals by water year,
     assuming the column is already in volumetric units (e.g. TAF).
@@ -564,7 +564,7 @@ def annualize_ts(df_col, freq='AS-OCT'):
     df_col : pd.DataFrame
         Exactly ONE column with a DateTimeIndex.
     freq : str
-        Defaults to 'AS-OCT', meaning the water year starts in October.
+        Defaults to 'YS-OCT', meaning the water year starts in October.
 
     Returns
     -------
