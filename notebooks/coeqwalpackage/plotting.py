@@ -1,187 +1,653 @@
-# Import standard libraries
-import os
-import sys
-import importlib
-import datetime as dt
-import time
-from pathlib import Path
-from contextlib import redirect_stdout
-
-# Import data manipulation libraries
-import numpy as np
-import pandas as pd
+# import metrics library
+from metrics import *
 
 # Import visualization libraries
-import matplotlib.pyplot as plt
 from matplotlib import colormaps, cm
 from matplotlib.collections import PatchCollection
 from matplotlib.patches import Rectangle
 from matplotlib.lines import Line2D
-from pandas.plotting import parallel_coordinates
-from sklearn.preprocessing import StandardScaler
 from matplotlib.ticker import PercentFormatter
-import seaborn as sns
 
 # Import custom modules - NEED WINDOWS OS
-import AuxFunctions as af, cs3, csPlots, cs_util as util, dss3_functions_reference as dss
+#import AuxFunctions as af, cs3, csPlots, cs_util as util, dss3_functions_reference as dss
 
 """PLOTTING FUNCTIONS"""
 
-def plot_ts(df, pTitle = 'Time Series', xLab = 'Date', lTitle = 'Studies', fTitle = 'mon_tot', pSave = True, fPath = 'fPath'):
+def plot_ts(
+        df,
+        pTitle='Time Series',
+        xLab='Date',
+        lTitle='Studies',
+        fTitle='mon_tot',
+        pSave=True,
+        fPath='fPath',
+        # --- OPTIONAL ---
+        study_list=None,
+        start_date=None,
+        end_date=None,
+        scenario_styles=None
+):
     """
-    Plots a time-series graph for a given MultiIndex dataframe (follows calsim conventions)
-    
-    The function assumes the DataFrame columns follow a specific naming
-    convention where the last part of the name indicates the study.
-    """
-    
-    var = '_'.join(df.columns[0][1].split('_')[:-1])
-    colormap = plt.cm.tab20
-    colors = [colormap(i) for i in range(df.shape[1])]
-    colors[-1] = [0,0,0,1]
+    Plots a time-series graph for a given MultiIndex DataFrame (CalSim style).
+    Allows optional subsetting by study_list and date range, plus scenario styles.
 
+    Parameters
+    ----------
+    df : pd.DataFrame
+        MultiIndex DataFrame with columns like (PartA, PartB, ..., Units).
+    pTitle : str
+        Plot title.
+    xLab : str
+        X-axis label.
+    lTitle : str
+        Legend title.
+    fTitle : str
+        Filename prefix for saving.
+    pSave : bool
+        Whether to save the figure as PNG.
+    fPath : str
+        Directory to save the PNG.
+    study_list : list of int, optional
+        e.g. [2,11] => subselect columns ending in "_s0002" or "_s0011".
+    start_date : str or datetime, optional
+        e.g. '1975-10-31'. Subset rows after this date.
+    end_date : str or datetime, optional
+        e.g. '1978-09-30'. Subset rows before this date.
+    scenario_styles : dict, optional
+        e.g. {2: {'color':'black', 'linestyle':'-', 'label':'Baseline'}}.
+
+    Returns
+    -------
+    None
+    """
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    import pandas as pd
+
+    # 1) Optional date subsetting
+    df_plot = df.copy()
+    if start_date is not None:
+        df_plot = df_plot.loc[df_plot.index >= pd.to_datetime(start_date)]
+    if end_date is not None:
+        df_plot = df_plot.loc[df_plot.index <= pd.to_datetime(end_date)]
+
+    # 2) Optional study subsetting
+    if study_list is not None:
+        suffixes = [f"s{str(st).zfill(4)}" for st in study_list]
+        new_cols = []
+        for col in df_plot.columns:
+            if any(col[1].endswith(sfx) for sfx in suffixes):
+                new_cols.append(col)
+        df_plot = df_plot[new_cols]
+
+    # If nothing left
+    if df_plot.empty:
+        print("[plot_ts] WARNING: No data to plot after subsetting!")
+        return
+
+    # 3) Plot setup
+    var = '_'.join(df_plot.columns[0][1].split('_')[:-1])
+    colormap = plt.cm.tab20
+    colors = [colormap(i) for i in range(df_plot.shape[1])]
+    if len(colors) > 0:
+        colors[-1] = (0, 0, 0, 1)
+
+    plt.figure(figsize=(14, 8))
+    default_font_size = plt.rcParams['font.size']
+    scaled_font_size = 1.5 * default_font_size
+    scaled_line_width = 1.5 * plt.rcParams['lines.linewidth']
+
+    # Build scenario IDs from columns
+    studies = [col[1].split('_')[-1] for col in df_plot.columns]
+    scenario_labeled = set()
     count = 0
-    
-    plt.figure(figsize=(14, 8))
-    
-    default_font_size = plt.rcParams['font.size']
-    scaled_font_size = 1.5 * default_font_size # Change it to font size you want
-    default_line_width = plt.rcParams['lines.linewidth']  
-    scaled_line_width = 1.5 * default_line_width
-    
-    studies = [col[1].split('_')[-1] for col in df.columns]
 
-    for study in studies:
-        study_cols = [col for col in df.columns if col[1].endswith(study)]
-        for col in study_cols:
-            sns.lineplot(data=df, x=df.index, y=col, label=f'{study}', color = colors[count], linewidth=scaled_line_width)
-            count+=1
-            
-    plt.title(var + ' ' + pTitle, fontsize=scaled_font_size*2)
-    plt.xlabel(xLab, fontsize=scaled_font_size*1.5)
-    plt.ylabel(var+"\nUnits: " + df.columns[0][6], fontsize=scaled_font_size*1.5)
+    # 4) Plot each column
+    for col, study in zip(df_plot.columns, studies):
+        numeric_study = int(study.replace('s', ''))
+        if scenario_styles and numeric_study in scenario_styles:
+            style_dict = scenario_styles[numeric_study]
+            this_color = style_dict.get('color', colors[count])
+            this_linestyle = style_dict.get('linestyle', '-')
+            this_label = style_dict.get('label', study) if study not in scenario_labeled else None
+            this_lw = style_dict.get('linewidth', scaled_line_width)
+        else:
+            this_color = colors[count]
+            this_linestyle = '-'
+            this_label = study if study not in scenario_labeled else None
+            this_lw = scaled_line_width
 
-    plt.legend(title=lTitle, title_fontsize = scaled_font_size*1.5, fontsize=scaled_font_size*1.25, bbox_to_anchor=(1.02, 1), loc='upper left', borderaxespad=0)
-    plt.xticks(rotation=45, fontsize=scaled_font_size)  
-    plt.yticks(fontsize=scaled_font_size)  
-    plt.tight_layout()  
-     
+        sns.lineplot(
+            data=df_plot,
+            x=df_plot.index,
+            y=col,
+            label=this_label,
+            color=this_color,
+            linewidth=this_lw,
+            linestyle=this_linestyle
+        )
+
+        if this_label is not None:
+            scenario_labeled.add(study)
+
+        count += 1
+
+    # 5) Final labeling
+    plt.title(var + ' ' + pTitle, fontsize=scaled_font_size * 2)
+    plt.xlabel(xLab, fontsize=scaled_font_size * 1.5)
+    first_col_units = df_plot.columns[0][6]
+    plt.ylabel(var + "\nUnits: " + str(first_col_units), fontsize=scaled_font_size * 1.5)
+
+    plt.legend(
+        title=lTitle,
+        title_fontsize=scaled_font_size * 1.5,
+        fontsize=scaled_font_size * 1.25,
+        bbox_to_anchor=(1.02, 1),
+        loc='upper left',
+        borderaxespad=0
+    )
+    plt.xticks(rotation=45, fontsize=scaled_font_size)
+    plt.yticks(fontsize=scaled_font_size)
+    plt.tight_layout()
+
     if pSave:
-        plt.savefig(f'{fPath}/{var}_{fTitle}.png', format = 'png', bbox_inches='tight', dpi=600, transparent=False)
-        
-    plt.show()
-   
+        plt.savefig(f'{fPath}/{var}_{fTitle}.png', format='png', bbox_inches='tight', dpi=600, transparent=False)
 
-def plot_annual_totals(df, xLab = 'Date', pTitle = 'Annual Totals', lTitle = 'Studies', fTitle = 'ann_tot', pSave = True, fPath = 'fPath'):
+    plt.show()
+
+
+def plot_annual_totals(
+        df,
+        xLab='Date',
+        pTitle='Annual Totals',
+        lTitle='Studies',
+        fTitle='ann_tot',
+        pSave=True,
+        fPath='fPath',
+        # OPTIONAL
+        study_list=None,
+        start_date=None,
+        end_date=None,
+        scenario_styles=None
+):
     """
-    Plots a time-series graph of annual totals for a given MultiIndex Dataframe that 
-    follows calsim conventions
-    
-    The function assumes the DataFrame columns follow a specific naming
-    convention where the last part of the name indicates the study. 
+    Plots a time-series graph of annual totals for a given MultiIndex DataFrame
+    that follows CalSim conventions, using annualize_ts for each column.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        MultiIndex DataFrame with columns shaped like (PartA, PartB, ..., Units).
+    xLab : str
+        X-axis label.
+    pTitle : str
+        Plot title.
+    lTitle : str
+        Legend title.
+    fTitle : str
+        Filename prefix for saving.
+    pSave : bool
+        Whether to save the figure as PNG.
+    fPath : str
+        Directory to save the PNG.
+    study_list : list of int, optional
+        e.g. [2,11].
+    start_date : str or datetime, optional
+        Subset rows after this date.
+    end_date : str or datetime, optional
+        Subset rows before this date.
+    scenario_styles : dict, optional
+        e.g. {2: {'color':'black','linestyle':'-','label':'Baseline'}}
+
+    Returns
+    -------
+    pd.DataFrame
+        The concatenated annual DataFrame for all columns, after summation.
     """
-    
-    annualized_df = pd.DataFrame()
-    var = '_'.join(df.columns[0][1].split('_')[:-1])
-    studies = [col[1].split('_')[-1] for col in df.columns]
-        
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    import pandas as pd
+
+    # 1) Subset date
+    df_plot = df.copy()
+    if start_date is not None:
+        df_plot = df_plot.loc[df_plot.index >= pd.to_datetime(start_date)]
+    if end_date is not None:
+        df_plot = df_plot.loc[df_plot.index <= pd.to_datetime(end_date)]
+
+    # 2) Subset columns by study
+    if study_list is not None:
+        suffixes = [f"s{str(st).zfill(4)}" for st in study_list]
+        new_cols = []
+        for col in df_plot.columns:
+            if any(col[1].endswith(sfx) for sfx in suffixes):
+                new_cols.append(col)
+        df_plot = df_plot[new_cols]
+
+    if df_plot.empty:
+        print("[plot_annual_totals] WARNING: No data after subsetting!")
+        return pd.DataFrame()
+
+    # 3) Plot setup
+    var = '_'.join(df_plot.columns[0][1].split('_')[:-1])
+    import numpy as np
+
     colormap = plt.cm.tab20
-    colors = [colormap(i) for i in range(df.shape[1])]
-    colors[-1] = [0,0,0,1]
-        
-    i=0
+    colors = [colormap(i) for i in range(df_plot.shape[1])]
+    if len(colors) > 0:
+        colors[-1] = (0, 0, 0, 1)
 
     plt.figure(figsize=(14, 8))
-        
     default_font_size = plt.rcParams['font.size']
-    scaled_font_size = 1.5 * default_font_size # Change it to font size you want
-    default_line_width = plt.rcParams['lines.linewidth']  
-    scaled_line_width = 1.5 * default_line_width
-    
-    for study in studies:
-        study_cols = [col for col in df.columns if col[1].endswith(study)]
-        for col in study_cols:
-            with redirect_stdout(open(os.devnull, 'w')):
-                df_ann = csPlots.annualize(df.loc[:, [df.columns[i]]])
-                annualized_df = pd.concat([annualized_df, df_ann], axis=1)
-                annualized_col_name = df_ann.columns[0]
-                sns.lineplot(data = df_ann, x=df_ann.index, y=annualized_col_name, label=f'{study}', color = colors[i],
-                            linewidth = scaled_line_width)
-                i+=1
-                    
+    scaled_font_size = 1.5 * default_font_size
+    scaled_line_width = 1.5 * plt.rcParams['lines.linewidth']
 
-    plt.title(var + ' ' + pTitle, fontsize=scaled_font_size*2)
-    plt.xlabel(xLab, fontsize=scaled_font_size*1.5)
-    plt.ylabel(var+"\nUnits: " + df.columns[0][6], fontsize=scaled_font_size*1.5)
+    annualized_df = pd.DataFrame()
 
-    plt.legend(title=lTitle, title_fontsize = scaled_font_size*1.5, fontsize=scaled_font_size*1.25, bbox_to_anchor=(1.02, 1), loc='upper left', borderaxespad=0)
-    plt.xticks(rotation=45, fontsize=scaled_font_size)  
-    plt.yticks(fontsize=scaled_font_size)  
-    plt.tight_layout()  
-        
+    # Build scenario list from columns
+    studies = [col[1].split('_')[-1] for col in df_plot.columns]
+    scenario_labeled = set()
+    count = 0
+
+    # 4) For each column => annualize & plot
+    for col, study in zip(df_plot.columns, studies):
+        numeric_study = int(study.replace('s',''))
+        if scenario_styles and numeric_study in scenario_styles:
+            style_dict = scenario_styles[numeric_study]
+            this_color = style_dict.get('color', colors[count])
+            this_linestyle = style_dict.get('linestyle', '-')
+            this_label = style_dict.get('label', study) if (study not in scenario_labeled) else None
+            this_lw = style_dict.get('linewidth', scaled_line_width)
+        else:
+            this_color = colors[count]
+            this_linestyle = '-'
+            this_label = study if study not in scenario_labeled else None
+            this_lw = scaled_line_width
+
+        from contextlib import redirect_stdout
+        with redirect_stdout(open(os.devnull, 'w')):
+            single_col_df = df_plot[[col]]  #
+            df_ann = annualize_ts(single_col_df, freq='AS-OCT')
+
+        # Concatenate to the final annual DataFrame
+        annualized_df = pd.concat([annualized_df, df_ann], axis=1)
+
+        # Plot
+        sns.lineplot(
+            data=df_ann,
+            x=df_ann.index,
+            y=df_ann.columns[0],
+            label=this_label,
+            color=this_color,
+            linewidth=this_lw,
+            linestyle=this_linestyle,
+            drawstyle='steps-post'
+        )
+
+        if this_label is not None:
+            scenario_labeled.add(study)
+        count += 1
+
+    # 5) Final labeling
+    plt.title(var + ' ' + pTitle, fontsize=scaled_font_size * 2)
+    plt.xlabel(xLab, fontsize=scaled_font_size * 1.5)
+    first_col_units = df_plot.columns[0][6]
+    plt.ylabel(var + "\nUnits: " + str(first_col_units), fontsize=scaled_font_size * 1.5)
+
+    plt.legend(
+        title=lTitle,
+        title_fontsize=scaled_font_size * 1.5,
+        fontsize=scaled_font_size * 1.25,
+        bbox_to_anchor=(1.02, 1),
+        loc='upper left',
+        borderaxespad=0
+    )
+    plt.xticks(rotation=45, fontsize=scaled_font_size)
+    plt.yticks(fontsize=scaled_font_size)
+    plt.tight_layout()
+
     if pSave:
-        plt.savefig(f'{fPath}/{var}_{fTitle}.png', format = 'png', bbox_inches='tight', dpi=600, transparent=False)
-        
-    plt.show()
-    return annualized_df 
+        plt.savefig(f'{fPath}/{var}_{fTitle}.png', format='png', bbox_inches='tight', dpi=600, transparent=False)
 
-def plot_exceedance(df, month = "All Months", xLab = 'Probability', pTitle = 'Exceedance Probability', lTitle = 'Studies', fTitle = 'exceed', pSave = True, fPath = 'fPath'):
+    plt.show()
+    return annualized_df
+
+def plot_exceedance(
+        df,
+        month="All Months",
+        xLab='Probability',
+        pTitle='Exceedance Probability',
+        lTitle='Studies',
+        fTitle='exceed',
+        pSave=True,
+        fPath='fPath',
+        # OPTIONAL
+        study_list=None,
+        scenario_styles=None
+):
     """
-    Plots an exceedance graph for a given MultiIndex Dataframe that follows calsim conventions
-  
-    The function assumes the DataFrame columns follow a specific naming
-    convention where the last part of the name indicates the study. 
+    Plots an exceedance graph for a given MultiIndex DataFrame (follows CalSim conventions)
+    using single_exceed_alternative() for each column. No date subsetting.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        MultiIndex DataFrame with columns shaped like (PartA, PartB, ..., Units).
+    month : str
+        Just a label for the plot title (e.g. "April" or "All Months").
+    xLab : str
+        X-axis label.
+    pTitle : str
+        Plot title base.
+    lTitle : str
+        Legend title.
+    fTitle : str
+        Filename prefix for saving.
+    pSave : bool
+        Whether to save the figure as PNG.
+    fPath : str
+        Directory to save PNG.
+    study_list : list of int, optional
+        e.g. [2,11] => columns ending in "_s0002" or "_s0011".
+    scenario_styles : dict, optional
+        e.g. {2: {'color':'black','linestyle':'-','label':'Baseline'}}
+
+    Returns
+    -------
+    None
     """
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+
+    # Just for labeling
     pTitle = pTitle + " " + month
     fTitle = fTitle + " " + month
-    
-    var = '_'.join(df.columns[0][1].split('_')[:-1])
-    studies = [col[1].split('_')[-1] for col in df.columns]
-    i=0
-    
+
+    # Subset columns by study_list
+    df_plot = df.copy()
+    if study_list is not None:
+        suffixes = [f"s{str(st).zfill(4)}" for st in study_list]
+        new_cols = []
+        for col in df_plot.columns:
+            if any(col[1].endswith(sfx) for sfx in suffixes):
+                new_cols.append(col)
+        df_plot = df_plot[new_cols]
+
+    if df_plot.empty:
+        print("[plot_exceedance] WARNING: No data to plot after subsetting!")
+        return
+
+    var = '_'.join(df_plot.columns[0][1].split('_')[:-1])
+    studies = [col[1].split('_')[-1] for col in df_plot.columns]
+
     colormap = plt.cm.tab20
-    colors = [colormap(i) for i in range(df.shape[1])]
-    colors[-1] = [0,0,0,1]
+    colors = [colormap(i) for i in range(df_plot.shape[1])]
+    if len(colors) > 0:
+        colors[-1] = (0, 0, 0, 1)
 
     plt.figure(figsize=(14, 8))
-            
     default_font_size = plt.rcParams['font.size']
-    scaled_font_size = 1.5 * default_font_size # Change it to font size you want
-    default_line_width = plt.rcParams['lines.linewidth']  
-    scaled_line_width = 1.5 * default_line_width
+    scaled_font_size = 1.5 * default_font_size
+    scaled_line_width = 1.5 * plt.rcParams['lines.linewidth']
 
-    for study in studies:
-        study_cols = [col for col in df.columns if col[1].endswith(study)]
-        for col in study_cols:
-            df_ex = csPlots.single_exceed(df, df.columns[i])
-            ex_col_name = df_ex.columns[0]
-            sns.lineplot(data = df_ex, x=df_ex.index, y=ex_col_name, label=f'{study}', color = colors[i], linewidth = scaled_line_width)
-            i+=1
+    scenario_labeled = set()
+    i = 0
 
-    plt.title(var + ' ' + pTitle, fontsize=scaled_font_size*2)
-    plt.xlabel(xLab, fontsize=scaled_font_size*1.5)
-    plt.ylabel(var+"\nUnits: " + df.columns[0][6], fontsize=scaled_font_size*1.5)
-    plt.legend(title=lTitle, title_fontsize = scaled_font_size*1.5, fontsize=scaled_font_size*1.25, bbox_to_anchor=(1.02, 1), loc='upper left', borderaxespad=0)
-    plt.xticks(rotation=45, fontsize=scaled_font_size)  
-    plt.yticks(fontsize=scaled_font_size)  
-    plt.tight_layout()  
-    
+    for col, study in zip(df_plot.columns, studies):
+        numeric_study = int(study.replace('s',''))
+        if scenario_styles and numeric_study in scenario_styles:
+            style_dict = scenario_styles[numeric_study]
+            this_color = style_dict.get('color', colors[i])
+            this_linestyle = style_dict.get('linestyle', '-')
+            this_label = style_dict.get('label', study) if study not in scenario_labeled else None
+            this_lw = style_dict.get('linewidth', scaled_line_width)
+        else:
+            this_color = colors[i]
+            this_linestyle = '-'
+            this_label = study if study not in scenario_labeled else None
+            this_lw = scaled_line_width
+
+        df_ex = single_exceed_alternative(df_plot[col])
+        ex_col_name = df_ex.columns[0]
+
+        sns.lineplot(
+            data=df_ex,
+            x=df_ex.index,
+            y=ex_col_name,
+            label=this_label,
+            color=this_color,
+            linewidth=this_lw,
+            linestyle=this_linestyle
+        )
+
+        if this_label:
+            scenario_labeled.add(study)
+        i += 1
+
+    plt.title(var + ' ' + pTitle, fontsize=scaled_font_size * 2)
+    plt.xlabel(xLab, fontsize=scaled_font_size * 1.5)
+    first_col_units = df_plot.columns[0][6]
+    plt.ylabel(var + "\nUnits: " + str(first_col_units), fontsize=scaled_font_size * 1.5)
+
+    plt.legend(
+        title=lTitle,
+        title_fontsize=scaled_font_size * 1.5,
+        fontsize=scaled_font_size * 1.25,
+        bbox_to_anchor=(1.02, 1),
+        loc='upper left'
+    )
+    plt.xticks(rotation=45, fontsize=scaled_font_size)
+    plt.yticks(fontsize=scaled_font_size)
+    plt.tight_layout()
+
     if pSave:
-        plt.savefig(f'{fPath}/{var}_{fTitle}.png', format = 'png', bbox_inches='tight', dpi=600, transparent=False)
-        
+        plt.savefig(f'{fPath}/{var}_{fTitle}.png', format='png', bbox_inches='tight', dpi=600, transparent=False)
+
     plt.show()
 
-def plot_moy_averages(df, xLab = 'Month of Year', pTitle = 'Month of Year Average Totals', lTitle = 'Studies', fTitle = 'moy_avg', pSave = True, fPath = 'fPath'):
+def single_exceed_alternative(series):
     """
-    Plots a time-series graph of month of year averages of a study for a given MultiIndex Dataframe that follows calsim conventions. Calculates mean for 12 months across all study years and uses the plot_ts function to produce a graph.
-    
-    The function assumes the DataFrame columns follow a specific naming
-    convention where the last part of the name indicates the study. 
+    Compute exceedance probabilities for a given Pandas Series.
+
+    Returns a DataFrame with:
+      - index = exceedance probability (0..1)
+      - one column with the sorted (descending) data
     """
-    df_copy = df.copy()
-    df_copy["Month"] = df.index.month
-    df_moy = df_copy.groupby('Month').mean()
-    plot_ts(df_moy, pTitle = pTitle, xLab = xLab, lTitle = lTitle, fTitle = fTitle, pSave = True, fPath = fPath)
+    s_clean = series.dropna()
+    s_sorted = s_clean.sort_values(ascending=False)
+    n = len(s_sorted)
+    ranks = np.arange(1, n + 1)
+    exceed_probs = ranks / (n + 1.0)
+    out_df = pd.DataFrame(data=s_sorted.values, index=exceed_probs, columns=[series.name])
+    return out_df
+
+def annualize_exceedance_plot(
+        df,
+        varname,
+        units="TAF",
+        freq="AS-OCT",
+        # optional parameters for plot_exceedance
+        pTitle='Annual Exceedance',
+        month="All Months",
+        xLab='Probability',
+        lTitle='Studies',
+        fTitle='annual_exceed',
+        pSave=True,
+        fPath='fPath',
+        study_list=None,
+        scenario_styles=None
+):
+    """
+    Subset df to varname in given units, annualize by water year,
+    then pass the annual DataFrame into plot_exceedance.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        MultiIndex DataFrame (date-indexed) with columns like (PartA, PartB, ..., Units).
+    varname : str
+        The variable name or partial name, e.g. "S_SHSTA_"
+    units : str
+        Desired units, e.g. "TAF"
+    freq : str
+        Resampling frequency, e.g. "AS-OCT" for water year sums.
+    pTitle : str
+        Plot title base.
+    month : str
+        Just a label for the plot title, e.g. "All Months" or "April Only".
+    xLab : str
+        X-axis label.
+    lTitle : str
+        Legend title.
+    fTitle : str
+        Filename prefix for saving.
+    pSave : bool
+        Whether to save the figure as PNG.
+    fPath : str
+        Directory to save PNG.
+    study_list : list of int, optional
+        e.g. [2,11] => columns ending in "_s0002" or "_s0011".
+    scenario_styles : dict, optional
+        e.g. {2: {'color':'black','linestyle':'-','label':'Baseline'}}
+
+    Returns
+    -------
+    pd.DataFrame
+        The annualized DataFrame (indexed by the start of each water year).
+    """
+    # 1) Subset data to varname in specified units
+    df_subset = create_subset_unit(df, varname, units)
+
+    # 2) If user wants further scenario subsetting, do it here
+    if study_list is not None:
+        suffixes = [f"s{str(st).zfill(4)}" for st in study_list]
+        keep_cols = []
+        for col in df_subset.columns:
+            if any(col[1].endswith(sfx) for sfx in suffixes):
+                keep_cols.append(col)
+        df_subset = df_subset[keep_cols]
+
+    # 3) Annualize each column by the freq (e.g. 'AS-OCT')
+    import pandas as pd
+    annual_cols = []
+    for col in df_subset.columns:
+        one_col = df_subset[[col]]
+        ann_col = one_col.resample(freq).sum(min_count=1)
+        annual_cols.append(ann_col)
+
+    # 4) Concatenate the annual columns
+    annual_df = pd.concat(annual_cols, axis=1)
+
+    # 5) Now call plot_exceedance on the resulting annual DataFrame
+    plot_exceedance(
+        annual_df,
+        month=month,
+        xLab=xLab,
+        pTitle=pTitle,
+        lTitle=lTitle,
+        fTitle=fTitle,
+        pSave=pSave,
+        fPath=fPath,
+        study_list=None,
+        scenario_styles=scenario_styles
+    )
+
+    return annual_df
+
+def annualize_ts(df_col, freq='AS-OCT'):
+    """
+    Aggregate a single-column DataFrame to annual totals by water year,
+    assuming the column is already in volumetric units (e.g. TAF).
+
+    Parameters
+    ----------
+    df_col : pd.DataFrame
+        Exactly ONE column with a DateTimeIndex.
+    freq : str
+        Defaults to 'AS-OCT', meaning the water year starts in October.
+
+    Returns
+    -------
+    pd.DataFrame (one column) with annual sums, indexed by Water Year start date.
+    """
+    if df_col.shape[1] != 1:
+        raise ValueError("annualize_ts expects exactly ONE column in df_col")
+    df_annual = df_col.resample(freq).sum(min_count=1)
+    return df_annual
+
+def plot_moy_averages(
+        df,
+        xLab='Month of Year',
+        pTitle='Month of Year Average Totals',
+        lTitle='Studies',
+        fTitle='moy_avg',
+        pSave=True,
+        fPath='fPath',
+        # OPTIONAL
+        study_list=None,
+        scenario_styles=None
+):
+    """
+    Plots a time-series graph of month-of-year averages (1..12) for each column,
+    then calls plot_ts on the result. No date subsetting.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        MultiIndex DataFrame with columns shaped like (PartA, PartB, ..., Units).
+    xLab : str
+        X-axis label.
+    pTitle : str
+        Plot title.
+    lTitle : str
+        Legend title.
+    fTitle : str
+        Filename prefix for saving.
+    pSave : bool
+        Whether to save plot.
+    fPath : str
+        Directory to save.
+    study_list : list of int, optional
+        e.g. [2,11]
+    scenario_styles : dict, optional
+        e.g. {2: {'color':'black','linestyle':'-','label':'Baseline'}}
+
+    Returns
+    -------
+    None
+    """
+    # 1) Subset columns by study_list
+    df_plot = df.copy()
+    if study_list is not None:
+        suffixes = [f"s{str(st).zfill(4)}" for st in study_list]
+        new_cols = []
+        for col in df_plot.columns:
+            if any(col[1].endswith(sfx) for sfx in suffixes):
+                new_cols.append(col)
+        df_plot = df_plot[new_cols]
+
+    if df_plot.empty:
+        print("[plot_moy_averages] WARNING: No data after subsetting!")
+        return
+
+    # 2) Compute month-of-year means
+    df_copy = df_plot.copy()
+    df_copy["Month"] = df_copy.index.month
+    df_moy = df_copy.groupby("Month").mean(numeric_only=True)
+
+    plot_ts(
+        df_moy,
+        pTitle=pTitle,
+        xLab=xLab,
+        lTitle=lTitle,
+        fTitle=fTitle,
+        pSave=pSave,
+        fPath=fPath,
+        study_list=None,
+        start_date=None,
+        end_date=None,
+        scenario_styles=scenario_styles
+    )
 
 
 """DIFFERENCE FROM BASELINE"""
@@ -215,7 +681,7 @@ def slice_with_baseline(df, var, study_lst):
     """
     Creates a subset of df based on varname and slices it according to the provided range.
     """
-    subset_df = create_subset(df, var)
+    subset_df = create_subset_var(df, var)
     df_baseline = subset_df.iloc[:,[0]]
     df_rest = subset_df.iloc[:, study_lst]
     return pd.concat([df_baseline, df_rest], axis = 1)
