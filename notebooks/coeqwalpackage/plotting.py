@@ -168,7 +168,8 @@ def plot_annual_totals(
         study_list=None,
         start_date=None,
         end_date=None,
-        scenario_styles=None
+        scenario_styles=None,
+        months=None
 ):
     """
     Plots a time-series graph of annual totals for a given MultiIndex DataFrame
@@ -178,6 +179,7 @@ def plot_annual_totals(
     ----------
     df : pd.DataFrame
         MultiIndex DataFrame with columns shaped like (PartA, PartB, ..., Units).
+        The index must be a DatetimeIndex.
     xLab : str
         X-axis label.
     pTitle : str
@@ -191,22 +193,27 @@ def plot_annual_totals(
     fPath : str
         Directory to save the PNG.
     study_list : list of int, optional
-        e.g. [2,11].
+        e.g. [2,11] => columns ending in "_s0002" or "_s0011".
     start_date : str or datetime, optional
-        Subset rows after this date.
+        Subset rows after this date (inclusive).
     end_date : str or datetime, optional
-        Subset rows before this date.
+        Subset rows before this date (inclusive).
     scenario_styles : dict, optional
         e.g. {2: {'color':'black','linestyle':'-','label':'Baseline'}}
+    months : list of int, optional
+        Subset the data to these months (1=Jan, 2=Feb, ..., 12=Dec).
+        e.g. [4] => only April data.
 
     Returns
     -------
     pd.DataFrame
-        The concatenated annual DataFrame for all columns, after summation.
+        The concatenated annual DataFrame for all columns (after summation).
     """
+    import os
+    import numpy as np
+    import pandas as pd
     import matplotlib.pyplot as plt
     import seaborn as sns
-    import pandas as pd
 
     # 1) Subset date
     df_plot = df.copy()
@@ -214,6 +221,10 @@ def plot_annual_totals(
         df_plot = df_plot.loc[df_plot.index >= pd.to_datetime(start_date)]
     if end_date is not None:
         df_plot = df_plot.loc[df_plot.index <= pd.to_datetime(end_date)]
+
+    # 1b) Subset by months if specified
+    if months is not None:
+        df_plot = df_plot[df_plot.index.month.isin(months)]
 
     # 2) Subset columns by study
     if study_list is not None:
@@ -230,11 +241,10 @@ def plot_annual_totals(
 
     # 3) Plot setup
     var = '_'.join(df_plot.columns[0][1].split('_')[:-1])
-    import numpy as np
-
     colormap = plt.cm.tab20
     colors = [colormap(i) for i in range(df_plot.shape[1])]
     if len(colors) > 0:
+        # Make the last color black for variety
         colors[-1] = (0, 0, 0, 1)
 
     plt.figure(figsize=(14, 8))
@@ -266,7 +276,9 @@ def plot_annual_totals(
 
         from contextlib import redirect_stdout
         with redirect_stdout(open(os.devnull, 'w')):
-            single_col_df = df_plot[[col]]  #
+            single_col_df = df_plot[[col]]
+            # annualize_ts can be your existing function or custom logic
+            # that sums (or averages) over 'YS-OCT' water years.
             df_ann = annualize_ts(single_col_df, freq='YS-OCT')
 
         # Concatenate to the final annual DataFrame
@@ -289,7 +301,7 @@ def plot_annual_totals(
         count += 1
 
     # 5) Final labeling
-    plt.title(var + ' ' + pTitle, fontsize=scaled_font_size * 2)
+    plt.title(f"{var} {pTitle}", fontsize=scaled_font_size * 2)
     plt.xlabel(xLab, fontsize=scaled_font_size * 1.5)
     first_col_units = df_plot.columns[0][6]
     plt.ylabel(var + "\nUnits: " + str(first_col_units), fontsize=scaled_font_size * 1.5)
@@ -314,31 +326,29 @@ def plot_annual_totals(
 
 def plot_exceedance(
         df,
-        month="All Months",
         xLab='Probability',
         pTitle='Exceedance Probability',
         lTitle='Studies',
         fTitle='exceed',
         pSave=True,
         fPath='fPath',
-        # OPTIONAL
         study_list=None,
-        scenario_styles=None
+        scenario_styles=None,
+        months=None
 ):
     """
     Plots an exceedance graph for a given MultiIndex DataFrame (follows CalSim conventions)
-    using single_exceed_alternative() for each column. No date subsetting.
+    using single_exceed_alternative() for each column.
 
     Parameters
     ----------
     df : pd.DataFrame
         MultiIndex DataFrame with columns shaped like (PartA, PartB, ..., Units).
-    month : str
-        Just a label for the plot title (e.g. "April" or "All Months").
+        Index must be a DatetimeIndex if you're subsetting by month.
     xLab : str
         X-axis label.
     pTitle : str
-        Plot title base.
+        Base for the plot title.
     lTitle : str
         Legend title.
     fTitle : str
@@ -346,25 +356,32 @@ def plot_exceedance(
     pSave : bool
         Whether to save the figure as PNG.
     fPath : str
-        Directory to save PNG.
+        Directory to save the PNG.
     study_list : list of int, optional
         e.g. [2,11] => columns ending in "_s0002" or "_s0011".
     scenario_styles : dict, optional
         e.g. {2: {'color':'black','linestyle':'-','label':'Baseline'}}
+    months : list of int, optional
+        Subset the data to these months (1=Jan, 2=Feb, ..., 12=Dec).
+        e.g. [4] => only April data.
 
     Returns
     -------
     None
     """
+    import os
+    import numpy as np
+    import pandas as pd
     import matplotlib.pyplot as plt
     import seaborn as sns
 
-    # Just for labeling
-    pTitle = pTitle + " " + month
-    fTitle = fTitle + " " + month
-
-    # Subset columns by study_list
     df_plot = df.copy()
+
+    # 1) Subset by months if specified
+    if months is not None:
+        df_plot = df_plot[df_plot.index.month.isin(months)]
+
+    # 2) Subset columns by study_list
     if study_list is not None:
         suffixes = [f"s{str(st).zfill(4)}" for st in study_list]
         new_cols = []
@@ -383,6 +400,7 @@ def plot_exceedance(
     colormap = plt.cm.tab20
     colors = [colormap(i) for i in range(df_plot.shape[1])]
     if len(colors) > 0:
+        # Make last color black
         colors[-1] = (0, 0, 0, 1)
 
     plt.figure(figsize=(14, 8))
@@ -391,15 +409,14 @@ def plot_exceedance(
     scaled_line_width = 1.5 * plt.rcParams['lines.linewidth']
 
     scenario_labeled = set()
-    i = 0
 
-    for col, study in zip(df_plot.columns, studies):
+    for i, (col, study) in enumerate(zip(df_plot.columns, studies)):
         numeric_study = int(study.replace('s',''))
         if scenario_styles and numeric_study in scenario_styles:
             style_dict = scenario_styles[numeric_study]
             this_color = style_dict.get('color', colors[i])
             this_linestyle = style_dict.get('linestyle', '-')
-            this_label = style_dict.get('label', study) if study not in scenario_labeled else None
+            this_label = style_dict.get('label', study) if (study not in scenario_labeled) else None
             this_lw = style_dict.get('linewidth', scaled_line_width)
         else:
             this_color = colors[i]
@@ -422,12 +439,11 @@ def plot_exceedance(
 
         if this_label:
             scenario_labeled.add(study)
-        i += 1
 
-    plt.title(var + ' ' + pTitle, fontsize=scaled_font_size * 2)
+    plt.title(f"{var} {pTitle}", fontsize=scaled_font_size * 2)
     plt.xlabel(xLab, fontsize=scaled_font_size * 1.5)
     first_col_units = df_plot.columns[0][6]
-    plt.ylabel(var + "\nUnits: " + str(first_col_units), fontsize=scaled_font_size * 1.5)
+    plt.ylabel(f"{var}\nUnits: {first_col_units}", fontsize=scaled_font_size * 1.5)
 
     plt.legend(
         title=lTitle,
@@ -466,20 +482,20 @@ def annualize_exceedance_plot(
         varname,
         units="TAF",
         freq="YS-OCT",
-        # optional parameters for plot_exceedance
         pTitle='Annual Exceedance',
-        month="All Months",
         xLab='Probability',
         lTitle='Studies',
         fTitle='annual_exceed',
         pSave=True,
         fPath='fPath',
         study_list=None,
-        scenario_styles=None
+        scenario_styles=None,
+        months=None
 ):
     """
-    Subset df to varname in given units, annualize by water year,
-    then pass the annual DataFrame into plot_exceedance.
+    Subset df to varname in given units, optionally subset to specific months,
+    annualize by water year (or chosen freq), then pass the annual data
+    into plot_exceedance.
 
     Parameters
     ----------
@@ -493,8 +509,6 @@ def annualize_exceedance_plot(
         Resampling frequency, e.g. "YS-OCT" for water year sums.
     pTitle : str
         Plot title base.
-    month : str
-        Just a label for the plot title, e.g. "All Months" or "April Only".
     xLab : str
         X-axis label.
     lTitle : str
@@ -504,21 +518,28 @@ def annualize_exceedance_plot(
     pSave : bool
         Whether to save the figure as PNG.
     fPath : str
-        Directory to save PNG.
+        Directory to save the PNG.
     study_list : list of int, optional
         e.g. [2,11] => columns ending in "_s0002" or "_s0011".
     scenario_styles : dict, optional
         e.g. {2: {'color':'black','linestyle':'-','label':'Baseline'}}
+    months : list of int, optional
+        Subset the data to these months (1=Jan, 2=Feb, ..., 12=Dec).
+        e.g. [4] => only April data.
 
     Returns
     -------
     pd.DataFrame
         The annualized DataFrame (indexed by the start of each water year).
     """
-    # 1) Subset data to varname in specified units
+    import pandas as pd
     df_subset = create_subset_unit(df, varname, units)
 
-    # 2) If user wants further scenario subsetting, do it here
+    # 1) Subset by months if specified
+    if months is not None:
+        df_subset = df_subset[df_subset.index.month.isin(months)]
+
+    # 2) If user wants scenario subsetting, do it here
     if study_list is not None:
         suffixes = [f"s{str(st).zfill(4)}" for st in study_list]
         keep_cols = []
@@ -527,8 +548,11 @@ def annualize_exceedance_plot(
                 keep_cols.append(col)
         df_subset = df_subset[keep_cols]
 
+    if df_subset.empty:
+        print("[annualize_exceedance_plot] WARNING: No data after subsetting!")
+        return pd.DataFrame()
+
     # 3) Annualize each column by the freq (e.g. 'YS-OCT')
-    import pandas as pd
     annual_cols = []
     for col in df_subset.columns:
         one_col = df_subset[[col]]
@@ -538,10 +562,8 @@ def annualize_exceedance_plot(
     # 4) Concatenate the annual columns
     annual_df = pd.concat(annual_cols, axis=1)
 
-    # 5) Now call plot_exceedance on the resulting annual DataFrame
     plot_exceedance(
         annual_df,
-        month=month,
         xLab=xLab,
         pTitle=pTitle,
         lTitle=lTitle,
@@ -549,7 +571,8 @@ def annualize_exceedance_plot(
         pSave=pSave,
         fPath=fPath,
         study_list=None,
-        scenario_styles=scenario_styles
+        scenario_styles=scenario_styles,
+        months=None
     )
 
     return annual_df
