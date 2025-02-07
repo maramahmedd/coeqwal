@@ -41,7 +41,7 @@ CREATE DATASETS ACROSS STUDIES
 (Aux functions to read and process studies (for single and multiple studies). Note: contain options to create hard-coded additional compound variables (if more are needed, add to these codes))
 """
 
-def preprocess_study_dss(df, dss_name, datetime_start_date, datetime_end_date, addsl=True, addres = True, addpump = True, adddelcvp = True, adddelcvpag = True, addcvpscex = True, addcvpprf = True, adddelcvpswp = True, add_nod_storage = True, add_del_nod_ag = True, add_del_nod_mi = True, add_del_sod_ag = True, add_total_exports = True):
+def preprocess_study_dss(df, dss_name, datetime_start_date, datetime_end_date, addsl=True, addres = True, addpump = True, adddelcvp = True, adddelcvpag = True, addcvpscex = True, addcvpprf = True, adddelcvpswp = True, add_nod_storage = True, add_sod_storage = True, add_del_nod_ag = True, add_del_nod_mi = True, add_del_sod_ag = True, add_total_exports = True):
     dvar_list = []
     combined_df = pd.DataFrame()
     
@@ -73,6 +73,9 @@ def preprocess_study_dss(df, dss_name, datetime_start_date, datetime_end_date, a
     if add_nod_storage:
         df[('CALCULATED', 'NOD_STORAGE', 'STORAGE-CALC', '1MON', 'L2020A', 'PER-AVER', 'TAF')] = df.loc[:,[('CALSIM', 'S_TRNTY', 'STORAGE', '1MON', 'L2020A', 'PER-AVER', 'TAF'),('CALSIM', 'S_SHSTA', 'STORAGE', '1MON', 'L2020A', 'PER-AVER', 'TAF'),('CALSIM', 'S_OROVL', 'STORAGE', '1MON', 'L2020A', 'PER-AVER', 'TAF'),('CALSIM', 'S_FOLSM', 'STORAGE', '1MON', 'L2020A', 'PER-AVER', 'TAF'),('CALSIM', 'S_NBLDB', 'STORAGE', '1MON', 'L2020A', 'PER-AVER', 'TAF')]].sum(axis=1)
 
+    if add_sod_storage:
+        df[('CALCULATED', 'SOD_STORAGE', 'STORAGE-CALC', '1MON', 'L2020A', 'PER-AVER', 'TAF')] = df.loc[:,[('CALSIM', 'S_SLUIS_CVP', 'STORAGE', '1MON', 'L2020A', 'PER-AVER', 'TAF'),('CALSIM', 'S_SLUIS_SWP', 'STORAGE', '1MON', 'L2020A', 'PER-AVER', 'TAF'),('CALSIM', 'S_MELON', 'STORAGE', '1MON', 'L2020A', 'PER-AVER', 'TAF'),('CALSIM', 'S_NHGAN', 'STORAGE', '1MON', 'L2020A', 'PER-AVER', 'TAF'),('CALSIM', 'S_MLRTN', 'STORAGE', '1MON', 'L2020A', 'PER-AVER', 'TAF'),('CALSIM', 'S_PEDRO', 'STORAGE', '1MON', 'L2020A', 'PER-AVER', 'TAF'),('CALSIM', 'S_MCLRE', 'STORAGE', '1MON', 'L2020A', 'PER-AVER', 'TAF'),('CALSIM', 'S_HNSLY', 'STORAGE', '1MON', 'L2020A', 'PER-AVER', 'TAF')]].sum(axis=1)
+
     if add_del_nod_ag:
         df[('CALCULATED', 'DEL_NOD_AG', 'DELIVERY-CALC', '1MON', 'L2020A', 'PER-AVER', 'CFS')] = df.loc[:,[('CALSIM', 'DEL_CVP_PAG_N', 'DELIVERY-CVP', '1MON', 'L2020A', 'PER-AVER', 'CFS'),('CALSIM', 'DEL_SWP_PAG_N', 'DELIVERY-SWP', '1MON', 'L2020A', 'PER-AVER', 'CFS'),('CALSIM', 'DEL_CVP_PSC_N', 'DELIVERY-CVP', '1MON', 'L2020A', 'PER-AVER', 'CFS')]].sum(axis=1)
 
@@ -80,10 +83,10 @@ def preprocess_study_dss(df, dss_name, datetime_start_date, datetime_end_date, a
         df[('CALCULATED', 'DEL_SOD_AG', 'DELIVERY-CALC', '1MON', 'L2020A', 'PER-AVER', 'CFS')] = df.loc[:,[('CALSIM', 'DEL_CVP_PAG_S', 'DELIVERY-CVP', '1MON', 'L2020A', 'PER-AVER', 'CFS'),('CALSIM', 'DEL_SWP_PAG_S', 'DELIVERY-SWP', '1MON', 'L2020A', 'PER-AVER', 'CFS'),('CALSIM', 'DEL_CVP_PEX_S', 'DELIVERY-CVP', '1MON', 'L2020A', 'PER-AVER', 'CFS')]].sum(axis=1)
 
     if add_del_nod_mi:
-       df[('CALCULATED', 'DEL_NOD_MI', 'DELIVERY-CALC', '1MON', 'L2020A', 'PER-AVER', 'CFS')] = df.loc[:,[('CALSIM', 'DEL_CVP_PMI_N_WAMER', 'DELIVERY-CVP', '1MON', 'L2020A', 'PER-AVER', 'CFS'),('CALSIM', 'DEL_SWP_PMI_N', 'DELIVERY-SWP', '1MON', 'L2020A', 'PER-AVER', 'CFS')]].sum(axis=1)
+        df[('CALCULATED', 'DEL_NOD_MI', 'DELIVERY-CALC', '1MON', 'L2020A', 'PER-AVER', 'CFS')] = df.loc[:,[('CALSIM', 'DEL_CVP_PMI_N_WAMER', 'DELIVERY-CVP', '1MON', 'L2020A', 'PER-AVER', 'CFS'),('CALSIM', 'DEL_SWP_PMI_N', 'DELIVERY-SWP', '1MON', 'L2020A', 'PER-AVER', 'CFS')]].sum(axis=1)
 
     if add_total_exports:
-       df[('CALCULATED', 'TOTAL_EXPORTS', 'EXPORTS-CALC', '1MON', 'L2020A', 'PER-AVER', 'CFS')] = df.loc[:,[('CALSIM', 'C_DMC003', 'CHANNEL', '1MON', 'L2020A', 'PER-AVER', 'CFS'),('CALSIM', 'C_CAA003_SWP', 'FLOW-DELIVERY', '1MON', 'L2020A', 'PER-AVER', 'CFS'),('CALSIM', 'C_CAA003_CVP', 'FLOW-DELIVERY', '1MON', 'L2020A', 'PER-AVER', 'CFS')]].sum(axis=1)
+        df[('CALCULATED', 'TOTAL_EXPORTS', 'EXPORTS-CALC', '1MON', 'L2020A', 'PER-AVER', 'CFS')] = df.loc[:,[('CALSIM', 'C_DMC003', 'CHANNEL', '1MON', 'L2020A', 'PER-AVER', 'CFS'),('CALSIM', 'C_CAA003_SWP', 'FLOW-DELIVERY', '1MON', 'L2020A', 'PER-AVER', 'CFS'),('CALSIM', 'C_CAA003_CVP', 'FLOW-DELIVERY', '1MON', 'L2020A', 'PER-AVER', 'CFS')]].sum(axis=1)
  
     if addsl:
         df[('CALCULATED', 'S_SLTOT', 'STORAGE', '1MON', 'L2020A', 'PER-AVER', 'TAF')] = df.loc[:,[('CALSIM', 'S_SLUIS_CVP', 'STORAGE', '1MON', 'L2020A', 'PER-AVER', 'TAF'),('CALSIM', 'S_SLUIS_SWP', 'STORAGE', '1MON', 'L2020A', 'PER-AVER', 'TAF')]].sum(axis=1)
@@ -118,7 +121,7 @@ def preprocess_study_dss(df, dss_name, datetime_start_date, datetime_end_date, a
     return df
 
 
-def preprocess_compound_data_dss(df, ScenarioDir, dss_names, index_names, min_datetime, max_datetime, addsl=True, addres = True, addpump = True, adddelcvp = True, adddelcvpag = True, addcvpscex = True, addcvpprf = True, adddelcvpswp = True, add_nod_storage = True, add_del_nod_ag = True, add_del_nod_mi = True, add_del_sod_ag = True, add_total_exports = True):
+def preprocess_compound_data_dss(df, ScenarioDir, dss_names, index_names, min_datetime, max_datetime, addsl=True, addres = True, addpump = True, adddelcvp = True, adddelcvpag = True, addcvpscex = True, addcvpprf = True, adddelcvpswp = True, add_nod_storage = True, add_sod_storage = True, add_del_nod_ag = True, add_del_nod_mi = True, add_del_sod_ag = True, add_total_exports = True):
     dvar_list = []
     combined_df = pd.DataFrame()
     
@@ -153,6 +156,9 @@ def preprocess_compound_data_dss(df, ScenarioDir, dss_names, index_names, min_da
 # create aggregate variables
         if add_nod_storage:
             df[('CALCULATED', 'NOD_STORAGE', 'STORAGE-CALC', '1MON', 'L2020A', 'PER-AVER', 'TAF')] = df.loc[:,[('CALSIM', 'S_TRNTY', 'STORAGE', '1MON', 'L2020A', 'PER-AVER', 'TAF'),('CALSIM', 'S_SHSTA', 'STORAGE', '1MON', 'L2020A', 'PER-AVER', 'TAF'),('CALSIM', 'S_OROVL', 'STORAGE', '1MON', 'L2020A', 'PER-AVER', 'TAF'),('CALSIM', 'S_FOLSM', 'STORAGE', '1MON', 'L2020A', 'PER-AVER', 'TAF'),('CALSIM', 'S_NBLDB', 'STORAGE', '1MON', 'L2020A', 'PER-AVER', 'TAF')]].sum(axis=1)
+
+        if add_sod_storage:
+            df[('CALCULATED', 'SOD_STORAGE', 'STORAGE-CALC', '1MON', 'L2020A', 'PER-AVER', 'TAF')] = df.loc[:,[('CALSIM', 'S_SLUIS_CVP', 'STORAGE', '1MON', 'L2020A', 'PER-AVER', 'TAF'),('CALSIM', 'S_SLUIS_SWP', 'STORAGE', '1MON', 'L2020A', 'PER-AVER', 'TAF'),('CALSIM', 'S_MELON', 'STORAGE', '1MON', 'L2020A', 'PER-AVER', 'TAF'),('CALSIM', 'S_NHGAN', 'STORAGE', '1MON', 'L2020A', 'PER-AVER', 'TAF'),('CALSIM', 'S_MLRTN', 'STORAGE', '1MON', 'L2020A', 'PER-AVER', 'TAF'),('CALSIM', 'S_PEDRO', 'STORAGE', '1MON', 'L2020A', 'PER-AVER', 'TAF'),('CALSIM', 'S_MCLRE', 'STORAGE', '1MON', 'L2020A', 'PER-AVER', 'TAF'),('CALSIM', 'S_HNSLY', 'STORAGE', '1MON', 'L2020A', 'PER-AVER', 'TAF')]].sum(axis=1)
 
         if add_del_nod_ag:
             df[('CALCULATED', 'DEL_NOD_AG', 'DELIVERY-CALC', '1MON', 'L2020A', 'PER-AVER', 'CFS')] = df.loc[:,[('CALSIM', 'DEL_CVP_PAG_N', 'DELIVERY-CVP', '1MON', 'L2020A', 'PER-AVER', 'CFS'),('CALSIM', 'DEL_SWP_PAG_N', 'DELIVERY-SWP', '1MON', 'L2020A', 'PER-AVER', 'CFS'),('CALSIM', 'DEL_CVP_PSC_N', 'DELIVERY-CVP', '1MON', 'L2020A', 'PER-AVER', 'CFS')]].sum(axis=1)
