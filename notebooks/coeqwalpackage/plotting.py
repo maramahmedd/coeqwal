@@ -7,6 +7,11 @@ from matplotlib.collections import PatchCollection
 from matplotlib.patches import Rectangle
 from matplotlib.lines import Line2D
 from matplotlib.ticker import PercentFormatter
+import os
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 # Import custom modules - NEED WINDOWS OS
 #import AuxFunctions as af, cs3, csPlots, cs_util as util, dss3_functions_reference as dss
@@ -15,13 +20,14 @@ from matplotlib.ticker import PercentFormatter
 
 def plot_ts(
         df,
+        varname,
+        units='TAF',
         pTitle='Time Series',
         xLab='Date',
         lTitle='Studies',
         fTitle='mon_tot',
         pSave=True,
         fPath='fPath',
-        # --- OPTIONAL ---
         study_list=None,
         start_date=None,
         end_date=None,
@@ -35,6 +41,10 @@ def plot_ts(
     ----------
     df : pd.DataFrame
         MultiIndex DataFrame with columns like (PartA, PartB, ..., Units).
+    varname : str
+        Variable name/pattern to filter, e.g. "S_SHSTA_".
+    units : str
+        Units to filter, e.g. "TAF", "CFS", etc.
     pTitle : str
         Plot title.
     xLab : str
@@ -60,18 +70,13 @@ def plot_ts(
     -------
     None
     """
-    import matplotlib.pyplot as plt
-    import seaborn as sns
-    import pandas as pd
+    df_plot = create_subset_unit(df, varname, units)
 
-    # 1) Optional date subsetting
-    df_plot = df.copy()
     if start_date is not None:
         df_plot = df_plot.loc[df_plot.index >= pd.to_datetime(start_date)]
     if end_date is not None:
         df_plot = df_plot.loc[df_plot.index <= pd.to_datetime(end_date)]
 
-    # 2) Optional study subsetting
     if study_list is not None:
         suffixes = [f"s{str(st).zfill(4)}" for st in study_list]
         new_cols = []
@@ -80,12 +85,10 @@ def plot_ts(
                 new_cols.append(col)
         df_plot = df_plot[new_cols]
 
-    # If nothing left
     if df_plot.empty:
         print("[plot_ts] WARNING: No data to plot after subsetting!")
         return
 
-    # 3) Plot setup
     var = '_'.join(df_plot.columns[0][1].split('_')[:-1])
     colormap = plt.cm.tab20
     colors = [colormap(i) for i in range(df_plot.shape[1])]
@@ -97,12 +100,10 @@ def plot_ts(
     scaled_font_size = 1.5 * default_font_size
     scaled_line_width = 1.5 * plt.rcParams['lines.linewidth']
 
-    # Build scenario IDs from columns
     studies = [col[1].split('_')[-1] for col in df_plot.columns]
     scenario_labeled = set()
     count = 0
 
-    # 4) Plot each column
     for col, study in zip(df_plot.columns, studies):
         numeric_study = int(study.replace('s', ''))
         if scenario_styles and numeric_study in scenario_styles:
@@ -132,7 +133,6 @@ def plot_ts(
 
         count += 1
 
-    # 5) Final labeling
     plt.title(var + ' ' + pTitle, fontsize=scaled_font_size * 2)
     plt.xlabel(xLab, fontsize=scaled_font_size * 1.5)
     first_col_units = df_plot.columns[0][6]
@@ -158,13 +158,14 @@ def plot_ts(
 
 def plot_annual_totals(
         df,
+        varname,
+        units='TAF',
         xLab='Date',
         pTitle='Annual Totals',
         lTitle='Studies',
         fTitle='ann_tot',
         pSave=True,
         fPath='fPath',
-        # OPTIONAL
         study_list=None,
         start_date=None,
         end_date=None,
@@ -180,6 +181,10 @@ def plot_annual_totals(
     df : pd.DataFrame
         MultiIndex DataFrame with columns shaped like (PartA, PartB, ..., Units).
         The index must be a DatetimeIndex.
+    varname : str
+        Variable name/pattern to filter, e.g. "DEL_SOD_AG_".
+    units : str
+        Units to filter, e.g. "TAF", "CFS", etc.
     xLab : str
         X-axis label.
     pTitle : str
@@ -199,34 +204,24 @@ def plot_annual_totals(
     end_date : str or datetime, optional
         Subset rows before this date (inclusive).
     scenario_styles : dict, optional
-        e.g. {2: {'color':'black','linestyle':'-','label':'Baseline'}}
     months : list of int, optional
-        Subset the data to these months (1=Jan, 2=Feb, ..., 12=Dec).
-        e.g. [4] => only April data.
+        Subset the data to these months (1=Jan, ..., 12=Dec).
 
     Returns
     -------
     pd.DataFrame
         The concatenated annual DataFrame for all columns (after summation).
     """
-    import os
-    import numpy as np
-    import pandas as pd
-    import matplotlib.pyplot as plt
-    import seaborn as sns
+    df_plot = create_subset_unit(df, varname, units)
 
-    # 1) Subset date
-    df_plot = df.copy()
     if start_date is not None:
         df_plot = df_plot.loc[df_plot.index >= pd.to_datetime(start_date)]
     if end_date is not None:
         df_plot = df_plot.loc[df_plot.index <= pd.to_datetime(end_date)]
 
-    # 1b) Subset by months if specified
     if months is not None:
         df_plot = df_plot[df_plot.index.month.isin(months)]
 
-    # 2) Subset columns by study
     if study_list is not None:
         suffixes = [f"s{str(st).zfill(4)}" for st in study_list]
         new_cols = []
@@ -239,12 +234,10 @@ def plot_annual_totals(
         print("[plot_annual_totals] WARNING: No data after subsetting!")
         return pd.DataFrame()
 
-    # 3) Plot setup
     var = '_'.join(df_plot.columns[0][1].split('_')[:-1])
     colormap = plt.cm.tab20
     colors = [colormap(i) for i in range(df_plot.shape[1])]
     if len(colors) > 0:
-        # Make the last color black for variety
         colors[-1] = (0, 0, 0, 1)
 
     plt.figure(figsize=(14, 8))
@@ -254,12 +247,10 @@ def plot_annual_totals(
 
     annualized_df = pd.DataFrame()
 
-    # Build scenario list from columns
     studies = [col[1].split('_')[-1] for col in df_plot.columns]
     scenario_labeled = set()
     count = 0
 
-    # 4) For each column => annualize & plot
     for col, study in zip(df_plot.columns, studies):
         numeric_study = int(study.replace('s',''))
         if scenario_styles and numeric_study in scenario_styles:
@@ -277,14 +268,10 @@ def plot_annual_totals(
         from contextlib import redirect_stdout
         with redirect_stdout(open(os.devnull, 'w')):
             single_col_df = df_plot[[col]]
-            # annualize_ts can be your existing function or custom logic
-            # that sums (or averages) over 'YS-OCT' water years.
             df_ann = annualize_ts(single_col_df, freq='YS-OCT')
 
-        # Concatenate to the final annual DataFrame
         annualized_df = pd.concat([annualized_df, df_ann], axis=1)
 
-        # Plot
         sns.lineplot(
             data=df_ann,
             x=df_ann.index,
@@ -300,7 +287,6 @@ def plot_annual_totals(
             scenario_labeled.add(study)
         count += 1
 
-    # 5) Final labeling
     plt.title(f"{var} {pTitle}", fontsize=scaled_font_size * 2)
     plt.xlabel(xLab, fontsize=scaled_font_size * 1.5)
     first_col_units = df_plot.columns[0][6]
@@ -326,6 +312,8 @@ def plot_annual_totals(
 
 def plot_exceedance(
         df,
+        varname,
+        units='TAF',
         xLab='Probability',
         pTitle='Exceedance Probability',
         lTitle='Studies',
@@ -345,6 +333,10 @@ def plot_exceedance(
     df : pd.DataFrame
         MultiIndex DataFrame with columns shaped like (PartA, PartB, ..., Units).
         Index must be a DatetimeIndex if you're subsetting by month.
+    varname : str
+        Variable name/pattern to filter.
+    units : str
+        Units to filter.
     xLab : str
         X-axis label.
     pTitle : str
@@ -360,28 +352,19 @@ def plot_exceedance(
     study_list : list of int, optional
         e.g. [2,11] => columns ending in "_s0002" or "_s0011".
     scenario_styles : dict, optional
-        e.g. {2: {'color':'black','linestyle':'-','label':'Baseline'}}
     months : list of int, optional
         Subset the data to these months (1=Jan, 2=Feb, ..., 12=Dec).
-        e.g. [4] => only April data.
 
     Returns
     -------
     None
     """
-    import os
-    import numpy as np
-    import pandas as pd
-    import matplotlib.pyplot as plt
-    import seaborn as sns
 
-    df_plot = df.copy()
+    df_plot = create_subset_unit(df, varname, units)
 
-    # 1) Subset by months if specified
     if months is not None:
         df_plot = df_plot[df_plot.index.month.isin(months)]
 
-    # 2) Subset columns by study_list
     if study_list is not None:
         suffixes = [f"s{str(st).zfill(4)}" for st in study_list]
         new_cols = []
@@ -400,7 +383,6 @@ def plot_exceedance(
     colormap = plt.cm.tab20
     colors = [colormap(i) for i in range(df_plot.shape[1])]
     if len(colors) > 0:
-        # Make last color black
         colors[-1] = (0, 0, 0, 1)
 
     plt.figure(figsize=(14, 8))
@@ -496,50 +478,13 @@ def annualize_exceedance_plot(
     Subset df to varname in given units, optionally subset to specific months,
     annualize by water year (or chosen freq), then pass the annual data
     into plot_exceedance.
-
-    Parameters
-    ----------
-    df : pd.DataFrame
-        MultiIndex DataFrame (date-indexed) with columns like (PartA, PartB, ..., Units).
-    varname : str
-        The variable name or partial name, e.g. "S_SHSTA_"
-    units : str
-        Desired units, e.g. "TAF"
-    freq : str
-        Resampling frequency, e.g. "YS-OCT" for water year sums.
-    pTitle : str
-        Plot title base.
-    xLab : str
-        X-axis label.
-    lTitle : str
-        Legend title.
-    fTitle : str
-        Filename prefix for saving.
-    pSave : bool
-        Whether to save the figure as PNG.
-    fPath : str
-        Directory to save the PNG.
-    study_list : list of int, optional
-        e.g. [2,11] => columns ending in "_s0002" or "_s0011".
-    scenario_styles : dict, optional
-        e.g. {2: {'color':'black','linestyle':'-','label':'Baseline'}}
-    months : list of int, optional
-        Subset the data to these months (1=Jan, 2=Feb, ..., 12=Dec).
-        e.g. [4] => only April data.
-
-    Returns
-    -------
-    pd.DataFrame
-        The annualized DataFrame (indexed by the start of each water year).
     """
-    import pandas as pd
+
     df_subset = create_subset_unit(df, varname, units)
 
-    # 1) Subset by months if specified
     if months is not None:
         df_subset = df_subset[df_subset.index.month.isin(months)]
 
-    # 2) If user wants scenario subsetting, do it here
     if study_list is not None:
         suffixes = [f"s{str(st).zfill(4)}" for st in study_list]
         keep_cols = []
@@ -552,18 +497,18 @@ def annualize_exceedance_plot(
         print("[annualize_exceedance_plot] WARNING: No data after subsetting!")
         return pd.DataFrame()
 
-    # 3) Annualize each column by the freq (e.g. 'YS-OCT')
     annual_cols = []
     for col in df_subset.columns:
         one_col = df_subset[[col]]
         ann_col = one_col.resample(freq).sum(min_count=1)
         annual_cols.append(ann_col)
 
-    # 4) Concatenate the annual columns
     annual_df = pd.concat(annual_cols, axis=1)
 
     plot_exceedance(
         annual_df,
+        varname=varname,
+        units=units,
         xLab=xLab,
         pTitle=pTitle,
         lTitle=lTitle,
@@ -600,6 +545,8 @@ def annualize_ts(df_col, freq='YS-OCT'):
 
 def plot_moy_averages(
         df,
+        varname,
+        units='TAF',
         xLab='Month of Year',
         pTitle='Month of Year Average Totals',
         lTitle='Studies',
@@ -618,6 +565,10 @@ def plot_moy_averages(
     ----------
     df : pd.DataFrame
         MultiIndex DataFrame with columns shaped like (PartA, PartB, ..., Units).
+    varname : str
+        Variable name/pattern to filter.
+    units : str
+        Units to filter.
     xLab : str
         X-axis label.
     pTitle : str
@@ -639,8 +590,8 @@ def plot_moy_averages(
     -------
     None
     """
-    # 1) Subset columns by study_list
-    df_plot = df.copy()
+    df_plot = create_subset_unit(df, varname, units)
+
     if study_list is not None:
         suffixes = [f"s{str(st).zfill(4)}" for st in study_list]
         new_cols = []
@@ -653,13 +604,14 @@ def plot_moy_averages(
         print("[plot_moy_averages] WARNING: No data after subsetting!")
         return
 
-    # 2) Compute month-of-year means
     df_copy = df_plot.copy()
     df_copy["Month"] = df_copy.index.month
     df_moy = df_copy.groupby("Month").mean(numeric_only=True)
 
     plot_ts(
         df_moy,
+        varname=varname,
+        units=units,
         pTitle=pTitle,
         xLab=xLab,
         lTitle=lTitle,
@@ -1681,9 +1633,21 @@ def custom_parallel_coordinates_highlight_quantile(objs, lower_bound_data, upper
 def custom_parallel_coordinates_highlight_scenarios_baseline_at_zero(objs, columns_axes=None, axis_labels=None,
                                                                      color_dict_categorical=None,
                                                                      alpha_base=0.8, lw_base=1.5,
-                                                                     fontsize=14, figsize=(22,8), save_fig_filename=None,
+                                                                     fontsize=14, figsize=(22,8),
+                                                                     save_fig_filename=None,
                                                                      title=None, highlight_indices=None,
                                                                      highlight_colors=None, highlight_descriptions=None):
+    """
+    Plots parallel coordinates for relative (% difference) data, typically:
+      - Row 0 => baseline scenario (always 0%)
+      - Row 1 => alternative scenario (± some % from baseline).
+
+    Main change: we automatically set the y-axis to [global_min, global_max]
+    rather than a fixed ±20% or symmetrical range.
+    """
+    import matplotlib.pyplot as plt
+    from matplotlib.ticker import PercentFormatter
+
     if columns_axes is None:
         columns_axes = objs.columns
     if axis_labels is None:
@@ -1692,80 +1656,213 @@ def custom_parallel_coordinates_highlight_scenarios_baseline_at_zero(objs, colum
     fig, ax = plt.subplots(1, 1, figsize=figsize, facecolor='white')
     ax.set_facecolor('white')
 
-    # Calculate global min and max for consistent y-axis
     global_min = objs[columns_axes].min().min()
     global_max = objs[columns_axes].max().max()
-    y_range = max(abs(global_min), abs(global_max))
 
-    # Plot all scenarios in grey
     for idx in objs.index:
-        if idx not in highlight_indices:
+        if highlight_indices is not None and idx not in highlight_indices:
             ax.plot(range(len(columns_axes)), objs.loc[idx, columns_axes],
                     c='grey', alpha=0.1, zorder=5, lw=0.5)
 
-    # Plot highlighted scenarios
     if highlight_indices is not None:
-        highlight_labels = highlight_descriptions if highlight_descriptions else [f"Scenario {i+1}" for i in range(len(highlight_indices))]
-        for i, idx in enumerate(highlight_indices):
-            if idx == 0:  # Baseline
-                ax.axhline(y=0, color='black', linestyle='--', linewidth=2, label='Baseline', alpha=0.8, zorder=20)
-            else:
-                color = highlight_colors[i]
-                label = highlight_labels[i]
-                ax.plot(range(len(columns_axes)), objs.loc[idx, columns_axes],
-                        c=color, alpha=alpha_base, zorder=15, lw=3, label=label)
+        highlight_labels = (highlight_descriptions if highlight_descriptions
+                            else [f"Scenario {i+1}" for i in range(len(highlight_indices))])
 
-    # Set up axes
+        for i, idx in enumerate(highlight_indices):
+            color = highlight_colors[i]
+            label = highlight_labels[i]
+            ax.plot(range(len(columns_axes)), objs.loc[idx, columns_axes],
+                    c=color, alpha=alpha_base, zorder=15, lw=3, label=label)
+
     ax.set_xlim(-0.5, len(columns_axes) - 0.5)
-    ax.set_ylim(-y_range, y_range)
+    ax.set_ylim(global_min, global_max)
+
     ax.set_xticks(range(len(columns_axes)))
     ax.set_xticklabels(axis_labels, rotation=45, ha='right', fontsize=fontsize)
 
-    # Customize y-axis
-    ax.yaxis.set_major_locator(plt.MultipleLocator(20))
     ax.yaxis.set_major_formatter(PercentFormatter(100))
     ax.tick_params(axis='y', colors='black', labelsize=fontsize)
 
-    # Add vertical lines for each metric
     for i in range(len(columns_axes)):
         ax.axvline(x=i, color='gray', linestyle=':', alpha=0.3, zorder=1)
 
-    # Remove all spines except the left one
     for spine in ['top', 'right', 'bottom']:
         ax.spines[spine].set_visible(False)
     ax.spines['left'].set_color('black')
 
-    # Add horizontal lines
     ax.yaxis.grid(True, linestyle=':', alpha=0.3, color='gray')
 
-    # Add title
     if title is not None:
         ax.set_title(title, fontsize=fontsize+2, color='black', pad=20)
-
-    # Add y-axis label
     ax.set_ylabel('Percentage Change from Baseline', fontsize=fontsize, color='black')
 
-    # Adjust layout
     plt.tight_layout()
 
-    # Calculate the space needed for x-axis labels
+
     fig.canvas.draw()
     renderer = fig.canvas.get_renderer()
     max_label_height = max([label.get_window_extent(renderer).height for label in ax.get_xticklabels()])
 
-    # Adjust the bottom of the plot to make room for labels and legend
     bottom_margin = max_label_height / fig.get_figheight() / fig.dpi
-    legend_height = 0.15  # Estimated height of the legend as a fraction of figure height
-
-    # Adjust subplot parameters
+    legend_height = 0.15
     plt.subplots_adjust(bottom=bottom_margin + legend_height)
 
-    # Add legend below the x-axis labels
-    leg = ax.legend(loc='upper center', bbox_to_anchor=(0.5, -bottom_margin / (bottom_margin + legend_height)),
-                    ncol=len(highlight_indices), frameon=False, fontsize=fontsize)
+    if highlight_indices is not None:
+        leg = ax.legend(loc='upper center',
+                        bbox_to_anchor=(0.5, -bottom_margin / (bottom_margin + legend_height)),
+                        ncol=len(highlight_indices), frameon=False, fontsize=fontsize)
 
     if save_fig_filename is not None:
         plt.savefig(save_fig_filename, bbox_inches='tight', dpi=600, facecolor='white')
 
     return fig, ax
 
+def custom_parallel_coordinates_relative_with_baseline_values(
+        objs_rel,
+        baseline_abs,
+        axis_label_map,
+        columns_axes=None,
+        axis_labels=None,
+        alpha_base=0.8,
+        lw_base=1.5,
+        fontsize=14,
+        figsize=(22,8),
+        save_fig_filename=None,
+        title=None,
+        highlight_indices=None,
+        highlight_colors=None,
+        highlight_descriptions=None
+):
+    """
+    Similar to your original function, but:
+      1) We look up the units from axis_label_map for each axis/column
+      2) We append "(Baseline)" to each numeric label
+      3) We use the updated logic to display baseline values below the axis.
+
+    Parameters
+    ----------
+    objs_rel : pd.DataFrame
+        Typically 2 rows => [baseline(0%), alternative(±%)], columns = variables.
+    baseline_abs : pd.DataFrame or pd.Series
+        1 row or Series, same columns, with the absolute baseline means.
+    axis_label_map : dict
+        Your dictionary mapping axis label => {calsim_vars, units, months}.
+        We can use it to fetch the 'units' for each axis label.
+    columns_axes, axis_labels : lists, optional
+        Same usage as before.
+    ...
+    """
+    def get_units_for_axis_label(label):
+        # If label not found, fallback to ""
+        if label in axis_label_map:
+            return axis_label_map[label]['units']
+        return ""
+
+    # 1) Decide which columns to plot
+    if columns_axes is None:
+        columns_axes = objs_rel.columns
+    if axis_labels is None:
+        axis_labels = columns_axes
+
+    # 2) If baseline_abs is a 1-row DataFrame, convert to Series
+    if isinstance(baseline_abs, pd.DataFrame):
+        if baseline_abs.shape[0] == 1:
+            baseline_abs = baseline_abs.iloc[0]
+        else:
+            raise ValueError("baseline_abs DataFrame must have exactly 1 row")
+
+    # 3) Setup figure
+    fig, ax = plt.subplots(1, 1, figsize=figsize, facecolor='white')
+    ax.set_facecolor('white')
+
+    # 4) Min/Max from the relative data
+    global_min = objs_rel[columns_axes].min().min()
+    global_max = objs_rel[columns_axes].max().max()
+
+    # 5) Plot non-highlighted rows in grey
+    for idx in objs_rel.index:
+        if highlight_indices is not None and idx not in highlight_indices:
+            ax.plot(range(len(columns_axes)), objs_rel.loc[idx, columns_axes],
+                    c='grey', alpha=0.1, lw=0.5, zorder=5)
+
+    # 6) Plot highlighted rows
+    if highlight_indices is not None:
+        if highlight_descriptions is None:
+            highlight_descriptions = highlight_indices
+        for i, idx in enumerate(highlight_indices):
+            color = highlight_colors[i]
+            label = highlight_descriptions[i]
+            ax.plot(
+                range(len(columns_axes)),
+                objs_rel.loc[idx, columns_axes],
+                c=color,
+                alpha=alpha_base,
+                lw=3,
+                label=label,
+                zorder=10
+            )
+
+    # 7) Axis scaling
+    ax.set_xlim(-0.5, len(columns_axes) - 0.5)
+    ax.set_ylim(global_min, global_max)
+    ax.set_xticks(range(len(columns_axes)))
+    ax.set_xticklabels(axis_labels, rotation=45, ha='right', fontsize=fontsize)
+
+    ax.yaxis.set_major_formatter(PercentFormatter(100))
+    ax.tick_params(axis='y', labelsize=fontsize)
+
+    for i in range(len(columns_axes)):
+        ax.axvline(x=i, color='gray', linestyle=':', alpha=0.3)
+
+    for spine in ['top', 'right', 'bottom']:
+        ax.spines[spine].set_visible(False)
+    ax.spines['left'].set_color('black')
+
+    ax.yaxis.grid(True, linestyle=':', alpha=0.3, color='gray')
+
+    if title:
+        ax.set_title(title, fontsize=fontsize+2, color='black', pad=20)
+    ax.set_ylabel('Percentage Change from Baseline', fontsize=fontsize)
+
+    # 8) Adjust layout for x-tick labels & legend
+    plt.tight_layout()
+    fig.canvas.draw()
+    renderer = fig.canvas.get_renderer()
+    max_label_height = max(label.get_window_extent(renderer).height for label in ax.get_xticklabels())
+    bottom_margin = max_label_height / fig.get_figheight() / fig.dpi
+    legend_height = 0.15
+    plt.subplots_adjust(bottom=bottom_margin + legend_height)
+
+    if highlight_indices is not None:
+        ax.legend(
+            loc='upper center',
+            bbox_to_anchor=(0.5, -bottom_margin / (bottom_margin + legend_height)),
+            ncol=len(highlight_indices),
+            frameon=False,
+            fontsize=fontsize
+        )
+
+    # 9) Annotate baseline absolute values + units
+    margin = 0.05 * (global_max - global_min)
+    label_y = global_min - margin
+
+    for i, col in enumerate(columns_axes):
+        base_val = baseline_abs[col]
+        if pd.isna(base_val):
+            txt_label = "NaN"
+        else:
+            units_str = get_units_for_axis_label(col)
+            txt_label = f"{base_val:,.0f} {units_str} (Baseline)"
+
+        ax.text(
+            i, label_y, txt_label,
+            ha='center', va='top',
+            fontsize=fontsize*0.8,
+            rotation=45,
+            color='black'
+        )
+
+    if save_fig_filename:
+        plt.savefig(save_fig_filename, bbox_inches='tight', dpi=600, facecolor='white')
+
+    return fig, ax
