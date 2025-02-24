@@ -152,6 +152,13 @@ def add_water_year_column(df):
     df_copy.loc[:, 'WaterYear'] = np.where(df_copy['Month'] >= 10, df_copy['Year'] + 1, df_copy['Year'])
     return df_copy.drop(["Date", "Year", "Month"], axis=1)
 
+def add_water_year_type(df, month):
+    df_filtered = df.loc[:, df.columns.get_level_values(1).str.contains('WYT_SAC_') | (df.columns.get_level_values(0) == 'WaterYear')].copy() 
+    month_values = df_filtered[df_filtered.index.month == month].groupby('WaterYear').first() # select the month you want the WYT to follow
+    df_filtered = df_filtered.merge(month_values, left_on='WaterYear', right_index=True, how='left', suffixes=('_df', ''))
+    df.update(df_filtered) # replaces old WYT columns with the month values of each water year
+    return df
+
 def create_subset_var(df, varname):
     """ 
     Filters df to return columns that contain the string varname

@@ -555,7 +555,8 @@ def plot_moy_averages(
         fPath='fPath',
         # OPTIONAL
         study_list=None,
-        scenario_styles=None
+        scenario_styles=None,
+        water_year_type=None
 ):
     """
     Plots a time-series graph of month-of-year averages (1..12) for each column,
@@ -585,6 +586,8 @@ def plot_moy_averages(
         e.g. [2,11]
     scenario_styles : dict, optional
         e.g. {2: {'color':'black','linestyle':'-','label':'Baseline'}}
+    water_year_type: list of int, optional
+        e.g. [4,5]
 
     Returns
     -------
@@ -599,6 +602,30 @@ def plot_moy_averages(
             if any(col[1].endswith(sfx) for sfx in suffixes):
                 new_cols.append(col)
         df_plot = df_plot[new_cols]
+
+        if water_year_type is not None: 
+            df_copy = df.copy()
+        
+            for suffix in suffixes:
+                df_wyt = df_copy.loc[:, df_copy.columns.get_level_values(1).str.contains(f'WYT_SAC__{suffix}')]
+                df_copy.loc[:, df_wyt.columns] = df_wyt.map(lambda x: x if x in water_year_type else np.nan)
+        
+                for col in df_plot.columns[df_plot.columns.get_level_values(1).str.contains(f'{suffix}')]:
+                    na = df_copy.loc[:, df_copy.columns.get_level_values(1).str.contains(f'WYT_SAC__{suffix}')].iloc[:, 0].isna()
+        
+                    df_plot = df_plot.copy()
+                    df_plot.loc[na, col] = np.nan
+
+    if study_list is None and water_year_type is not None: 
+        df_copy = df.copy()
+        df_wyt = df_copy.loc[:, df_copy.columns.get_level_values(1).str.contains('WYT_SAC_')]
+        df_copy.loc[:, df_wyt.columns] = df_wyt.map(lambda x: x if x in water_year_type else np.nan)
+    
+        for col in df_plot.columns:
+            na = df_copy.loc[:, df_copy.columns.get_level_values(1).str.contains('WYT_SAC_')].iloc[:, 0].isna()
+        
+            df_plot = df_plot.copy()
+            df_plot.loc[na, col] = np.nan
 
     if df_plot.empty:
         print("[plot_moy_averages] WARNING: No data after subsetting!")
