@@ -55,89 +55,111 @@ def load_metadata_df(extract_path, all_data, metadata_file,):
 
 def convert_cfs_to_taf(df, metadata_df):
     """
-    Convert columns from CFS to TAF based on metadata unit specifications.
-    
+    Convert columns from CFS to TAF based on either:
+      1) The metadata file's Part B => UNITS mapping, or
+      2) A fallback rule for 'CALCULATED' columns that contain 'DEL' in Part B,
+         or exactly match 'TOTAL_EXPORTS'.
+
     Parameters:
     - df (pd.DataFrame): The main data DataFrame with multi-level columns.
     - metadata_df (pd.DataFrame): The metadata DataFrame containing 'Part B' and 'UNITS'.
-    
+
     Returns:
     - pd.DataFrame: The DataFrame with converted units where applicable.
     """
-    units_mapping = metadata_df.set_index('Part B')['UNITS'].dropna().to_dict()
+    # 1) Build a dict from your metadata that maps Part B -> desired UNITS
+    units_mapping = (
+        metadata_df.set_index("Part B")["UNITS"]
+        .dropna()
+        .to_dict()
+    )
 
     print("\nUnits Mapping (First 10):")
     for key, value in list(units_mapping.items())[:10]:
         print(f"{key}: {value}")
 
+    # 2) Figure out days in each month (for the entire date range of df)
     date_column = df.index
     months = date_column.strftime('%m')
     years = date_column.strftime('%Y')
 
     days_in_month = np.zeros(len(df))
-
-    # Compute the number of days in each month, considering leap years for February
     for i in range(len(months)):
         if months[i] in {"01", "03", "05", "07", "08", "10", "12"}:
             days_in_month[i] = 31
         elif months[i] == "02":
             year = int(years[i])
-            if year % 4 == 0 and (year % 100 != 0 or year % 400 == 0):
+            # leap year check
+            if (year % 4 == 0 and (year % 100 != 0 or year % 400 == 0)):
                 days_in_month[i] = 29
             else:
                 days_in_month[i] = 28
         elif months[i] in {"04", "06", "09", "11"}:
             days_in_month[i] = 30
 
+    # 3) Identify columns to convert
     columns_to_convert = []
     columns_to_skip = []
 
     for col in df.columns:
-        data_part_b = col[1] 
-        data_unit = col[6]     
+        part_a     = col[0]  # e.g. "CALCULATED" or "CALSIM"
+        part_b     = col[1]  # e.g. "DEL_NOD_AG"
+        data_unit  = col[6]  # e.g. "CFS"
 
-
+        # (A) Try metadata matching
         matched_part_b = None
         for meta_part_b in units_mapping.keys():
-            if meta_part_b in data_part_b:
+            # Example logic: if meta_part_b is a substring of part_b
+            if meta_part_b in part_b:
                 matched_part_b = meta_part_b
-                break  
+                break
 
         if matched_part_b:
             desired_unit = units_mapping.get(matched_part_b, data_unit)
-            if data_unit != desired_unit:
-                columns_to_convert.append((col, desired_unit))
+            if data_unit == "CFS" and desired_unit == "TAF":
+                columns_to_convert.append((col, "TAF"))
             else:
                 columns_to_skip.append(col)
-        else:
-            columns_to_skip.append(col)
 
+        # (B) If we did NOT match metadata, then check if it's a "CALCULATED" column
+        if matched_part_b is None:
+            if part_a == "CALCULATED" and data_unit == "CFS":
+                # Fallback rule: convert if part_b has "DEL" or == "TOTAL_EXPORTS"
+                if ("DEL" in part_b) or ("TOTAL_EXPORTS" in part_b):
+                    columns_to_convert.append((col, "TAF"))
+                else:
+                    columns_to_skip.append(col)
+            else:
+                columns_to_skip.append(col)
+
+    # 4) Print out columns that will / won't be converted
     print("\nColumns to Convert:")
     for col, desired_unit in columns_to_convert:
         print(f"{col}: Data Unit = {col[6]}, Desired Unit = {desired_unit}")
 
     print("\nColumns to Skip:")
     for col in columns_to_skip:
-        print(f"{col}: Data Unit = {col[6]}, Desired Unit = {units_mapping.get(col[1], 'No Unit Information')}")
+        # Show what the metadata says if any
+        print(f"{col}: Data Unit = {col[6]}, "
+              f"Desired Unit = {units_mapping.get(col[1], 'No Unit Information')}")
 
+    # 5) Perform the actual conversion from CFS to TAF
     for col, desired_unit in columns_to_convert:
-        data_unit = col[6]
-        part_b = col[1]
-
-        if data_unit == 'CFS' and desired_unit == 'TAF':
-            print(f"\nConverting column: {col} from {data_unit} to '{desired_unit}'")
+        if col[6] == 'CFS' and desired_unit == 'TAF':
+            print(f"\nConverting column: {col} from CFS to TAF")
 
             new_values = df[col].values * 0.001984 * days_in_month
 
+            # Update the multi-index: only the last level (units) changes to TAF
             new_col = list(col)
-            new_col[6] = 'TAF'  
+            new_col[6] = 'TAF'
             new_col = tuple(new_col)
 
             df[new_col] = new_values
 
             print(f"Updated column units to 'TAF' for {new_col}")
         else:
-            print(f"No defined conversion rule for {data_unit} to {desired_unit}. Skipping.")
+            print(f"No defined conversion rule for {col[6]} to {desired_unit}. Skipping.")
 
     return df
 
@@ -151,6 +173,13 @@ def add_water_year_column(df):
     df_copy.loc[:, 'Month'] = df_copy['Date'].dt.month
     df_copy.loc[:, 'WaterYear'] = np.where(df_copy['Month'] >= 10, df_copy['Year'] + 1, df_copy['Year'])
     return df_copy.drop(["Date", "Year", "Month"], axis=1)
+
+def add_water_year_type(df, month):
+    df_filtered = df.loc[:, df.columns.get_level_values(1).str.contains('WYT_SAC_') | (df.columns.get_level_values(0) == 'WaterYear')].copy() 
+    month_values = df_filtered[df_filtered.index.month == month].groupby('WaterYear').first() # select the month you want the WYT to follow
+    df_filtered = df_filtered.merge(month_values, left_on='WaterYear', right_index=True, how='left', suffixes=('_df', ''))
+    df.update(df_filtered) # replaces old WYT columns with the month values of each water year
+    return df
 
 def create_subset_var(df, varname):
     """ 
@@ -510,7 +539,7 @@ def frequency_hitting_level(df, var_res, var_fldzn, units, vartitle, floodzone =
     if study_lst is not None:
         subset_df = subset_df.iloc[:, study_lst]
     
-    subset_df = add_water_year_column(subset_df)
+    subset_df = add_water_year_colum n(subset_df)
     
     if months is not None:
         subset_df = subset_df[subset_df.index.month.isin(months)]
