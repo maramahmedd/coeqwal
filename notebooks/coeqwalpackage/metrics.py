@@ -174,13 +174,50 @@ def add_water_year_column(df):
     df_copy.loc[:, 'WaterYear'] = np.where(df_copy['Month'] >= 10, df_copy['Year'] + 1, df_copy['Year'])
     return df_copy.drop(["Date", "Year", "Month"], axis=1)
 
-def create_subset_var(df, varname): # still need to add WYT to
+def create_subset_var(df, varname, water_year_type=None, month=None):
     """ 
-    Filters df to return columns that contain the string varname
+    Filters df to return columns that contain the string varname; optionally filter by specified WYT
     :param df: Dataframe to filter
     :param varname: variable of interest, e.g. S_SHSTA
+    :param water_year_type: water year types of interest, e.g. [4,5]
+    :param month: month to create water_year_type with, e.g. 5
     """
     filtered_columns = df.columns.get_level_values(1).str.contains(varname)
+
+    if water_year_type is not None:
+        if month is None:
+            raise ValueError("If 'water_year_type' is provided, 'month' must also be provided.")
+        
+        wyt_filter = df.columns.get_level_values(1).str.contains('WYT_SAC_')
+        wy_filter = df.columns.get_level_values(0).str.contains("WaterYear")
+
+        # Combine filters to keep relevant columns
+        combined_filter = (var_filter) | wyt_filter | wy_filter
+        filtered_df = df.loc[:, combined_filter].copy()
+
+        # Get Water Year Type values for the specified month
+        df_wyt_filtered = df_copy.loc[:, filtered_df.columns.get_level_values(1).str.contains('WYT_SAC_') | (filtered_df.columns.get_level_values(0) == 'WaterYear')] 
+        month_values = df_wyt_filtered[df_wyt_filtered.index.month == month].groupby('WaterYear').first()
+        df_wyt_filtered = df_wyt_filtered.merge(month_values, left_on='WaterYear', right_index=True, how='left', suffixes=('_df', ''))
+        
+        # Update filtered DataFrame with selected Water Year Type values
+        filtered_df.update(df_wyt_filtered)
+
+        # Apply Water Year Type filter
+        df_wyt = filtered_df.loc[:, filtered_df.columns.get_level_values(1).str.contains('WYT_SAC_')]
+        filtered_df.loc[:, df_wyt.columns] = df_wyt.map(lambda x: x if x in water_year_type else np.nan)
+
+        # Get final subset for variable names
+        df_var = filtered_df.loc[:, filtered_df.columns.get_level_values(1).str.contains(varname)]
+        
+        # Apply NaN values to the selected variable columns
+        df_copy = filtered_df.loc[:, filtered_df.columns.get_level_values(1).str.contains('WYT_SAC_')]
+        for i in range(len(df_var.columns)):
+            na = df_copy[df_copy.columns[i]].isna()
+            df_var.loc[na, df_var.columns[i]] = np.nan
+        
+        return df_var
+    
     return df.loc[:, filtered_columns]
 
 def create_subset_unit(df, varname, units, water_year_type=None, month=None): 
@@ -205,34 +242,74 @@ def create_subset_unit(df, varname, units, water_year_type=None, month=None):
 
         combined_filter = (var_filter & unit_filter) | wyt_filter | wy_filter
         filtered_columns = df.loc[:, combined_filter]
-        df_copy = filtered_columns.copy()
         
-        df_wyt_filtered = df_copy.loc[:, df_copy.columns.get_level_values(1).str.contains('WYT_SAC_') | (df_copy.columns.get_level_values(0) == 'WaterYear')] 
-        
-        month_values = df_wyt_filtered[df_wyt_filtered.index.month == month].groupby('WaterYear').first()  # select the month you want the WYT to follow
+        df_wyt_filtered = filtered_columns.loc[:, filtered_columns.columns.get_level_values(1).str.contains('WYT_SAC_') | (filtered_columns.columns.get_level_values(0) == 'WaterYear')] 
+
+        # Select the month you want the WYT to follow, it will replace the WYT columns in filtered_columns with the month value for each year
+        month_values = df_wyt_filtered[df_wyt_filtered.index.month == month].groupby('WaterYear').first()  
         df_wyt_filtered = df_wyt_filtered.merge(month_values, left_on='WaterYear', right_index=True, how='left', suffixes=('_df', ''))
-        df_copy.update(df_wyt_filtered)  # replace old WYT columns with the month values of each water year
+        filtered_columns.update(df_wyt_filtered) 
 
-        df_wyt = df_copy.loc[:, df_copy.columns.get_level_values(1).str.contains('WYT_SAC_')]
-        df_copy.loc[:, df_wyt.columns] = df_wyt.map(lambda x: x if x in water_year_type else np.nan)
-        df_var = df_copy.loc[:, df_copy.columns.get_level_values(1).str.contains(varname)]
-        df_copy = df_copy.loc[:, df_copy.columns.get_level_values(1).str.contains('WYT_SAC_')]
+        # Map NaN values to the WYTs not selected
+        df_wyt = filtered_columns.loc[:, filtered_columns.columns.get_level_values(1).str.contains('WYT_SAC_')]
+        filtered_columns.loc[:, df_wyt.columns] = df_wyt.map(lambda x: x if x in water_year_type else np.nan)
+        df_var = filtered_columns.loc[:, filtered_columns.columns.get_level_values(1).str.contains(varname)]
+        filtered_columns = filtered_columns.loc[:, filtered_columns.columns.get_level_values(1).str.contains('WYT_SAC_')]
 
+        # Apply the NaN values (WYT not selected) to the variable columns
         for i in range(len(df_var.columns)):
-            na = df_copy[df_copy.columns[i]].isna()
-            df_var.loc[na, df_var.columns[i]] = np.nan # apply the NaN values (WYT not selected) to the varname 
+            df_nan = filtered_columns[filtered_columns.columns[i]].isna()
+            df_var.loc[df_nan, df_var.columns[i]] = np.nan 
         
         return df_var
 
     return df.loc[:, filtered_columns]
 
-def create_subset_list(df, var_names): # still need to add WYT to
+def create_subset_list(df, var_names, water_year_type=None, month=None):
     """ 
-    Filters df to return columns that contain any of the strings in var_names.
+    Filters df to return columns that contain any of the strings in var_names; optionally filter by specified WYT
     :param df: Dataframe to filter.
     :param var_names: List of variables of interest, e.g. ['S_SHSTA', 'S_OROVL'].
+    param water_year_type: water year types of interest, e.g. [4,5]
+    param month: month to create water_year_type with, e.g. 5
     """
     filtered_columns = df.columns.get_level_values(1).str.contains('|'.join(var_names))
+
+    if water_year_type is not None:
+        if month is None:
+            raise ValueError("If 'water_year_type' is provided, 'month' must also be provided.")
+        
+        wyt_filter = df.columns.get_level_values(1).str.contains('WYT_SAC_')
+        wy_filter = df.columns.get_level_values(0).str.contains("WaterYear")
+        
+        # Combine filters to keep relevant columns
+        combined_filter = filtered_columns | wyt_filter | wy_filter
+        filtered_df = df.loc[:, combined_filter].copy()
+        
+        df_wyt_filtered = filtered_df.loc[:, filtered_df.columns.get_level_values(1).str.contains('WYT_SAC_') | (filtered_df.columns.get_level_values(0) == 'WaterYear')] 
+        
+        # Get Water Year Type values for the specified month
+        month_values = df_wyt_filtered[df_wyt_filtered.index.month == month].groupby('WaterYear').first()
+        df_wyt_filtered = df_wyt_filtered.merge(month_values, left_on='WaterYear', right_index=True, how='left', suffixes=('_df', ''))
+        
+        # Update filtered df with selected WYT values
+        filtered_df.update(df_wyt_filtered)
+        
+        # Apply WYT filter
+        df_wyt = filtered_df.loc[:, filtered_df.columns.get_level_values(1).str.contains('WYT_SAC_')]
+        filtered_df.loc[:, df_wyt.columns] = df_wyt.applymap(lambda x: x if x in water_year_type else np.nan)
+        
+        # Get final subset for variable names
+        df_var = filtered_df.loc[:, filtered_df.columns.get_level_values(1).str.contains('|'.join(var_names))]
+        
+        # Apply NaN values to the selected variable columns (for WYT not selected)
+        df_copy = filtered_df.loc[:, filtered_df.columns.get_level_values(1).str.contains('WYT_SAC_')]
+        for i in range(len(df_var.columns)):
+            na = df_copy[df_copy.columns[i]].isna()
+            df_var.loc[na, df_var.columns[i]] = np.nan
+        
+        return df_var
+
     return df.loc[:, filtered_columns]
 
 """FORMATTING HELPER FUNCTIONS"""
