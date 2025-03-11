@@ -74,8 +74,8 @@ def convert_cfs_to_taf(df, metadata_df):
         .to_dict()
     )
 
-    print("\nUnits Mapping (First 10):")
-    for key, value in list(units_mapping.items())[:10]:
+    print("\nUnits Mapping:")
+    for key, value in list(units_mapping.items()):
         print(f"{key}: {value}")
 
     # 2) Figure out days in each month (for the entire date range of df)
