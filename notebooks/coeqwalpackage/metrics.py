@@ -35,7 +35,7 @@ def load_metadata_df(extract_path, all_data, metadata_file,):
                                 engine='openpyxl',
                                 skiprows=7,
                                 usecols="B:K",
-                                nrows=170)
+                                nrows=200)
     metadata_df.columns=[
     'Pathnames',
     'Part A',
