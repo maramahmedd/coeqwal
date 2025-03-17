@@ -30,12 +30,12 @@ def read_in_df(df_path, names_path):
 
 """CONVERT UNITS"""
 
-def load_metadata_df(extract_path, all_data, metadata_file,):
+def load_metadata_df(extract_path, all_data, metadata_file, nrows=200):
     metadata_df = pd.read_excel(extract_path + metadata_file,
                                 engine='openpyxl',
                                 skiprows=7,
                                 usecols="B:K",
-                                nrows=200)
+                                nrows=nrows)
     metadata_df.columns=[
     'Pathnames',
     'Part A',
