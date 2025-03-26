@@ -58,26 +58,35 @@ def read_init_file(CtrlFile, CtrlTab):
 
     # Hard-coded file structure
     ScenarioDirInd = 'B2'
-    DssListFileInd = 'B3'
-    DssListTabInd = 'B4'
+    ScenarioListFileInd = 'B3'
+    ScenarioListTabInd = 'B4'
     IndexMinInd = 'C5' # first scenario index
     IndexMaxInd = 'D5' # last scenario index
-    ScenariosDirMinInd = 'C6' # first dss dir index
-    ScenariosDirMaxInd = 'D6' # last dss dir index
-    DssPathMinInd = 'C7' # first dss path index
-    DssPathMaxInd = 'D7' # last dss path index
-    StartMinInd = 'C8' # first start date index
-    StartMaxInd = 'D8' # last start date index
-    EndMinInd = 'C9' # First end date index
-    EndMaxInd = 'D9' # Last end date index
-    GroupDataDirInd = 'B10' # Group data extraction directory
-    VarFileNameInd = 'B11' # Variable list file name
-    VarFileTabInd = 'B12' # Variable list file tab
-    VarMinInd = 'C13' # top left of variable name block
-    VarMaxInd = 'D13' # bottom right of variable name block
-    ExtractionDirInd = 'B14'
-    ModelFilesDirInd = 'B15'
-    ModelSubDirInd = 'B16'
+    ScenariosNameMinInd = 'C6' # first dss dir index
+    ScenariosNameMaxInd = 'D6' # last dss dir index
+    ScenariosDirMinInd = 'C7' # first dss dir index
+    ScenariosDirMaxInd = 'D7' # last dss dir index
+    DVDssPathMinInd = 'C8' # first dss path index
+    DVDssPathMaxInd = 'D8' # last dss path index
+    SVDssPathMinInd = 'C9' # first dss path index
+    SVDssPathMaxInd = 'D9' # last dss path index
+    StartMinInd = 'C10' # first start date index
+    StartMaxInd = 'D10' # last start date index
+    EndMinInd = 'C11' # First end date index
+    EndMaxInd = 'D11' # Last end date index
+    GroupDataDirInd = 'B12' # Group data extraction directory
+    VarFileNameInd = 'B13' # Variable list file name
+    VarFileTabInd = 'B14' # Variable list file tab
+    VarMinInd = 'C15' # top left of variable name block
+    VarMaxInd = 'D15' # bottom right of variable name block
+    ExtractionDirInd = 'B16'
+    DemDelDirInd = 'B17'
+    ModelFilesDirInd = 'B18'
+    ModelSubDirInd = 'B19'
+    DemandsFileInd = 'B20'
+    DemandsTabInd = 'B21'
+    DemMinInd = 'C22' # top left of demand name block
+    DemMaxInd = 'D22' # bottom right of demand name block
 
     # Control File Example
     #Item	Name or description	Upper Left Cell	Lower Right Cell
@@ -100,25 +109,33 @@ def read_init_file(CtrlFile, CtrlTab):
     # Read directory structure and contol file name
     Hdr, ScenarioDir = read_from_excel(CtrlFile, CtrlTab, ScenarioDirInd, ScenarioDirInd, hdr=False) # Scenarios directory (../../CalSim3_Model_Runs/Scenarios in the current structure)
     ScenarioDir = ScenarioDir[0][0]
-    Hdr, DssListFile = read_from_excel(CtrlFile, CtrlTab, DssListFileInd, DssListFileInd, hdr=False) # DSS file names Excel workbook
-    DssListFile = DssListFile[0][0]
-    DssListPath = os.path.join(ScenarioDir,DssListFile) # path to DSS file names Excel workbook
+    Hdr, ScenarioListFile = read_from_excel(CtrlFile, CtrlTab, ScenarioListFileInd, ScenarioListFileInd, hdr=False) # DSS file names Excel workbook
+    ScenarioListFile = ScenarioListFile[0][0]
+    ScenarioListPath = os.path.join(ScenarioDir,ScenarioListFile) # path to DSS file names Excel workbook
     
     # Read file names and ranges for DSS and vars from control file
-    Hdr, DssListTab = read_from_excel(CtrlFile, CtrlTab, DssListTabInd, DssListTabInd, hdr=False) # DSS file names Excel workbook Tab
-    DssListTab = DssListTab[0][0]
+    Hdr, ScenarioListTab = read_from_excel(CtrlFile, CtrlTab, ScenarioListTabInd, ScenarioListTabInd, hdr=False) # DSS file names Excel workbook Tab
+    ScenarioListTab = ScenarioListTab[0][0]
     Hdr, IndexMin = read_from_excel(CtrlFile, CtrlTab, IndexMinInd, IndexMinInd, hdr=False) # Scenario Index Name UL
     IndexMin = IndexMin[0][0]
     Hdr, IndexMax = read_from_excel(CtrlFile, CtrlTab, IndexMaxInd, IndexMaxInd, hdr=False) # Scenario Index Name LR
     IndexMax = IndexMax[0][0]
+    Hdr, NameMin = read_from_excel(CtrlFile, CtrlTab, ScenariosNameMinInd, ScenariosNameMinInd, hdr=False) # Scenario Name UL
+    NameMin = NameMin[0][0]
+    Hdr, NameMax = read_from_excel(CtrlFile, CtrlTab, ScenariosNameMaxInd, ScenariosNameMaxInd, hdr=False) # Scenario Name UL
+    NameMax = NameMax[0][0]
     Hdr, DirMin = read_from_excel(CtrlFile, CtrlTab, ScenariosDirMinInd, ScenariosDirMinInd, hdr=False) # Scenario Dir Name UL
     DirMin = DirMin[0][0]
     Hdr, DirMax = read_from_excel(CtrlFile, CtrlTab, ScenariosDirMaxInd, ScenariosDirMaxInd, hdr=False) # Scenario Dir Name UL
     DirMax = DirMax[0][0]
-    Hdr, DssMin = read_from_excel(CtrlFile, CtrlTab, DssPathMinInd, DssPathMinInd, hdr=False) # DSS Path Name UL
-    DssMin = DssMin[0][0]
-    Hdr, DssMax = read_from_excel(CtrlFile, CtrlTab, DssPathMaxInd, DssPathMaxInd, hdr=False) # DSS Path Name LR
-    DssMax = DssMax[0][0]
+    Hdr, DVDssMin = read_from_excel(CtrlFile, CtrlTab, DVDssPathMinInd, DVDssPathMinInd, hdr=False) # DSS Path Name UL
+    DVDssMin = DVDssMin[0][0]
+    Hdr, DVDssMax = read_from_excel(CtrlFile, CtrlTab, DVDssPathMaxInd, DVDssPathMaxInd, hdr=False) # DSS Path Name LR
+    DVDssMax = DVDssMax[0][0]
+    Hdr, SVDssMin = read_from_excel(CtrlFile, CtrlTab, SVDssPathMinInd, SVDssPathMinInd, hdr=False) # DSS Path Name UL
+    SVDssMin = SVDssMin[0][0]
+    Hdr, SVDssMax = read_from_excel(CtrlFile, CtrlTab, SVDssPathMaxInd, SVDssPathMaxInd, hdr=False) # DSS Path Name LR
+    SVDssMax = SVDssMax[0][0]
     Hdr, StartMin = read_from_excel(CtrlFile, CtrlTab, StartMinInd, StartMinInd, hdr=False) # Start Date UL
     StartMin = StartMin[0][0]
     Hdr, StartMax = read_from_excel(CtrlFile, CtrlTab, StartMaxInd, StartMaxInd, hdr=False) # Start Date LR
@@ -141,19 +158,31 @@ def read_init_file(CtrlFile, CtrlTab):
     VarMax = VarMax[0][0]
     Hdr, ExtractionDir = read_from_excel(CtrlFile, CtrlTab, ExtractionDirInd, ExtractionDirInd, hdr=False) #  Var extraction Dir Name
     ExtractionDir = ExtractionDir[0][0]
+    Hdr, DemandDeliveryDir = read_from_excel(CtrlFile, CtrlTab, DemDelDirInd, DemDelDirInd, hdr=False) #  Var extraction Dir Name
+    DemandDeliveryDir = DemandDeliveryDir[0][0]
     Hdr, ModelFilesDir = read_from_excel(CtrlFile, CtrlTab, ModelFilesDirInd, ModelFilesDirInd, hdr=False) #  Var extraction Dir Name
     ModelFilesDir = ModelFilesDir[0][0]
     Hdr, ModelSubDir = read_from_excel(CtrlFile, CtrlTab, ModelSubDirInd, ModelSubDirInd, hdr=False) #  Var extraction SubDir Name
     ModelSubDir = ModelSubDir[0][0]
+    Hdr, DemandFileName = read_from_excel(CtrlFile, CtrlTab, DemandsFileInd, DemandsFileInd, hdr=False) # directory name for variable listing (trend_report_variables_v3.xlsx in current structure)
+    DemandFileName = DemandFileName[0][0]
+    Hdr, DemandFileTab = read_from_excel(CtrlFile, CtrlTab, DemandsTabInd, DemandsTabInd, hdr=False) # tab for variable listing (TrendReportVars_CS3 in current structure)
+    DemandFileTab = DemandFileTab[0][0]
+    Hdr, DemMin = read_from_excel(CtrlFile, CtrlTab, DemMinInd, DemMinInd, hdr=False) # variable listing UL
+    DemMin = DemMin[0][0]
+    Hdr, DemMax = read_from_excel(CtrlFile, CtrlTab, DemMaxInd, DemMaxInd, hdr=False) # variable listing LR
+    DemMax = DemMax[0][0]
 
     # Construct file and directory names
     # File and directory names
-    DssListFileCsv = DssListFile.replace(".xlsx", ".csv")
-    DssNamesOut = 'DssNamesFrom_' + DssListFileCsv # output DSS names CSV
-    DssIndicesOut = 'IndicesFrom_' + DssListFileCsv # output DSS indices CSV
-    DssDirsOut = 'DirNamesFrom_' + DssListFileCsv # output directory names CSV
-    DssNamesOutPath = os.path.join(GroupDataDirPath, DssNamesOut) # output DSS names CSV path
-    DssIndicesOutPath = os.path.join(GroupDataDirPath, DssIndicesOut) # output DSS index names CSV path
+    ScenarioListFileCsv = ScenarioListFile.replace(".xlsx", ".csv")
+    DVDssNamesOut = 'DVDssNamesFrom_' + ScenarioListFileCsv # output DSS names CSV
+    SVDssNamesOut = 'SVDssNamesFrom_' + ScenarioListFileCsv # output DSS names CSV
+    ScenarioIndicesOut = 'IndicesFrom_' + ScenarioListFileCsv # output DSS indices CSV
+    DssDirsOut = 'DirNamesFrom_' + ScenarioListFileCsv # output directory names CSV
+    DVDssNamesOutPath = os.path.join(GroupDataDirPath, DVDssNamesOut) # output DSS names CSV path
+    SVDssNamesOutPath = os.path.join(GroupDataDirPath, SVDssNamesOut) # output DSS names CSV path
+    ScenarioIndicesOutPath = os.path.join(GroupDataDirPath, ScenarioIndicesOut) # output DSS index names CSV path
     DssDirsOutPath = os.path.join(GroupDataDirPath, DssDirsOut) # output DSS dir names CSV path
 
     # list of relevant variables file, tab, and range (B & C parts)
@@ -162,6 +191,7 @@ def read_init_file(CtrlFile, CtrlTab):
     VarListFile = VarListName + VarListExt # full file name
     VarListFileCsv = VarListFile.replace(".xlsx", ".csv")
     VarListPath = os.path.join(ScenarioDir, VarListFile)
+    DemandFilePath = os.path.join(ScenarioDir, DemandFileName)
     VarOut = 'VarsFrom_' + VarListFileCsv # output compund variable names CSV
     VarOutPath = os.path.join(GroupDataDirPath, VarOut)
     DataOut = 'DataFrom_' + VarListFileCsv # file name for multi-study output CSV
@@ -170,14 +200,15 @@ def read_init_file(CtrlFile, CtrlTab):
     ConvertDataOutPath = os.path.join(GroupDataDirPath, ConvertDataOut) # file name for multi-study output CSV path
     ExtractionSubDir = 'Variables_From_' + VarListName + '_' + VarListTab
     ExtractionSubPath = os.path.join(ExtractionDir, ExtractionSubDir)
+    DemandDeliverySubPath = os.path.join(ExtractionDir, DemandDeliveryDir)
     ModelSubPath = os.path.join('Model_Files','DSS','output')
 
     # debug print
-    # print(DssListFile)    
-    # print(DssListTab)    
-    # print(DssListPath)
+    # print(ScenarioListFile)    
+    # print(ScenarioListTab)    
+    # print(ScenariosistPath)
     # print(DssNamesOutPath)
-    # print(DssIndicesOutPath)
+    # print(ScenarioIndicesOutPath)
     # print(DssDirsOutPath)
     # print(VarListPath)
     # print(VarOutPath)
@@ -187,4 +218,4 @@ def read_init_file(CtrlFile, CtrlTab):
     # print(GroupDataDirPath)
  
     # return info
-    return DssListFile, DssListTab, DssListPath, DssNamesOutPath, DssIndicesOutPath, DssDirsOutPath, VarListPath, VarListFile, VarListTab, VarOutPath, DataOutPath, ConvertDataOutPath, ExtractionSubPath, ModelSubPath, GroupDataDirPath, ScenarioDir, DssMin, DssMax, DirMin, DirMax, IndexMin, IndexMax, StartMin, StartMax, EndMin, EndMax, VarMin, VarMax
+    return ScenarioListFile, ScenarioListTab, ScenarioListPath, DVDssNamesOutPath, SVDssNamesOutPath, ScenarioIndicesOutPath, DssDirsOutPath, VarListPath, VarListFile, VarListTab, VarOutPath, DataOutPath, ConvertDataOutPath, ExtractionSubPath, DemandDeliverySubPath, ModelSubPath, GroupDataDirPath, ScenarioDir, DVDssMin, DVDssMax, SVDssMin, SVDssMax, NameMin, NameMax, DirMin, DirMax, IndexMin, IndexMax, StartMin, StartMax, EndMin, EndMax, VarMin, VarMax, DemandFilePath, DemandFileName, DemandFileTab, DemMin, DemMax
