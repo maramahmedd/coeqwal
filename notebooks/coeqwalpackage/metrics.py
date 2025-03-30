@@ -490,8 +490,9 @@ def ann_avg(df, dss_names, var_name, units="TAF"):
     return ann_avg_delta_df
 
 # Annual X Percentile outflow of a Delta or X Percentile Resevoir Storage
-def ann_percentile(df, dss_names, pct, var_name, df_title, units="TAF"):
+def ann_percentile(df, dss_names, pct, var_name, units="TAF"):
     study_list = np.arange(0, len(dss_names))
+    df_title = 'Percentile_' + var_name + units
     iqr_df = compute_iqr_value(df, pct, var_name, units, df_title, study_list, months=None, annual=True)
     iqr_df = set_index(iqr_df, dss_names)
     return iqr_df
@@ -531,10 +532,10 @@ def moy_avgs(df, var_name, dss_names, units="TAF"):
     return moy_df
 
 # Monthly X Percentile Resevoir Storage or X Percentile Delta Outflow
-def mnth_percentile(df, dss_names, pct, var_name, df_title, mnth_num, units="TAF"):
+def mnth_percentile(df, dss_names, pct, var_name, mnth_num, units="TAF"):
     study_list = np.arange(0, len(dss_names))
     mnth_str = calendar.month_abbr[mnth_num]
-    df_title = mnth_str + "_" + df_title + "_" + units
+    df_title = mnth_str + '_Percentile_' + var_name + units
     iqr_df = compute_iqr_value(df, pct, var_name, units, df_title, study_list, months = [mnth_num], annual = True)
     iqr_df = set_index(iqr_df, dss_names)
     return iqr_df
