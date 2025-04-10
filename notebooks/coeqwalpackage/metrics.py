@@ -479,10 +479,10 @@ def exceedance_metric(df, var, exceedance_percent, vartitle, unit):
 """CUSTOM FUNCTIONS using dss_names"""
 
 # Annual Avg (using dss_names)
-def ann_avg(df, dss_names, var_name, units="TAF"):
+def ann_avg(df, dss_names, var_name, units="TAF", months=None):
     metrics = []
     for study_index in np.arange(0, len(dss_names)):
-        metric_value = compute_mean(df, var_name, [study_index], units, months=None)
+        metric_value = compute_mean(df, var_name, [study_index], units, months=months)
         metrics.append(metric_value)
 
     ann_avg_delta_df = pd.DataFrame(metrics, columns=['Ann_Avg_' + var_name + units])
@@ -570,7 +570,7 @@ def annual_totals(df, var_name, units):
 
 """Calculate Frequency Hitting Floodzone/Deadpool Levels"""
 
-def frequency_hitting_level(df, dss_names, var_res, var_fldzn, units, vartitle, floodzone = True, months = None):
+def frequency_hitting_level(df, dss_names, var_res, var_fldzn, units, vartitle, floodzone = True, months = None, threshold = None):
     """
     Calculate the frequency of hitting the floodzone or deadpool levels
     Use floodzone = True to calculate probability hitting floodzone, and False to calculate hitting deadpool levels
@@ -583,19 +583,21 @@ def frequency_hitting_level(df, dss_names, var_res, var_fldzn, units, vartitle, 
         subset_df_floodzone = subset_df_floodzone[subset_df_floodzone.index.month.isin(months)]
 
     multiindex_columns = subset_df_res.columns
-
     subset_df_res_comp_values = subset_df_res.values - subset_df_floodzone.values
+    
     if floodzone:
         subset_df_res_comp_values += 0.000001
 
     subset_df_res_comp = pd.DataFrame(subset_df_res_comp_values, index=subset_df_res.index, columns=multiindex_columns)
 
+    if threshold is not None:
+        days_within_threshold = (abs(subset_df_res_comp_values) <= threshold).sum().sum()
+
     exceedance_days = count_exceedance_days(subset_df_res_comp, 0)
-    #exceedance_days_percent = exceedance_days / len(subset_df_res_comp) * 100
     exceedance_days_fraction = exceedance_days / len(subset_df_res_comp)
+    
     if not floodzone:
         exceedance_days = 100 - exceedance_days
-
 
     exceedance_days = exceedance_days.melt(value_name=vartitle).reset_index(drop=True)[[vartitle]]
     exceedance_days = set_index(exceedance_days, dss_names)
@@ -603,7 +605,10 @@ def frequency_hitting_level(df, dss_names, var_res, var_fldzn, units, vartitle, 
     exceedance_days_fraction = exceedance_days_fraction.melt(value_name=vartitle).reset_index(drop=True)[[vartitle]]
     exceedance_days_fraction = set_index(exceedance_days_fraction, dss_names)
 
-    return exceedance_days, exceedance_days_fraction
+    if threshold is not None:
+        return exceedance_days, exceedance_days_fraction, days_within_threshold
+    else:
+        return exceedance_days, exceedance_days_fraction
 
 """OLD VERSIONS OF FUNCTIONS"""
 
