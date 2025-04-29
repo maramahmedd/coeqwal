@@ -88,6 +88,12 @@ def read_init_file(CtrlFile, CtrlTab):
     DemMinInd = 'C22' # top left of demand name block
     DemMaxInd = 'D22' # bottom right of demand name block
 
+    InflowDirInd = 'B23'
+    InflowFileInd = 'B24'
+    InflowTabInd = 'B25'
+    InflowMinInd = 'C26' # top left of demand name block
+    InflowMaxInd = 'D26' # bottom right of demand name block
+
     # Control File Example
     #Item	Name or description	Upper Left Cell	Lower Right Cell
     #Scenarios Directory	../../CalSim3_Model_Runs/Scenarios		
@@ -172,6 +178,17 @@ def read_init_file(CtrlFile, CtrlTab):
     DemMin = DemMin[0][0]
     Hdr, DemMax = read_from_excel(CtrlFile, CtrlTab, DemMaxInd, DemMaxInd, hdr=False) # variable listing LR
     DemMax = DemMax[0][0]
+    
+    Hdr, InflowDir = read_from_excel(CtrlFile, CtrlTab, InflowDirInd, InflowDirInd, hdr=False) #  Var extraction Dir Name
+    InflowDir = InflowDir[0][0]
+    Hdr, InflowFileName = read_from_excel(CtrlFile, CtrlTab, InflowFileInd, InflowFileInd, hdr=False) # directory name for variable listing (trend_report_variables_v3.xlsx in current structure)
+    InflowFileName = InflowFileName[0][0]
+    Hdr, InflowFileTab = read_from_excel(CtrlFile, CtrlTab, InflowTabInd, InflowTabInd, hdr=False) # tab for variable listing (TrendReportVars_CS3 in current structure)
+    InflowFileTab = InflowFileTab[0][0]
+    Hdr, InflowMin = read_from_excel(CtrlFile, CtrlTab, InflowMinInd, InflowMinInd, hdr=False) # variable listing UL
+    InflowMin = InflowMin[0][0]
+    Hdr, InflowMax = read_from_excel(CtrlFile, CtrlTab, InflowMaxInd, InflowMaxInd, hdr=False) # variable listing LR
+    InflowMax = InflowMax[0][0]
 
     # Construct file and directory names
     # File and directory names
@@ -202,6 +219,8 @@ def read_init_file(CtrlFile, CtrlTab):
     ExtractionSubPath = os.path.join(ExtractionDir, ExtractionSubDir)
     DemandDeliverySubPath = os.path.join(ExtractionDir, DemandDeliveryDir)
     ModelSubPath = os.path.join('Model_Files','DSS','output')
+    InflowOutSubPath = os.path.join(ExtractionDir, InflowDir)
+    InflowFilePath = os.path.join(ScenarioDir, InflowFileName)
 
     # debug print
     # print(ScenarioListFile)    
@@ -218,4 +237,4 @@ def read_init_file(CtrlFile, CtrlTab):
     # print(GroupDataDirPath)
  
     # return info
-    return ScenarioListFile, ScenarioListTab, ScenarioListPath, DVDssNamesOutPath, SVDssNamesOutPath, ScenarioIndicesOutPath, DssDirsOutPath, VarListPath, VarListFile, VarListTab, VarOutPath, DataOutPath, ConvertDataOutPath, ExtractionSubPath, DemandDeliverySubPath, ModelSubPath, GroupDataDirPath, ScenarioDir, DVDssMin, DVDssMax, SVDssMin, SVDssMax, NameMin, NameMax, DirMin, DirMax, IndexMin, IndexMax, StartMin, StartMax, EndMin, EndMax, VarMin, VarMax, DemandFilePath, DemandFileName, DemandFileTab, DemMin, DemMax
+    return ScenarioListFile, ScenarioListTab, ScenarioListPath, DVDssNamesOutPath, SVDssNamesOutPath, ScenarioIndicesOutPath, DssDirsOutPath, VarListPath, VarListFile, VarListTab, VarOutPath, DataOutPath, ConvertDataOutPath, ExtractionSubPath, DemandDeliverySubPath, ModelSubPath, GroupDataDirPath, ScenarioDir, DVDssMin, DVDssMax, SVDssMin, SVDssMax, NameMin, NameMax, DirMin, DirMax, IndexMin, IndexMax, StartMin, StartMax, EndMin, EndMax, VarMin, VarMax, DemandFilePath, DemandFileName, DemandFileTab, DemMin, DemMax, InflowOutSubPath, InflowFilePath, InflowFileName, InflowFileTab, InflowMin, InflowMax
