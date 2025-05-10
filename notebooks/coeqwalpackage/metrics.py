@@ -697,6 +697,49 @@ def probability_var1_eq_var2_for_scenario(df, var1_name, var2_name, units="CFS",
     prob_equal = count_equal / len(series_var1)
     return prob_equal
 
+def probability_var1_gte_var2_for_scenario(df, var1_name, var2_name, units="CFS", tolerance=1e-6):
+    """
+    Returns the probability that var1 >= var2 for a single scenario, if both columns exist.
+    Otherwise returns NaN.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Main DataFrame (multi-index columns).
+    var1_name : str
+        The column name (Part B, or full name) for the 'actual' variable (e.g. 'C_AMR004_s0018').
+    var2_name : str
+        The column name for the 'comparison' variable (e.g. 'C_AMR004_MIF_s0018').
+    units : str, default 'CFS'
+        Expected units for both columns (so we subset the correct columns).
+    tolerance : float
+        Not really used here for >= check, included for symmetry with eq & lt function.
+
+    Returns
+    -------
+    float
+        Probability that var1 >= var2 (0 to 1).
+    """
+    df_var1 = create_subset_unit(df, var1_name, units)
+    df_var2 = create_subset_unit(df, var2_name, units)
+
+    if df_var1.empty or df_var2.empty:
+        return np.nan  # columns don't exist or no valid data
+
+    # Align on index
+    series_var1 = df_var1.iloc[:, 0].reindex(df_var2.index).dropna()
+    series_var2 = df_var2.iloc[:, 0].reindex(df_var1.index).dropna()
+    common_idx = series_var1.index.intersection(series_var2.index)
+    if len(common_idx) == 0:
+        return np.nan
+
+    series_var1 = series_var1.loc[common_idx]
+    series_var2 = series_var2.loc[common_idx]
+
+    count_gte = (series_var1 >= series_var2).sum()
+    prob_less = count_gte / len(series_var1)
+    return prob_less
+
 """OLD VERSIONS OF FUNCTIONS"""
 
 """def exceedance_metric(df, var, exceedance_percent, vartitle, unit):
