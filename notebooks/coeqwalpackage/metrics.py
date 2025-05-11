@@ -740,6 +740,43 @@ def probability_var1_gte_var2_for_scenario(df, var1_name, var2_name, units="CFS"
     prob_less = count_gte / len(series_var1)
     return prob_less
 
+def probability_var1_gte_const_for_scenario(df, var1_name, const, units="CFS"):
+    """
+    Returns the probability that var1 >= constant value for a single scenario, if both columns exist.
+    Otherwise returns NaN.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Main DataFrame (multi-index columns).
+    var1_name : str
+        The column name (Part B, or full name) for the 'actual' variable (e.g. 'C_AMR004_s0018').
+    var2_name : int
+        The constant value for the variable.
+    units : str, default 'CFS'
+        Expected units for both columns (so we subset the correct columns).
+
+    Returns
+    -------
+    float
+        Probability that var1 >= const (0 to 1).
+    """
+
+    df_var1 = create_subset_unit(df, var1_name, units)
+
+    if df_var1.empty:
+        return np.nan  # columns don't exist or no valid data
+
+    # Align on index
+    series_var1 = df_var1.iloc[:, 0].dropna()
+
+    if len(series_var1) == 0:
+        return np.nan
+
+    count_gte = (series_var1 >= const).sum()
+    prob_less = count_gte / len(series_var1)
+    return prob_less
+
 """OLD VERSIONS OF FUNCTIONS"""
 
 """def exceedance_metric(df, var, exceedance_percent, vartitle, unit):
