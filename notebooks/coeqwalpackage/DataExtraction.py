@@ -411,3 +411,123 @@ def preprocess_demands_deliveries(DemandFilePath, DemandFileTab, DemMin, DemMax,
     # mean_annual_dem.to_csv(ofp2, header=True) # writes out a "mean of all years" file
 
     return annual_dem_df, annual_del_df, mean_annual_dem, mean_annual_del
+
+def preprocess_GW_data_study_dss(df, dss_name, datetime_start_date, datetime_end_date, addSRlevels=True, num_vars = 66):
+    dvar_list = []
+    combined_df = pd.DataFrame()
+    
+    for i, r in df.iterrows():
+        if r["Part C:"] == '':
+            dvar_list.append(f'/{r["Part B:"]}/')
+        else:
+            dvar_list.append(f'/{r["Part B:"]}/{r["Part C:"]}/')
+
+    # print('dvar_list:')
+    # print(dvar_list)
+
+    # Create a blank python "calsim" object
+    thiscs3 = cs3.calsim()
+
+    # add start and end dates
+    print('Start: ')
+    print(datetime_start_date)
+    print('End: ')
+    print(datetime_end_date)   
+    thiscs3.StartDate = datetime_start_date
+    thiscs3.EndDate = datetime_end_date
+
+    # add path to DSS
+    DSS_FP = dss_name
+    thiscs3.DV_FP = DSS_FP
+
+    # Retrieve the DSS data variables from the DSS file
+    thiscs3.DVdata = cs3.csDVdata(thiscs3)
+    thiscs3.DVdata.getDVts(filter=dvar_list)
+
+    df = thiscs3.DVdata.DVtsDF.copy(deep=True)
+
+# create aggregate variables
+    if addSRlevels:
+        # df[('CALCULATED', 'SR10:TOT', 'GW_STORAGE', '1MON', 'GW_STORAGE_AT_CALSIM_REGIONS', 'PER-CUM', 'AC.FT')] = df.loc[:,[('IWFM', 'SR10:L1', 'GW_STORAGE', '1MON', 'GW_STORAGE_AT_CALSIM_REGIONS', 'PER-CUM', 'AC.FT'),('IWFM', 'SR10:L2', 'GW_STORAGE', '1MON', 'GW_STORAGE_AT_CALSIM_REGIONS', 'PER-CUM', 'AC.FT'),('IWFM', 'SR10:L3', 'GW_STORAGE', '1MON', 'GW_STORAGE_AT_CALSIM_REGIONS', 'PER-CUM', 'AC.FT')]].sum(axis=1)
+        for i in range(1, num_vars+1):
+            zone = f"SR{i}"
+            target_col = ('CALCULATED', f'{zone}:TOT', 'GW_STORAGE', '1MON', 'GW_STORAGE_AT_CALSIM_REGIONS', 'PER-CUM', 'AC.FT.')
+            
+            # Build list of source columns to sum: L1, L2, L3
+            source_cols = [
+                ('IWFM', f'{zone}:L1', 'GW_STORAGE', '1MON', 'GW_STORAGE_AT_CALSIM_REGIONS', 'PER-CUM', 'AC.FT.'),
+                ('IWFM', f'{zone}:L2', 'GW_STORAGE', '1MON', 'GW_STORAGE_AT_CALSIM_REGIONS', 'PER-CUM', 'AC.FT.'),
+                ('IWFM', f'{zone}:L3', 'GW_STORAGE', '1MON', 'GW_STORAGE_AT_CALSIM_REGIONS', 'PER-CUM', 'AC.FT.'),
+            ]
+            
+            df[target_col] = df.loc[:, source_cols].sum(axis=1)
+
+
+    new_columns = [(col[0], col[1], *col[2:]) if len(col) > 1 else (col[0], '') for col in df.columns]
+    df.columns = pd.MultiIndex.from_tuples(new_columns)
+    df.columns.names = ['A', 'B', 'C', 'D', 'E', 'F', 'Units']
+
+    # df.head(5)
+    return df
+
+
+def preprocess_compound_GW_data_dss(df, ScenarioDir, dss_names, index_names, min_datetime, max_datetime, addSRlevels=True, num_vars = 66):
+    dvar_list = []
+    combined_df = pd.DataFrame()
+    
+    print("num_vars:" + str(num_vars))
+
+    for i, r in df.iterrows():
+        if r["Part C:"] == '':
+            dvar_list.append(f'/{r["Part B:"]}/')
+        else:
+            dvar_list.append(f'/{r["Part B:"]}/{r["Part C:"]}/')
+
+
+    for i in range(len(dss_names)):
+        #get DSS and scenario index name
+        dss_name = dss_names[i]
+        index_name = index_names[i]
+        print(dss_name)
+        print(index_name)
+
+        # Create a blank python "calsim" object
+        thiscs3 = cs3.calsim()
+
+        # add start and end dates
+        thiscs3.StartDate = min_datetime
+        thiscs3.EndDate = max_datetime
+
+        # add path to DSS
+        DSS_FP = os.path.join(ScenarioDir, dss_name)
+        thiscs3.DV_FP = DSS_FP
+
+        # Retrieve the DSS data variables from the DSS file
+        thiscs3.DVdata = cs3.csDVdata(thiscs3)
+        thiscs3.DVdata.getDVts(filter=dvar_list)
+
+        df = thiscs3.DVdata.DVtsDF.copy(deep=True)
+
+# create aggregate variables
+        if addSRlevels:
+            # df[('CALCULATED', 'SR10:TOT', 'GW_STORAGE', '1MON', 'GW_STORAGE_AT_CALSIM_REGIONS', 'PER-CUM', 'AC.FT.')] = df.loc[:,[('IWFM', 'SR10:L1', 'GW_STORAGE', '1MON', 'GW_STORAGE_AT_CALSIM_REGIONS', 'PER-CUM', 'AC.FT.'),('IWFM', 'SR10:L2', 'GW_STORAGE', '1MON', 'GW_STORAGE_AT_CALSIM_REGIONS', 'PER-CUM', 'AC.FT.'),('IWFM', 'SR10:L3', 'GW_STORAGE', '1MON', 'GW_STORAGE_AT_CALSIM_REGIONS', 'PER-CUM', 'AC.FT.')]].sum(axis=1)
+            for i in range(1, num_vars+1):
+                zone = f"SR{i}"
+                target_col = ('CALCULATED', f'{zone}:TOT', 'GW_STORAGE', '1MON', 'GW_STORAGE_AT_CALSIM_REGIONS', 'PER-CUM', 'AC.FT.')
+                
+                # Build list of source columns to sum: L1, L2, L3
+                source_cols = [
+                    ('IWFM', f'{zone}:L1', 'GW_STORAGE', '1MON', 'GW_STORAGE_AT_CALSIM_REGIONS', 'PER-CUM', 'AC.FT.'),
+                    ('IWFM', f'{zone}:L2', 'GW_STORAGE', '1MON', 'GW_STORAGE_AT_CALSIM_REGIONS', 'PER-CUM', 'AC.FT.'),
+                    ('IWFM', f'{zone}:L3', 'GW_STORAGE', '1MON', 'GW_STORAGE_AT_CALSIM_REGIONS', 'PER-CUM', 'AC.FT.'),
+                ]
+                
+                df[target_col] = df.loc[:, source_cols].sum(axis=1)
+
+        new_columns = [(col[0], f'{col[1]}_{index_name[:]}', *col[2:]) if len(col) > 1 else (col[0], '') for col in df.columns]
+        df.columns = pd.MultiIndex.from_tuples(new_columns)
+        df.columns.names = ['A', 'B', 'C', 'D', 'E', 'F', 'Units']
+        combined_df = pd.concat([combined_df, df], axis=1)
+
+    return combined_df
+
