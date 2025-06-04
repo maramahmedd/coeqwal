@@ -412,7 +412,7 @@ def preprocess_demands_deliveries(DemandFilePath, DemandFileTab, DemMin, DemMax,
 
     return annual_dem_df, annual_del_df, mean_annual_dem, mean_annual_del
 
-def preprocess_GW_data_study_dss(df, dss_name, datetime_start_date, datetime_end_date, addSRlevels=True, num_vars = 66):
+def preprocess_GW_data_study_dss(df, dss_name, datetime_start_date, datetime_end_date, addSRlevels=True, num_vars = 66, convertAcFtToTaf = True):
     dvar_list = []
     combined_df = pd.DataFrame()
     
@@ -467,11 +467,27 @@ def preprocess_GW_data_study_dss(df, dss_name, datetime_start_date, datetime_end
     df.columns = pd.MultiIndex.from_tuples(new_columns)
     df.columns.names = ['A', 'B', 'C', 'D', 'E', 'F', 'Units']
 
+    if convertAcFtToTaf: 
+        # Identify columns that end in 'AC.FT.'
+        acft_cols = [col for col in df.columns if col[-1] == "AC.FT."]
+
+        # Divide those columns by 1000
+        df[acft_cols] = df[acft_cols] / 1000
+
+        # Rename the last level of the column from 'AC.FT.' to 'TAF'
+        renamed_cols = [
+            col[:-1] + ("TAF",) if col in acft_cols else col
+            for col in df.columns
+        ]
+
+        # Apply new column names
+        df.columns = pd.MultiIndex.from_tuples(renamed_cols)
+
     # df.head(5)
     return df
 
 
-def preprocess_compound_GW_data_dss(df, ScenarioDir, dss_names, index_names, min_datetime, max_datetime, addSRlevels=True, num_vars = 66):
+def preprocess_compound_GW_data_dss(df, ScenarioDir, dss_names, index_names, min_datetime, max_datetime, addSRlevels=True, num_vars = 66, convertAcFtToTaf = True):
     dvar_list = []
     combined_df = pd.DataFrame()
     
@@ -514,7 +530,6 @@ def preprocess_compound_GW_data_dss(df, ScenarioDir, dss_names, index_names, min
             for i in range(1, num_vars+1):
                 zone = f"SR{i}"
                 target_col = ('CALCULATED', f'{zone}:TOT', 'GW_STORAGE', '1MON', 'GW_STORAGE_AT_CALSIM_REGIONS', 'PER-CUM', 'AC.FT.')
-                
                 # Build list of source columns to sum: L1, L2, L3
                 source_cols = [
                     ('IWFM', f'{zone}:L1', 'GW_STORAGE', '1MON', 'GW_STORAGE_AT_CALSIM_REGIONS', 'PER-CUM', 'AC.FT.'),
@@ -528,6 +543,22 @@ def preprocess_compound_GW_data_dss(df, ScenarioDir, dss_names, index_names, min
         df.columns = pd.MultiIndex.from_tuples(new_columns)
         df.columns.names = ['A', 'B', 'C', 'D', 'E', 'F', 'Units']
         combined_df = pd.concat([combined_df, df], axis=1)
+
+    if convertAcFtToTaf: 
+        # Identify columns that end in 'AC.FT.'
+        acft_cols = [col for col in combined_df.columns if col[-1] == "AC.FT."]
+
+        # Divide those columns by 1000
+        combined_df[acft_cols] = combined_df[acft_cols] / 1000
+
+        # Rename the last level of the column from 'AC.FT.' to 'TAF'
+        renamed_cols = [
+            col[:-1] + ("TAF",) if col in acft_cols else col
+            for col in combined_df.columns
+        ]
+
+        # Apply new column names
+        combined_df.columns = pd.MultiIndex.from_tuples(renamed_cols)
 
     return combined_df
 
