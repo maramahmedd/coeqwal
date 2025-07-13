@@ -1,0 +1,462 @@
+<metadata xml:lang="en">
+	<Esri>
+		<CreaDate>20220609</CreaDate>
+		<CreaTime>08565100</CreaTime>
+		<SyncOnce>FALSE</SyncOnce>
+		<DataProperties>
+			<lineage>
+				<Process Name="FeatureClassToFeatureClass_5" ToolSource="C:\Program Files\ArcGIS\ArcToolbox\Toolboxes\Conversion Tools.tbx\FeatureClassToFeatureClass" Date="20070530" Time="151452" export="">FeatureClassToFeatureClass Sacramento_River_RivMi_Pts E:\TEMP\CalSim_III\NODEs_ARCs\SacValley_Cntrlns Sac_Nodes.shp # "Id Id true false false 6 Long 0 6 ,First,#,E:\TEMP\CalSim_III\NODEs_ARCs\SacValley_Cntrlns\Sacramento_River_RivMi_Pts.shp,Sacramento_River_RivMi_Pts.Id,-1,-1;CalSim_ID CalSim_ID true false false 10 Text 0 0 ,First,#,E:\TEMP\CalSim_III\NODEs_ARCs\SacValley_Cntrlns\Sacramento_River_RivMi_Pts.shp,Sacramento_River_RivMi_Pts.CalSim_ID,-1,-1;ET_ID ET_ID true false false 9 Long 0 9 ,First,#,E:\TEMP\CalSim_III\NODEs_ARCs\SacValley_Cntrlns\Sacramento_River_RivMi_Pts.shp,Sacramento_River_RivMi_Pts.ET_ID,-1,-1;ET_X ET_X true false false 15 Double 5 14 ,First,#,E:\TEMP\CalSim_III\NODEs_ARCs\SacValley_Cntrlns\Sacramento_River_RivMi_Pts.shp,Sacramento_River_RivMi_Pts.ET_X,-1,-1;ET_Y ET_Y true false false 15 Double 5 14 ,First,#,E:\TEMP\CalSim_III\NODEs_ARCs\SacValley_Cntrlns\Sacramento_River_RivMi_Pts.shp,Sacramento_River_RivMi_Pts.ET_Y,-1,-1;ET_ANGLE ET_ANGLE true false false 13 Double 4 12 ,First,#,E:\TEMP\CalSim_III\NODEs_ARCs\SacValley_Cntrlns\Sacramento_River_RivMi_Pts.shp,Sacramento_River_RivMi_Pts.ET_ANGLE,-1,-1;Riv_Mi Riv_Mi true false false 19 Double 0 0 ,First,#,E:\TEMP\CalSim_III\NODEs_ARCs\SacValley_Cntrlns\Sacramento_River_RivMi_Pts.shp,Sacramento_River_RivMi_Pts.Riv_Mi,-1,-1;Riv_Name Riv_Name true false false 50 Text 0 0 ,First,#,E:\TEMP\CalSim_III\NODEs_ARCs\SacValley_Cntrlns\Sacramento_River_RivMi_Pts.shp,Sacramento_River_RivMi_Pts.Riv_Name,-1,-1;Index_10 Index_10 true false false 4 Short 0 4 ,First,#,E:\TEMP\CalSim_III\NODEs_ARCs\SacValley_Cntrlns\Sacramento_River_RivMi_Pts.shp,Sacramento_River_RivMi_Pts.Index_10,-1,-1;Index_5 Index_5 true false false 4 Short 0 4 ,First,#,E:\TEMP\CalSim_III\NODEs_ARCs\SacValley_Cntrlns\Sacramento_River_RivMi_Pts.shp,Sacramento_River_RivMi_Pts.Index_5,-1,-1;CalSim_I_1 CalSim_I_1 true true false 255 Text 0 0 ,First,#,E:\TEMP\CalSim_III\NODEs_ARCs\SacValley_Cntrlns\Sacramento_River_RivMi_Pts.shp,SAC$.CalSim_ID,-1,-1;Mile Mile true true false 8 Double 6 15 ,First,#,E:\TEMP\CalSim_III\NODEs_ARCs\SacValley_Cntrlns\Sacramento_River_RivMi_Pts.shp,SAC$.Mile,-1,-1;Comment Comment true true false 255 Text 0 0 ,First,#,E:\TEMP\CalSim_III\NODEs_ARCs\SacValley_Cntrlns\Sacramento_River_RivMi_Pts.shp,SAC$.Comment,-1,-1;C2VSIM_GW C2VSIM_GW true true false 8 Double 6 15 ,First,#,E:\TEMP\CalSim_III\NODEs_ARCs\SacValley_Cntrlns\Sacramento_River_RivMi_Pts.shp,SAC$.C2VSIM_GW,-1,-1;C2VSIM_SW C2VSIM_SW true true false 8 Double 6 15 ,First,#,E:\TEMP\CalSim_III\NODEs_ARCs\SacValley_Cntrlns\Sacramento_River_RivMi_Pts.shp,SAC$.C2VSIM_SW,-1,-1;CalSim2_ID CalSim2_ID true true false 255 Text 0 0 ,First,#,E:\TEMP\CalSim_III\NODEs_ARCs\SacValley_Cntrlns\Sacramento_River_RivMi_Pts.shp,SAC$.CalSim2_ID,-1,-1" # E:\TEMP\CalSim_III\NODEs_ARCs\SacValley_Cntrlns\Sac_Nodes.shp</Process>
+				<Process ToolSource="C:\Program Files\ArcGIS\ArcToolbox\Toolboxes\Data Management Tools.tbx\CopyFeatures" Date="20070626" Time="095840" Name="" export="">CopyFeatures E:\TEMP\CalSim_III\NODEs_ARCs\SacValley_Cntrlns\Sac_Nodes.shp E:\TEMP\CalSim_III\NODEs_ARCs\CalSim_III_GeoSchematic.mdb\GeoSchematic\Sac_Nodes # 0 0 0</Process>
+				<Process Name="CopyFeatures_1" ToolSource="C:\Program Files\ArcGIS\ArcToolbox\Toolboxes\Data Management Tools.tbx\CopyFeatures" Date="20071220" Time="114638" export="">CopyFeatures "Sac_Nodes (Working Symbology)" E:\TEMP\CalSim_III\NODEs_ARCs\CalSim_III_GeoSchematic.mdb\GeoSchematic\All_Nodes # 0 0 0</Process>
+				<Process ToolSource="C:\Program Files\ArcGIS\ArcToolbox\Toolboxes\Data Management Tools.tbx\RepairGeometry" Date="20081112" Time="171950" Name="" export="">RepairGeometry GeoSchematic\All_Nodes DELETE_NULL GeoSchematic\All_Nodes</Process>
+				<Process ToolSource="C:\Program Files\ArcGIS\ArcToolbox\Toolboxes\Data Management Tools.tbx\RepairGeometry" Date="20090310" Time="135817" Name="" export="">RepairGeometry All_Nodes DELETE_NULL All_Nodes</Process>
+				<Process ToolSource="C:\Program Files\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CopyFeatures" Date="20100826" Time="102324" Name="" export="">CopyFeatures G:\US_Bureau_Reclamation\TO_06A3_CalSimIII_Extension\_DATA\Geodatabase\CalSim_III_GeoSchematic_20100727.mdb\GeoSchematic\All_Nodes G:\US_Bureau_Reclamation\TO_06A3_CalSimIII_Extension\_DATA\Geodatabase\CalSim_III_GeoSchematic_20100826.mdb\GeoSchematic\All_Nodes # 0 0 0</Process>
+				<Process ToolSource="C:\Program Files\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20101105" Time="143129" Name="" export="">CalculateField All_Nodes ID_Update ""0"&amp; [CalSim_ID]" VB #</Process>
+				<Process ToolSource="C:\Program Files\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20101105" Time="143213" Name="" export="">CalculateField All_Nodes ID_Update [CalSim_ID] VB #</Process>
+				<Process ToolSource="C:\Program Files\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20101105" Time="143335" Name="" export="">CalculateField All_Nodes Dups isDuplicate( !ID_Update! ) PYTHON_9.3 "uniqueList = []\ndef isDuplicate(inValue):\n  if inValue in uniqueList:\n    return 1\n  else:\n    uniqueList.append(inValue)\n    return 0\n"</Process>
+				<Process ToolSource="C:\Program Files\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20101107" Time="164938" Name="" export="">CalculateField All_Nodes CalSim_ID [ID_Update] VB #</Process>
+				<Process ToolSource="C:\Program Files\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20110713" Time="172111" Name="" export="">CalculateField All_Nodes Comment "Miocene Diversion Dam" VB #</Process>
+				<Process ToolSource="C:\Program Files\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\RepairGeometry" Date="20111011" Time="100223" Name="" export="">RepairGeometry All_Nodes DELETE_NULL</Process>
+				<Process ToolSource="C:\Program Files\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20111115" Time="172443" Name="" export="">CalculateField All_Nodes Wrkng_Symb "" VB #</Process>
+				<Process ToolSource="C:\Program Files\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20111115" Time="173737" Name="" export="">CalculateField All_Nodes CalSim_ID Replace( [CalSim_ID],"DD_","") VB #</Process>
+				<Process ToolSource="C:\Program Files\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20111115" Time="173817" Name="" export="">CalculateField All_Nodes Comment "Net Delta Depletion" VB #</Process>
+				<Process ToolSource="C:\Program Files\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20111115" Time="173829" Name="" export="">CalculateField All_Nodes Comment "Net Delta Depletion" VB #</Process>
+				<Process ToolSource="C:\Program Files\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20111115" Time="174104" Name="" export="">CalculateField All_Nodes Riv_Name "NULL" VB #</Process>
+				<Process ToolSource="C:\Program Files\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20111115" Time="174115" Name="" export="">CalculateField All_Nodes Riv_Name "NULL" VB #</Process>
+				<Process ToolSource="C:\Program Files\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20111115" Time="174130" Name="" export="">CalculateField All_Nodes Riv_Name &lt;Null&gt; VB #</Process>
+				<Process ToolSource="C:\Program Files\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20111115" Time="174154" Name="" export="">CalculateField All_Nodes Riv_Name NULL VB #</Process>
+				<Process ToolSource="C:\Program Files\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20111115" Time="174203" Name="" export="">CalculateField All_Nodes H2O_Source NULL VB #</Process>
+				<Process ToolSource="C:\Program Files\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20111115" Time="174213" Name="" export="">CalculateField All_Nodes H2O_Source NULL VB #</Process>
+				<Process ToolSource="C:\Program Files\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20111115" Time="174222" Name="" export="">CalculateField All_Nodes Nrest_Gage NULL VB #</Process>
+				<Process ToolSource="C:\Program Files\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20111115" Time="174231" Name="" export="">CalculateField All_Nodes Dups NULL VB #</Process>
+				<Process ToolSource="C:\Program Files\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20111115" Time="174252" Name="" export="">CalculateField All_Nodes Wrkng_Symb "DC" VB #</Process>
+				<Process ToolSource="C:\Program Files\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20111115" Time="174304" Name="" export="">CalculateField All_Nodes Wrkng_Symb "DC" VB #</Process>
+				<Process ToolSource="C:\Program Files\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20111115" Time="202039" Name="" export="">CalculateField All_Nodes Dups isDuplicate( !CalSim_ID! ) PYTHON_9.3 "uniqueList = []\ndef isDuplicate(inValue):\n  if inValue in uniqueList:\n    return 1\n  else:\n    uniqueList.append(inValue)\n    return 0\n\n"</Process>
+				<Process ToolSource="C:\Program Files\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20111118" Time="193824" Name="" export="">CalculateField All_Nodes LOS_Arc_ID ""D_"&amp; [CalSim_ID]&amp;"_"" VB #</Process>
+				<Process ToolSource="C:\Program Files\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20111118" Time="193902" Name="" export="">CalculateField All_Nodes LOS_Arc_ID ""D_"&amp; [CalSim_ID]&amp;"_"&amp; Left( [CalSim_ID],3)&amp; "LOS"" VB #</Process>
+				<Process ToolSource="C:\Program Files\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20111213" Time="120723" Name="" export="">CalculateField All_Nodes CalSim_ID "SYC000" VB #</Process>
+				<Process ToolSource="c:\program files\arcgis\desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CopyFeatures" Date="20120104" Time="141820" Name="" export="">CopyFeatures G:\US_Bureau_Reclamation\TO_06A3_CalSimIII_Extension\_DATA\Geodatabase\CalSim_III_GeoSchematic_20110815.mdb\GeoSchematic\All_Nodes G:\US_Bureau_Reclamation\TO_06A3_CalSimIII_Extension\_DATA\Distributed_Data\DWR\CS3_Mapbook_20120105\CalSim_3.gdb\GeoSchematic_v20110815\All_Nodes # 0 0 0</Process>
+				<Process ToolSource="c:\program files\arcgis\desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\DeleteField" Date="20120110" Time="100524" Name="" export="">DeleteField GeoSchematic\All_Nodes ExcelMatch;Dups;Excel_ID;ID_Update</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\AssignDomainToField" Date="20120427" Time="103721" Name="" export="">AssignDomainToField All_Nodes HR HydroRegion #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20120511" Time="135315" Name="" export="">CalculateField All_Nodes Node_Symbol "Natural sream or river" VB #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20120511" Time="135343" Name="" export="">CalculateField All_Nodes Node_Symbol "Natural stream or river" VB #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20120511" Time="135858" Name="" export="">CalculateField All_Nodes Node_Symbol "Man-made canal or drain" VB #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20120511" Time="142134" Name="" export="">CalculateField All_Nodes Node_Symbol "Important info related to area" VB #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20120511" Time="142644" Name="" export="">CalculateField All_Nodes Node_Symbol "Major Feature" VB #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20120511" Time="142928" Name="" export="">CalculateField All_Nodes Node_Symbol "Natural stream at gaging station" VB #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20120511" Time="143100" Name="" export="">CalculateField All_Nodes Node_Symbol "Water Treatment Plant" VB #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20120511" Time="143235" Name="" export="">CalculateField All_Nodes Node_Symbol "Wastewater Treatment Plant" VB #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20120511" Time="153537" Name="" export="">CalculateField All_Nodes Node_Symbol "Reservoir or Lake" VB #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20120511" Time="154201" Name="" export="">CalculateField All_Nodes Node_Symbol "Demand, Agricultural, both" VB #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20120515" Time="081254" Name="" export="">CalculateField All_Nodes_temp node_type conveyance-bypass VB #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20120515" Time="081316" Name="" export="">CalculateField All_Nodes_temp node_type "conveyance-bypass" VB #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20120515" Time="081423" Name="" export="">CalculateField All_Nodes_temp node_type "conveyance-canal" VB #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20120515" Time="082509" Name="" export="">CalculateField All_Nodes_temp Node_Type "conveyance-bypass" VB #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20120515" Time="082540" Name="" export="">CalculateField All_Nodes_temp Node_Type "conveyance-canal" VB #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20120515" Time="082612" Name="" export="">CalculateField All_Nodes_temp Node_Type "conveyance-canal_streamgage" VB #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20120515" Time="082630" Name="" export="">CalculateField All_Nodes_temp Node_Type "conveyance-canal-streamgage" VB #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20120515" Time="082738" Name="" export="">CalculateField All_Nodes_temp Node_Type "demand-agricultural-groundwater" VB #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20120515" Time="082843" Name="" export="">CalculateField All_Nodes_temp Node_Type "demand-agricultural-surface&amp;groundwater" VB #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20120515" Time="082921" Name="" export="">CalculateField All_Nodes_temp Node_Type "demand-agricultural-surface-water" VB #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20120515" Time="083005" Name="" export="">CalculateField All_Nodes_temp Node_Type "demand-refuge-groundwater" VB #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20120515" Time="083249" Name="" export="">CalculateField All_Nodes_temp Node_Type "demand-refuge-surface&amp;groundwater" VB #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20120515" Time="083329" Name="" export="">CalculateField All_Nodes_temp Node_Type "demand-refuge-surface-water" VB #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20120515" Time="083405" Name="" export="">CalculateField All_Nodes_temp Node_Type "demand-urban-groundwater" VB #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20120515" Time="083453" Name="" export="">CalculateField All_Nodes_temp Node_Type "demand-urban-surface&amp;groundwater" VB #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20120515" Time="083701" Name="" export="">CalculateField All_Nodes_temp Node_Type "demand-urban-surface-water" VB #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20120515" Time="083746" Name="" export="">CalculateField All_Nodes_temp Node_Type "major feature" VB #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20120515" Time="083843" Name="" export="">CalculateField All_Nodes_temp Node_Type "conveyance-canal" VB #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20120515" Time="083946" Name="" export="">CalculateField All_Nodes_temp Node_Type "conveyance-channel-streamgage" VB #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20120515" Time="090816" Name="" export="">CalculateField All_Nodes_temp Node_Type "conveyance-channel" VB #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20120515" Time="090928" Name="" export="">CalculateField All_Nodes_temp Node_Type "conveyance-pumping-plant" VB #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20120515" Time="091039" Name="" export="">CalculateField All_Nodes_temp Node_Type "storage-reservoir-or-lake" VB #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20120515" Time="091123" Name="" export="">CalculateField All_Nodes_temp Node_Type "storage- reservoir or lake" VB #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20120515" Time="091245" Name="" export="">CalculateField All_Nodes_temp Node_Type "return flow" VB #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20120515" Time="091353" Name="" export="">CalculateField All_Nodes_temp Node_Type "storage- reservoir or lake" VB #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20120515" Time="091432" Name="" export="">CalculateField All_Nodes_temp Node_Type "conveyance-channel" VB #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20120515" Time="091523" Name="" export="">CalculateField All_Nodes_temp Node_Type "conveyance-channel-streamgage" VB #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20120515" Time="091604" Name="" export="">CalculateField All_Nodes_temp Node_Type "wastewater treatment plant" VB #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20120515" Time="091632" Name="" export="">CalculateField All_Nodes_temp Node_Type "water treatment plant" VB #</Process>
+				<Process ToolSource="C:\Program Files (x86)\ArcGIS\Desktop10.0\ArcToolbox\Toolboxes\Conversion Tools.tbx\FeatureClassToFeatureClass" Date="20120518" Time="115212" Name="" export="">FeatureClassToFeatureClass Nodes \\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_1\CS3_GeoSchematic_Draft_v1_1.gdb Nodes # "OBJECTID "OBJECTID" true true false 9 Long 0 9 ,First,#,C:\Users\kramerj\Documents\ArcGIS\Packages\CS3_GeoSchematic_Draft_v1_1\commondata\data0\All_Nodes_temp.shp,OBJECTID,-1,-1;CalSim_ID "CalSim_ID" true true false 10 Text 0 0 ,First,#,C:\Users\kramerj\Documents\ArcGIS\Packages\CS3_GeoSchematic_Draft_v1_1\commondata\data0\All_Nodes_temp.shp,CalSim_ID,-1,-1;Riv_Mi "Riv_Mi" true true false 19 Double 0 0 ,First,#,C:\Users\kramerj\Documents\ArcGIS\Packages\CS3_GeoSchematic_Draft_v1_1\commondata\data0\All_Nodes_temp.shp,Riv_Mi,-1,-1;Riv_Name "Riv_Name" true true false 50 Text 0 0 ,First,#,C:\Users\kramerj\Documents\ArcGIS\Packages\CS3_GeoSchematic_Draft_v1_1\commondata\data0\All_Nodes_temp.shp,Riv_Name,-1,-1;Comment "Comment" true true false 254 Text 0 0 ,First,#,C:\Users\kramerj\Documents\ArcGIS\Packages\CS3_GeoSchematic_Draft_v1_1\commondata\data0\All_Nodes_temp.shp,Comment,-1,-1;C2VSIM_GW "C2VSIM_GW" true true false 20 Text 0 0 ,First,#,C:\Users\kramerj\Documents\ArcGIS\Packages\CS3_GeoSchematic_Draft_v1_1\commondata\data0\All_Nodes_temp.shp,C2VSIM_GW,-1,-1;C2VSIM_SW "C2VSIM_SW" true true false 20 Text 0 0 ,First,#,C:\Users\kramerj\Documents\ArcGIS\Packages\CS3_GeoSchematic_Draft_v1_1\commondata\data0\All_Nodes_temp.shp,C2VSIM_SW,-1,-1;CalSim2_ID "CalSim2_ID" true true false 20 Text 0 0 ,First,#,C:\Users\kramerj\Documents\ArcGIS\Packages\CS3_GeoSchematic_Draft_v1_1\commondata\data0\All_Nodes_temp.shp,CalSim2_ID,-1,-1;Type "Type" true true false 40 Text 0 0 ,First,#,C:\Users\kramerj\Documents\ArcGIS\Packages\CS3_GeoSchematic_Draft_v1_1\commondata\data0\All_Nodes_temp.shp,Type,-1,-1;Sub_Type "Sub_Type" true true false 40 Text 0 0 ,First,#,C:\Users\kramerj\Documents\ArcGIS\Packages\CS3_GeoSchematic_Draft_v1_1\commondata\data0\All_Nodes_temp.shp,Sub_Type,-1,-1;H2O_Source "H2O_Source" true true false 25 Text 0 0 ,First,#,C:\Users\kramerj\Documents\ArcGIS\Packages\CS3_GeoSchematic_Draft_v1_1\commondata\data0\All_Nodes_temp.shp,H2O_Source,-1,-1;Wrkng_Symb "Wrkng_Symb" true true false 50 Text 0 0 ,First,#,C:\Users\kramerj\Documents\ArcGIS\Packages\CS3_GeoSchematic_Draft_v1_1\commondata\data0\All_Nodes_temp.shp,Wrkng_Symb,-1,-1;Nrest_Gage "Nrest_Gage" true true false 50 Text 0 0 ,First,#,C:\Users\kramerj\Documents\ArcGIS\Packages\CS3_GeoSchematic_Draft_v1_1\commondata\data0\All_Nodes_temp.shp,Nrest_Gage,-1,-1;Strm_Code "Strm_Code" true true false 10 Text 0 0 ,First,#,C:\Users\kramerj\Documents\ArcGIS\Packages\CS3_GeoSchematic_Draft_v1_1\commondata\data0\All_Nodes_temp.shp,Strm_Code,-1,-1;RM_II "RM_II" true true false 4 Short 0 4 ,First,#,C:\Users\kramerj\Documents\ArcGIS\Packages\CS3_GeoSchematic_Draft_v1_1\commondata\data0\All_Nodes_temp.shp,RM_II,-1,-1;HR "HR" true true false 20 Text 0 0 ,First,#,C:\Users\kramerj\Documents\ArcGIS\Packages\CS3_GeoSchematic_Draft_v1_1\commondata\data0\All_Nodes_temp.shp,HR,-1,-1;Node_Type "Node_Type" true true false 50 Text 0 0 ,First,#,C:\Users\kramerj\Documents\ArcGIS\Packages\CS3_GeoSchematic_Draft_v1_1\commondata\data0\All_Nodes_temp.shp,Node_Type,-1,-1" #</Process>
+				<Process ToolSource="c:\program files (x86)\arcgis\desktop10.1\ArcToolbox\Toolboxes\Conversion Tools.tbx\FeatureClassToFeatureClass" Date="20120809" Time="135516" Name="" export="">FeatureClassToFeatureClass \\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_2\CS3_GeoSchematic_Draft_v1_2.gdb\Nodes \\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_2 Nodes_20120809.shp # "OBJECTID "OBJECTID" true true false 4 Long 0 0 ,First,#,\\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_2\CS3_GeoSchematic_Draft_v1_2.gdb\Nodes,OBJECTID,-1,-1;CalSim_ID "CalSim_ID" true true false 10 Text 0 0 ,First,#,\\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_2\CS3_GeoSchematic_Draft_v1_2.gdb\Nodes,CalSim_ID,-1,-1;Riv_Mi "Riv_Mi" true true false 8 Double 0 0 ,First,#,\\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_2\CS3_GeoSchematic_Draft_v1_2.gdb\Nodes,Riv_Mi,-1,-1;Riv_Name "Riv_Name" true true false 50 Text 0 0 ,First,#,\\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_2\CS3_GeoSchematic_Draft_v1_2.gdb\Nodes,Riv_Name,-1,-1;Comment "Comment" true true false 254 Text 0 0 ,First,#,\\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_2\CS3_GeoSchematic_Draft_v1_2.gdb\Nodes,Comment,-1,-1;C2VSIM_GW "C2VSIM_GW" true true false 20 Text 0 0 ,First,#,\\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_2\CS3_GeoSchematic_Draft_v1_2.gdb\Nodes,C2VSIM_GW,-1,-1;C2VSIM_SW "C2VSIM_SW" true true false 20 Text 0 0 ,First,#,\\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_2\CS3_GeoSchematic_Draft_v1_2.gdb\Nodes,C2VSIM_SW,-1,-1;CalSim2_ID "CalSim2_ID" true true false 20 Text 0 0 ,First,#,\\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_2\CS3_GeoSchematic_Draft_v1_2.gdb\Nodes,CalSim2_ID,-1,-1;Type "Type" true true false 40 Text 0 0 ,First,#,\\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_2\CS3_GeoSchematic_Draft_v1_2.gdb\Nodes,Type,-1,-1;Sub_Type "Sub_Type" true true false 40 Text 0 0 ,First,#,\\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_2\CS3_GeoSchematic_Draft_v1_2.gdb\Nodes,Sub_Type,-1,-1;H2O_Source "H2O_Source" true true false 25 Text 0 0 ,First,#,\\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_2\CS3_GeoSchematic_Draft_v1_2.gdb\Nodes,H2O_Source,-1,-1;Wrkng_Symb "Wrkng_Symb" true true false 50 Text 0 0 ,First,#,\\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_2\CS3_GeoSchematic_Draft_v1_2.gdb\Nodes,Wrkng_Symb,-1,-1;Nrest_Gage "Nrest_Gage" true true false 50 Text 0 0 ,First,#,\\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_2\CS3_GeoSchematic_Draft_v1_2.gdb\Nodes,Nrest_Gage,-1,-1;Strm_Code "Strm_Code" true true false 10 Text 0 0 ,First,#,\\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_2\CS3_GeoSchematic_Draft_v1_2.gdb\Nodes,Strm_Code,-1,-1;RM_II "RM_II" true true false 2 Short 0 0 ,First,#,\\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_2\CS3_GeoSchematic_Draft_v1_2.gdb\Nodes,RM_II,-1,-1;HR "HR" true true false 20 Text 0 0 ,First,#,\\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_2\CS3_GeoSchematic_Draft_v1_2.gdb\Nodes,HR,-1,-1;Node_Type "Node_Type" true true false 50 Text 0 0 ,First,#,\\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_2\CS3_GeoSchematic_Draft_v1_2.gdb\Nodes,Node_Type,-1,-1" #</Process>
+				<Process ToolSource="c:\program files (x86)\arcgis\desktop10.1\ArcToolbox\Toolboxes\Conversion Tools.tbx\FeatureClassToFeatureClass" Date="20121001" Time="150236" Name="" export="">FeatureClassToFeatureClass \\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_3_20121001\Nodes_20121001.shp \\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_3_20121001\CS3_GeoSchematic_Draft_v1_3.gdb CS3_Nodes # "OBJECTID "OBJECTID" true true false 9 Long 0 9 ,First,#,\\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_3_20121001\Nodes_20121001.shp,OBJECTID,-1,-1;CalSim_ID "CalSim_ID" true true false 10 Text 0 0 ,First,#,\\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_3_20121001\Nodes_20121001.shp,CalSim_ID,-1,-1;Riv_Mi "Riv_Mi" true true false 19 Double 0 0 ,First,#,\\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_3_20121001\Nodes_20121001.shp,Riv_Mi,-1,-1;Riv_Name "Riv_Name" true true false 50 Text 0 0 ,First,#,\\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_3_20121001\Nodes_20121001.shp,Riv_Name,-1,-1;Comment "Comment" true true false 254 Text 0 0 ,First,#,\\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_3_20121001\Nodes_20121001.shp,Comment,-1,-1;C2VSIM_GW "C2VSIM_GW" true true false 20 Text 0 0 ,First,#,\\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_3_20121001\Nodes_20121001.shp,C2VSIM_GW,-1,-1;C2VSIM_SW "C2VSIM_SW" true true false 20 Text 0 0 ,First,#,\\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_3_20121001\Nodes_20121001.shp,C2VSIM_SW,-1,-1;CalSim2_ID "CalSim2_ID" true true false 20 Text 0 0 ,First,#,\\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_3_20121001\Nodes_20121001.shp,CalSim2_ID,-1,-1;Type "Type" true true false 40 Text 0 0 ,First,#,\\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_3_20121001\Nodes_20121001.shp,Type,-1,-1;Sub_Type "Sub_Type" true true false 40 Text 0 0 ,First,#,\\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_3_20121001\Nodes_20121001.shp,Sub_Type,-1,-1;H2O_Source "H2O_Source" true true false 25 Text 0 0 ,First,#,\\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_3_20121001\Nodes_20121001.shp,H2O_Source,-1,-1;Wrkng_Symb "Wrkng_Symb" true true false 50 Text 0 0 ,First,#,\\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_3_20121001\Nodes_20121001.shp,Wrkng_Symb,-1,-1;Nrest_Gage "Nrest_Gage" true true false 50 Text 0 0 ,First,#,\\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_3_20121001\Nodes_20121001.shp,Nrest_Gage,-1,-1;Strm_Code "Strm_Code" true true false 10 Text 0 0 ,First,#,\\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_3_20121001\Nodes_20121001.shp,Strm_Code,-1,-1;RM_II "RM_II" true true false 4 Short 0 4 ,First,#,\\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_3_20121001\Nodes_20121001.shp,RM_II,-1,-1;HR "HR" true true false 20 Text 0 0 ,First,#,\\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_3_20121001\Nodes_20121001.shp,HR,-1,-1;Node_Type "Node_Type" true true false 50 Text 0 0 ,First,#,\\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_3_20121001\Nodes_20121001.shp,Node_Type,-1,-1;Lat_Nad83 "Lat_Nad83" true true false 13 Float 0 0 ,First,#,\\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_3_20121001\Nodes_20121001.shp,Lat_Nad83,-1,-1;Long_Nad83 "Long_Nad83" true true false 13 Float 0 0 ,First,#,\\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_3_20121001\Nodes_20121001.shp,Long_Nad83,-1,-1" #</Process>
+				<Process ToolSource="c:\program files (x86)\arcgis\desktop10.1\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20121019" Time="155524" Name="" export="">CalculateField CS3_Nodes CalSim3_ID [CalSim_ID] VB #</Process>
+				<Process ToolSource="c:\program files (x86)\arcgis\desktop10.2\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20131030" Time="150655" Name="" export="">CalculateField CS3_Nodes_20131029 Legend [Node_Type] VB #</Process>
+				<Process ToolSource="c:\program files (x86)\arcgis\desktop10.2\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20131030" Time="150801" Name="" export="">CalculateField CS3_Nodes_20131029 Legend [Node_Type] VB #</Process>
+				<Process ToolSource="c:\program files (x86)\arcgis\desktop10.2\ArcToolbox\Toolboxes\Data Management Tools.tbx\CalculateField" Date="20131030" Time="152813" Name="" export="">CalculateField CS3_Nodes_20131029 CalSim_ID [CalSim3_ID] VB #</Process>
+				<Process ToolSource="c:\program files\arcgis\pro\Resources\ArcToolbox\Toolboxes\Data Management Tools.tbx\CopyMultiple" Date="20211209" Time="135059">CopyMultiple "A:\Workspace\Shvidchenko\Projects\20211208_CalSim3_SchematicUpdates\CS3UpdateGeoSchematic_initial\GIS\CS3_GeoSchematic_March2017.gdb\CS3_Nodes FeatureClass" A:\Workspace\Shvidchenko\Projects\20211208_CalSim3_SchematicUpdates\Project_Folder\Default.gdb CS3_Nodes "CS3_Nodes FeatureClass CS3_Nodes #"</Process>
+				<Process ToolSource="c:\program files\arcgis\pro\Resources\ArcToolbox\Toolboxes\Data Management Tools.tbx\Rename" Date="20211209" Time="135140">Rename A:\Workspace\Shvidchenko\Projects\20211208_CalSim3_SchematicUpdates\Project_Folder\Default.gdb\CS3_Nodes A:\Workspace\Shvidchenko\Projects\20211208_CalSim3_SchematicUpdates\Project_Folder\Default.gdb\CS3_Nodes_Copy FeatureClass</Process>
+				<Process ToolSource="c:\program files\arcgis\pro\Resources\ArcToolbox\toolboxes\Data Management Tools.tbx\Append" Date="20211216" Time="150034">Append 'Cal Sim Feature Copies (To Edit)\CS3_Nodes_TO_ADD_FROM_STANTEC' "Cal Sim Feature Copies (To Edit)\CS3_Nodes_Copy" "Use the field map to reconcile field differences" "RiverMile_Actual "Riv_Mi" true true false 8 Double 0 0,First,#,Cal Sim Feature Copies (To Edit)\CS3_Nodes_TO_ADD_FROM_STANTEC,CS3_Nodes_NewAttributes$.RiverMile_Actual,-1,-1;RiverName "Riv_Name" true true false 50 Text 0 0,First,#,Cal Sim Feature Copies (To Edit)\CS3_Nodes_TO_ADD_FROM_STANTEC,CS3_Nodes_NewAttributes$.RiverName,0,255;Comment "Comment" true true false 254 Text 0 0,First,#,Cal Sim Feature Copies (To Edit)\CS3_Nodes_TO_ADD_FROM_STANTEC,CS3_Nodes_NewAttributes$.Comment,0,255;C2VSIM_GW "C2VSIM_GW" true true false 20 Text 0 0,First,#,Cal Sim Feature Copies (To Edit)\CS3_Nodes_TO_ADD_FROM_STANTEC,CS3_Nodes_NewAttributes$.C2VSIM_GW,0,255;C2VSIM_SW "C2VSIM_SW" true true false 20 Text 0 0,First,#,Cal Sim Feature Copies (To Edit)\CS3_Nodes_TO_ADD_FROM_STANTEC,CS3_Nodes_NewAttributes$.C2VSIM_SW,-1,-1;CalSim2_ID "CalSim2_ID" true true false 20 Text 0 0,First,#,Cal Sim Feature Copies (To Edit)\CS3_Nodes_TO_ADD_FROM_STANTEC,CS3_Nodes_NewAttributes$.CalSim2_ID,-1,-1;WaterSource "H2O_Source" true true false 25 Text 0 0,First,#,Cal Sim Feature Copies (To Edit)\CS3_Nodes_TO_ADD_FROM_STANTEC,CS3_Nodes_NewAttributes$.WaterSource,0,255;NearestGage "Nrest_Gage" true true false 50 Text 0 0,First,#,Cal Sim Feature Copies (To Edit)\CS3_Nodes_TO_ADD_FROM_STANTEC,CS3_Nodes_NewAttributes$.NearestGage,-1,-1;StreamCode "Strm_Code" true true false 10 Text 0 0,First,#,Cal Sim Feature Copies (To Edit)\CS3_Nodes_TO_ADD_FROM_STANTEC,CS3_Nodes_NewAttributes$.StreamCode,0,255;RiverMile_Assigned "RM_II" true true false 2 Short 0 0,First,#,Cal Sim Feature Copies (To Edit)\CS3_Nodes_TO_ADD_FROM_STANTEC,CS3_Nodes_NewAttributes$.RiverMile_Assigned,-1,-1;HydroRegion "HR" true true false 20 Text 0 0,First,#,Cal Sim Feature Copies (To Edit)\CS3_Nodes_TO_ADD_FROM_STANTEC,CS3_Nodes_NewAttributes$.HydroRegion,0,255;CalSim3_ID "CalSim 3 ID" true true false 10 Text 0 0,First,#,Cal Sim Feature Copies (To Edit)\CS3_Nodes_TO_ADD_FROM_STANTEC,CS3_Nodes_NewAttributes$.CalSim3_ID,0,255;NodeDescription "NodeDescription" true true false 50 Text 0 0,First,#,Cal Sim Feature Copies (To Edit)\CS3_Nodes_TO_ADD_FROM_STANTEC,CS3_Nodes_NewAttributes$.NodeDescription,0,255" # #</Process>
+				<Process ToolSource="c:\program files\arcgis\pro\Resources\ArcToolbox\toolboxes\Data Management Tools.tbx\Rename" Date="20211216" Time="150200">Rename A:\Workspace\Shvidchenko\Projects\20211208_CalSim3_SchematicUpdates\Project_Folder\Default.gdb\CS3_Nodes_Copy A:\Workspace\Shvidchenko\Projects\20211208_CalSim3_SchematicUpdates\Project_Folder\Default.gdb\CS3_Nodes FeatureClass</Process>
+				<Process ToolSource="c:\program files\arcgis\pro\Resources\ArcToolbox\toolboxes\Data Management Tools.tbx\CopyMultiple" Date="20220126" Time="080912">CopyMultiple "A:\Workspace\Shvidchenko\Projects\20211208_CalSim3_SchematicUpdates\Project_Folder\Default.gdb\CS3_Nodes FeatureClass" A:\Workspace\Shvidchenko\Projects\20211208_CalSim3_SchematicUpdates\Project_Folder\Default.gdb CS3_Nodes_1 "CS3_Nodes FeatureClass CS3_Nodes_1 #"</Process>
+				<Process ToolSource="c:\program files\arcgis\pro\Resources\ArcToolbox\toolboxes\Data Management Tools.tbx\Rename" Date="20220126" Time="080934">Rename A:\Workspace\Shvidchenko\Projects\20211208_CalSim3_SchematicUpdates\Project_Folder\Default.gdb\CS3_Nodes_1 A:\Workspace\Shvidchenko\Projects\20211208_CalSim3_SchematicUpdates\Project_Folder\Default.gdb\CS3_Nodes_Edit FeatureClass</Process>
+				<Process ToolSource="c:\program files\arcgis\pro\Resources\ArcToolbox\toolboxes\Conversion Tools.tbx\FeatureClassToFeatureClass" Date="20220126" Time="081125">FeatureClassToFeatureClass CS3_Nodes_Edit A:\Workspace\Shvidchenko\Projects\20211208_CalSim3_SchematicUpdates\Project_Folder\Default.gdb CS3_Nodes_Updated # "RiverMile_Actual "Riv_Mi" true true false 8 Double 0 0,First,#,CS3_Nodes_Edit,CS3_Nodes_Edit.RiverMile_Actual,-1,-1;RiverName "Riv_Name" true true false 50 Text 0 0,First,#,CS3_Nodes_Edit,CS3_Nodes_Edit.RiverName,0,50;Comment "Comment" true true false 254 Text 0 0,First,#,CS3_Nodes_Edit,CS3_Nodes_Edit.Comment,0,254;C2VSIM_GW "C2VSIM_GW" true true false 20 Text 0 0,First,#,CS3_Nodes_Edit,CS3_Nodes_Edit.C2VSIM_GW,0,20;C2VSIM_SW "C2VSIM_SW" true true false 20 Text 0 0,First,#,CS3_Nodes_Edit,CS3_Nodes_Edit.C2VSIM_SW,0,20;CalSim2_ID "CalSim2_ID" true true false 20 Text 0 0,First,#,CS3_Nodes_Edit,CS3_Nodes_Edit.CalSim2_ID,0,20;WaterSource "H2O_Source" true true false 25 Text 0 0,First,#,CS3_Nodes_Edit,CS3_Nodes_Edit.WaterSource,0,25;NearestGage "Nrest_Gage" true true false 50 Text 0 0,First,#,CS3_Nodes_Edit,CS3_Nodes_Edit.NearestGage,0,50;StreamCode "Strm_Code" true true false 10 Text 0 0,First,#,CS3_Nodes_Edit,CS3_Nodes_Edit.StreamCode,0,10;RiverMile_Assigned "RM_II" true true false 2 Short 0 0,First,#,CS3_Nodes_Edit,CS3_Nodes_Edit.RiverMile_Assigned,-1,-1;HydroRegion "HR" true true false 20 Text 0 0,First,#,CS3_Nodes_Edit,CS3_Nodes_Edit.HydroRegion,0,20;CalSim3_ID "CalSim 3 ID" true true false 10 Text 0 0,First,#,CS3_Nodes_Edit,CS3_Nodes_Edit.CalSim3_ID,0,10;NodeDescription "NodeDescription" true true false 50 Text 0 0,First,#,CS3_Nodes_Edit,CS3_Nodes_Edit.NodeDescription,0,50;CalSim_ID "CalSim_ID" true true false 8000 Text 0 0,First,#,CS3_Nodes_Edit,Edits_To_Add.csv.CalSim_ID,0,8000;NodeDescription "NodeDescription" true true false 8000 Text 0 0,First,#,CS3_Nodes_Edit,Edits_To_Add.csv.NodeDescription,0,8000" #</Process>
+				<Process ToolSource="c:\program files\arcgis\pro\Resources\ArcToolbox\toolboxes\Data Management Tools.tbx\Rename" Date="20220126" Time="081205">Rename A:\Workspace\Shvidchenko\Projects\20211208_CalSim3_SchematicUpdates\Project_Folder\Default.gdb\CS3_Nodes_Updated A:\Workspace\Shvidchenko\Projects\20211208_CalSim3_SchematicUpdates\Project_Folder\Default.gdb\CS3_Nodes_Edit FeatureClass</Process>
+				<Process ToolSource="c:\program files\arcgis\pro\Resources\ArcToolbox\toolboxes\Data Management Tools.tbx\DeleteField" Date="20220126" Time="081340">DeleteField CS3_Nodes_Edit NodeDescription_1 "Delete Fields"</Process>
+				<Process ToolSource="c:\program files\arcgis\pro\Resources\ArcToolbox\toolboxes\Data Management Tools.tbx\Rename" Date="20220126" Time="082142">Rename A:\Workspace\Shvidchenko\Projects\20211208_CalSim3_SchematicUpdates\Project_Folder\Default.gdb\CS3_Nodes_Edit A:\Workspace\Shvidchenko\Projects\20211208_CalSim3_SchematicUpdates\Project_Folder\Default.gdb\CS3_Nodes FeatureClass</Process>
+				<Process ToolSource="c:\program files\arcgis\pro\Resources\ArcToolbox\toolboxes\Data Management Tools.tbx\DeleteField" Date="20220126" Time="082420">DeleteField "Cal Sim Features Completed\CS3_Nodes" CalSim_ID "Delete Fields"</Process>
+				<Process ToolSource="c:\program files\arcgis\pro\Resources\ArcToolbox\toolboxes\Data Management Tools.tbx\CopyMultiple" Date="20220126" Time="082747">CopyMultiple "A:\Workspace\Shvidchenko\Projects\20211208_CalSim3_SchematicUpdates\Project_Folder\Default.gdb\CS3_Nodes FeatureClass" A:\Workspace\Shvidchenko\Projects\20211208_CalSim3_SchematicUpdates\Project_Folder\Default.gdb CS3_Nodes_1 "CS3_Nodes FeatureClass CS3_Nodes_1 #"</Process>
+				<Process ToolSource="c:\program files\arcgis\pro\Resources\ArcToolbox\toolboxes\Data Management Tools.tbx\Rename" Date="20220126" Time="082825">Rename A:\Workspace\Shvidchenko\Projects\20211208_CalSim3_SchematicUpdates\Project_Folder\Default.gdb\CS3_Nodes_1 A:\Workspace\Shvidchenko\Projects\20211208_CalSim3_SchematicUpdates\Project_Folder\Default.gdb\CS3_Nodes_Edit FeatureClass</Process>
+				<Process ToolSource="c:\program files\arcgis\pro\Resources\ArcToolbox\Toolboxes\Data Management Tools.tbx\Rename" Date="20220302" Time="081431">Rename A:\Workspace\Shvidchenko\Projects\2021\20211208_CalSim3_SchematicUpdates\Project_Folder\Default.gdb\CS3_Nodes_Edit A:\Workspace\Shvidchenko\Projects\2021\20211208_CalSim3_SchematicUpdates\Project_Folder\Default.gdb\CS3_Nodes FeatureClass</Process>
+				<Process ToolSource="c:\program files\arcgis\pro\Resources\ArcToolbox\Toolboxes\Data Management Tools.tbx\CopyMultiple" Date="20220609" Time="085654">CopyMultiple "A:\Workspace\Shvidchenko\Projects\2022\20220503_CalSim3_SchematicUpdates\Project_Folder\Default.gdb\CS3_Nodes FeatureClass" A:\Workspace\Shvidchenko\Projects\2022\20220503_CalSim3_SchematicUpdates\20220606_Final\Final_Deliverables\CS3_GeoSchematic_20220606\CS3_GeoSchematic_20220606.gdb CS3_Nodes "CS3_Nodes FeatureClass CS3_Nodes #"</Process>
+				<Process ToolSource="c:\program files\arcgis\pro\Resources\ArcToolbox\Toolboxes\Data Management Tools.tbx\Rename" Date="20220609" Time="085737">Rename A:\Workspace\Shvidchenko\Projects\2022\20220503_CalSim3_SchematicUpdates\20220606_Final\Final_Deliverables\CS3_GeoSchematic_20220609\CS3_GeoSchematic_20220609.gdb\CS3_Nodes A:\Workspace\Shvidchenko\Projects\2022\20220503_CalSim3_SchematicUpdates\20220606_Final\Final_Deliverables\CS3_GeoSchematic_20220609\CS3_GeoSchematic_20220609.gdb\CS3_Nodes20220609 FeatureClass</Process>
+				<Process ToolSource="c:\program files\arcgis\pro\Resources\ArcToolbox\toolboxes\Data Management Tools.tbx\Rename" Date="20220614" Time="102542">Rename A:\Workspace\Shvidchenko\Projects\2022\20220503_CalSim3_SchematicUpdates\20220606_Final\Final_Deliverables\CS3_GeoSchematic_20220609\CS3_GeoSchematic_20220609.gdb\CS3_Nodes20220609 A:\Workspace\Shvidchenko\Projects\2022\20220503_CalSim3_SchematicUpdates\20220606_Final\Final_Deliverables\CS3_GeoSchematic_20220609\CS3_GeoSchematic_20220609.gdb\CS3_Nodes20220614 FeatureClass</Process>
+				<Process ToolSource="c:\program files\arcgis\pro\Resources\ArcToolbox\Toolboxes\Data Management Tools.tbx\UpdateSchema" Date="20221020" Time="143007">UpdateSchema "CIMDATA=&lt;CIMStandardDataConnection xsi:type='typens:CIMStandardDataConnection' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:typens='http://www.esri.com/schemas/ArcGIS/2.9.0'&gt;&lt;WorkspaceConnectionString&gt;DATABASE=\\cnrastore-bdo\BDO_HOME\Hydrology_Development\Mohammad\Mohammd_Hasan_20220810\Geo_ReferenceScematic\GeoRefSchematic_SacrmntoValley\CS3_GeoSchematic_20220614\CS3_GeoSchematic_20220614.gdb&lt;/WorkspaceConnectionString&gt;&lt;WorkspaceFactory&gt;FileGDB&lt;/WorkspaceFactory&gt;&lt;Dataset&gt;CS3_Nodes20220614&lt;/Dataset&gt;&lt;DatasetType&gt;esriDTFeatureClass&lt;/DatasetType&gt;&lt;/CIMStandardDataConnection&gt;" &lt;operationSequence&gt;&lt;workflow&gt;&lt;AlterField&gt;&lt;field_name&gt;NearestGage&lt;/field_name&gt;&lt;new_field_name&gt;Nrest_Gage&lt;/new_field_name&gt;&lt;field_type&gt;TEXT&lt;/field_type&gt;&lt;field_is_nullable&gt;True&lt;/field_is_nullable&gt;&lt;clear_field_alias&gt;False&lt;/clear_field_alias&gt;&lt;/AlterField&gt;&lt;/workflow&gt;&lt;workflow&gt;&lt;AlterField&gt;&lt;field_name&gt;StreamCode&lt;/field_name&gt;&lt;new_field_name&gt;Strm_Code&lt;/new_field_name&gt;&lt;field_type&gt;TEXT&lt;/field_type&gt;&lt;field_is_nullable&gt;True&lt;/field_is_nullable&gt;&lt;clear_field_alias&gt;False&lt;/clear_field_alias&gt;&lt;/AlterField&gt;&lt;/workflow&gt;&lt;workflow&gt;&lt;AlterField&gt;&lt;field_name&gt;RiverMile_Assigned&lt;/field_name&gt;&lt;new_field_name&gt;RM_II_Assigned&lt;/new_field_name&gt;&lt;field_is_nullable&gt;True&lt;/field_is_nullable&gt;&lt;clear_field_alias&gt;False&lt;/clear_field_alias&gt;&lt;/AlterField&gt;&lt;/workflow&gt;&lt;workflow&gt;&lt;AlterField&gt;&lt;field_name&gt;HydroRegion&lt;/field_name&gt;&lt;new_field_name&gt;HR&lt;/new_field_name&gt;&lt;field_type&gt;TEXT&lt;/field_type&gt;&lt;field_is_nullable&gt;True&lt;/field_is_nullable&gt;&lt;clear_field_alias&gt;False&lt;/clear_field_alias&gt;&lt;/AlterField&gt;&lt;/workflow&gt;&lt;/operationSequence&gt;</Process>
+				<Process ToolSource="c:\program files\arcgis\pro\Resources\ArcToolbox\Toolboxes\Data Management Tools.tbx\Rename" Date="20221021" Time="091907">Rename \\cnrastore-bdo\BDO_HOME\Hydrology_Development\Mohammad\Mohammd_Hasan_20220810\Geo_ReferenceScematic\GeoRefSchematic_SacrmntoValley\CS3_GeoSchematic_20220614\CS3_GeoSchematic_20220614.gdb\CS3_Nodes20220614 \\cnrastore-bdo\BDO_HOME\Hydrology_Development\Mohammad\Mohammd_Hasan_20220810\Geo_ReferenceScematic\GeoRefSchematic_SacrmntoValley\CS3_GeoSchematic_20220614\CS3_GeoSchematic_20220614.gdb\i12_CalSim3Model_Nodes_20220614 FeatureClass</Process>
+				<Process ToolSource="c:\program files\arcgis\pro\Resources\ArcToolbox\toolboxes\Data Management Tools.tbx\UpdateSchema" Date="20221021" Time="115201">UpdateSchema "CIMDATA=&lt;CIMStandardDataConnection xsi:type='typens:CIMStandardDataConnection' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:typens='http://www.esri.com/schemas/ArcGIS/2.9.0'&gt;&lt;WorkspaceConnectionString&gt;DATABASE=\\cnrastore-bdo\BDO_HOME\Hydrology_Development\Mohammad\Mohammd_Hasan_20220810\Geo_ReferenceScematic\GeoRefSchematic_SacrmntoValley\CS3_GeoSchematic_20220614\CS3_GeoSchematic_20220614.gdb&lt;/WorkspaceConnectionString&gt;&lt;WorkspaceFactory&gt;FileGDB&lt;/WorkspaceFactory&gt;&lt;Dataset&gt;i12_CalSim3Model_Nodes_20220614&lt;/Dataset&gt;&lt;DatasetType&gt;esriDTFeatureClass&lt;/DatasetType&gt;&lt;/CIMStandardDataConnection&gt;" &lt;operationSequence&gt;&lt;workflow&gt;&lt;AlterField&gt;&lt;field_name&gt;RiverMile_Actual&lt;/field_name&gt;&lt;new_field_name&gt;Riv_Mi&lt;/new_field_name&gt;&lt;field_is_nullable&gt;True&lt;/field_is_nullable&gt;&lt;clear_field_alias&gt;False&lt;/clear_field_alias&gt;&lt;/AlterField&gt;&lt;/workflow&gt;&lt;workflow&gt;&lt;AlterField&gt;&lt;field_name&gt;RiverName&lt;/field_name&gt;&lt;new_field_name&gt;Riv_Name&lt;/new_field_name&gt;&lt;field_type&gt;TEXT&lt;/field_type&gt;&lt;field_is_nullable&gt;True&lt;/field_is_nullable&gt;&lt;clear_field_alias&gt;False&lt;/clear_field_alias&gt;&lt;/AlterField&gt;&lt;/workflow&gt;&lt;/operationSequence&gt;</Process>
+				<Process ToolSource="c:\program files\arcgis\pro\Resources\ArcToolbox\toolboxes\Conversion Tools.tbx\FeatureClassToFeatureClass" Date="20221021" Time="115352">FeatureClassToFeatureClass i12_CalSim3Model_Nodes_20220614 \\cnrastore-bdo\BDO_HOME\Hydrology_Development\Mohammad\Mohammd_Hasan_20220810\Geo_ReferenceScematic\GeoRefSchematic_SacrmntoValley\CS3_GeoSchematic_20220614\CalSim3_GeoSchematic_20221022.gdb i12_CalSim3Model_Nodes_20221021 # "Riv_Mi "RiverMile_Actual" true true false 8 Double 0 0,First,#,i12_CalSim3Model_Nodes_20220614,Riv_Mi,-1,-1;Riv_Name "RiverName" true true false 50 Text 0 0,First,#,i12_CalSim3Model_Nodes_20220614,Riv_Name,0,50;Comment "Comment" true true false 254 Text 0 0,First,#,i12_CalSim3Model_Nodes_20220614,Comment,0,254;C2VSIM_GW "C2VSIM_GroundWater" true true false 20 Text 0 0,First,#,i12_CalSim3Model_Nodes_20220614,C2VSIM_GW,0,20;C2VSIM_SW "C2VSIM_SurfaceWater" true true false 20 Text 0 0,First,#,i12_CalSim3Model_Nodes_20220614,C2VSIM_SW,0,20;CalSim2_ID "CalSim2_ID" true true false 20 Text 0 0,First,#,i12_CalSim3Model_Nodes_20220614,CalSim2_ID,0,20;WaterSource "H2O_Source" true true false 25 Text 0 0,First,#,i12_CalSim3Model_Nodes_20220614,WaterSource,0,25;Nrest_Gage "Nearest_Gage" true true false 50 Text 0 0,First,#,i12_CalSim3Model_Nodes_20220614,Nrest_Gage,0,50;Strm_Code "Stream_Code" true true false 10 Text 0 0,First,#,i12_CalSim3Model_Nodes_20220614,Strm_Code,0,10;RM_II_Assigned "RiverMile_Assigned" true true false 2 Short 0 0,First,#,i12_CalSim3Model_Nodes_20220614,RM_II_Assigned,-1,-1;HR "HydroRegion" true true false 20 Text 0 0,First,#,i12_CalSim3Model_Nodes_20220614,HR,0,20;CalSim3_ID "CalSim 3 ID" true true false 10 Text 0 0,First,#,i12_CalSim3Model_Nodes_20220614,CalSim3_ID,0,10;NodeDescription "NodeDescription" true true false 50 Text 0 0,First,#,i12_CalSim3Model_Nodes_20220614,NodeDescription,0,50" #</Process>
+				<Process ToolSource="c:\program files\arcgis\pro\Resources\ArcToolbox\toolboxes\Data Management Tools.tbx\UpdateSchema" Date="20230106" Time="082515">UpdateSchema "CIMDATA=&lt;CIMStandardDataConnection xsi:type='typens:CIMStandardDataConnection' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:typens='http://www.esri.com/schemas/ArcGIS/3.0.0'&gt;&lt;WorkspaceConnectionString&gt;DATABASE=\\cnrastore-bdo\BDO_HOME\Hydrology_Development\Mohammad\Mohammd_Hasan_20220810\Geo_ReferenceScematic\GeoRefSchematic_SacrmntoValley\CalSim3_GeoSchematic_20221227.gdb\CalSim3_GeoSchematic_20221022.gdb&lt;/WorkspaceConnectionString&gt;&lt;WorkspaceFactory&gt;FileGDB&lt;/WorkspaceFactory&gt;&lt;Dataset&gt;i12_CalSim3Model_Nodes_20221021&lt;/Dataset&gt;&lt;DatasetType&gt;esriDTFeatureClass&lt;/DatasetType&gt;&lt;/CIMStandardDataConnection&gt;" &lt;operationSequence&gt;&lt;workflow&gt;&lt;AddField&gt;&lt;field_name&gt;Source&lt;/field_name&gt;&lt;field_type&gt;TEXT&lt;/field_type&gt;&lt;field_length&gt;255&lt;/field_length&gt;&lt;field_is_nullable&gt;True&lt;/field_is_nullable&gt;&lt;field_is_required&gt;False&lt;/field_is_required&gt;&lt;/AddField&gt;&lt;/workflow&gt;&lt;workflow&gt;&lt;AddField&gt;&lt;field_name&gt;Last_Modified_Date&lt;/field_name&gt;&lt;field_type&gt;DATE&lt;/field_type&gt;&lt;field_is_nullable&gt;True&lt;/field_is_nullable&gt;&lt;field_is_required&gt;False&lt;/field_is_required&gt;&lt;/AddField&gt;&lt;/workflow&gt;&lt;workflow&gt;&lt;AddField&gt;&lt;field_name&gt;Modified_By&lt;/field_name&gt;&lt;field_type&gt;TEXT&lt;/field_type&gt;&lt;field_length&gt;35&lt;/field_length&gt;&lt;field_is_nullable&gt;True&lt;/field_is_nullable&gt;&lt;field_is_required&gt;False&lt;/field_is_required&gt;&lt;/AddField&gt;&lt;/workflow&gt;&lt;workflow&gt;&lt;AddField&gt;&lt;field_name&gt;Date_Data_Refers_To&lt;/field_name&gt;&lt;field_type&gt;DATE&lt;/field_type&gt;&lt;field_is_nullable&gt;True&lt;/field_is_nullable&gt;&lt;field_is_required&gt;False&lt;/field_is_required&gt;&lt;/AddField&gt;&lt;/workflow&gt;&lt;/operationSequence&gt;</Process><Process ToolSource="c:\program files\arcgis\pro\Resources\ArcToolbox\toolboxes\Data Management Tools.tbx\CalculateField" Date="20230106" Time="082607">CalculateField i12_CalSim3Model_Nodes_20221021 Last_Modified_Date "01/05/2023" "Python 3" # Text NO_ENFORCE_DOMAINS</Process><Process ToolSource="c:\program files\arcgis\pro\Resources\ArcToolbox\toolboxes\Data Management Tools.tbx\CalculateField" Date="20230106" Time="082631">CalculateField i12_CalSim3Model_Nodes_20221021 Modified_By "Mohammad Hasan/DWR" "Python 3" # Text NO_ENFORCE_DOMAINS</Process><Process ToolSource="c:\program files\arcgis\pro\Resources\ArcToolbox\toolboxes\Data Management Tools.tbx\CalculateField" Date="20230106" Time="082652">CalculateField i12_CalSim3Model_Nodes_20221021 Date_Data_Refers_To "10/24/2022" "Python 3" # Text NO_ENFORCE_DOMAINS</Process><Process ToolSource="c:\program files\arcgis\pro\Resources\ArcToolbox\toolboxes\Data Management Tools.tbx\CopyFeatures" Date="20250707" Time="183336">CopyFeatures C:\Dino\COEQWAL\CalSim3\CS3_Spatial_Data\DWR_Version_2022update\CalSim3_GeoSchematic_20221227.gdb\i12_CalSim3Model_Nodes_20221021 C:\Dino\COEQWAL\CalSim3\CS3_Spatial_Data\DWR_Version_2022update\i12_CalSim3Model_Nodes_20221021.shp # # # #</Process></lineage>
+			<itemProps>
+				<itemName Sync="TRUE">i12_CalSim3Model_Nodes_20221021</itemName>
+				<nativeExtBox>
+					<westBL Sync="TRUE">259280.700500</westBL>
+					<eastBL Sync="TRUE">538888.349700</eastBL>
+					<southBL Sync="TRUE">3985281.974900</southBL>
+					<northBL Sync="TRUE">4520359.969700</northBL>
+					<exTypeCode Sync="TRUE">1</exTypeCode>
+				</nativeExtBox>
+				<itemLocation>
+					<linkage Sync="TRUE">file://\\DESKTOP-VN7ADDC\C$\Dino\COEQWAL\CalSim3\CS3_Spatial_Data\DWR_Version_2022update\i12_CalSim3Model_Nodes_20221021.shp</linkage>
+					<protocol Sync="TRUE">Local Area Network</protocol>
+				</itemLocation>
+				<itemSize Sync="TRUE">0.000</itemSize>
+				<imsContentType Sync="TRUE">002</imsContentType></itemProps>
+			<coordRef>
+				<type Sync="TRUE">Projected</type>
+				<geogcsn Sync="TRUE">GCS_North_American_1983</geogcsn>
+				<projcsn Sync="TRUE">NAD_1983_UTM_Zone_10_5N</projcsn>
+				<peXml Sync="TRUE">&lt;ProjectedCoordinateSystem xsi:type='typens:ProjectedCoordinateSystem' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:typens='http://www.esri.com/schemas/ArcGIS/3.3.0'&gt;&lt;WKT&gt;PROJCS[&amp;quot;NAD_1983_UTM_Zone_10_5N&amp;quot;,GEOGCS[&amp;quot;GCS_North_American_1983&amp;quot;,DATUM[&amp;quot;D_North_American_1983&amp;quot;,SPHEROID[&amp;quot;GRS_1980&amp;quot;,6378137.0,298.257222101]],PRIMEM[&amp;quot;Greenwich&amp;quot;,0.0],UNIT[&amp;quot;Degree&amp;quot;,0.0174532925199433]],PROJECTION[&amp;quot;Transverse_Mercator&amp;quot;],PARAMETER[&amp;quot;False_Easting&amp;quot;,500000.0],PARAMETER[&amp;quot;False_Northing&amp;quot;,0.0],PARAMETER[&amp;quot;Central_Meridian&amp;quot;,-120.0],PARAMETER[&amp;quot;Scale_Factor&amp;quot;,0.9996],PARAMETER[&amp;quot;Latitude_Of_Origin&amp;quot;,0.0],UNIT[&amp;quot;Meter&amp;quot;,1.0]]&lt;/WKT&gt;&lt;XOrigin&gt;-5120900&lt;/XOrigin&gt;&lt;YOrigin&gt;-9998100&lt;/YOrigin&gt;&lt;XYScale&gt;450445547.3910538&lt;/XYScale&gt;&lt;ZOrigin&gt;-100000&lt;/ZOrigin&gt;&lt;ZScale&gt;10000&lt;/ZScale&gt;&lt;MOrigin&gt;-100000&lt;/MOrigin&gt;&lt;MScale&gt;10000&lt;/MScale&gt;&lt;XYTolerance&gt;0.001&lt;/XYTolerance&gt;&lt;ZTolerance&gt;0.001&lt;/ZTolerance&gt;&lt;MTolerance&gt;0.001&lt;/MTolerance&gt;&lt;HighPrecision&gt;true&lt;/HighPrecision&gt;&lt;/ProjectedCoordinateSystem&gt;</peXml>
+				<csUnits Sync="TRUE">Linear Unit: Meter (1.000000)</csUnits>
+			</coordRef>
+			<copyHistory>
+				<copy source="\\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_2\Nodes_20121001" dest="\\nasbdo\CalSim_3_GIS\CS3_GeoSchematic_Draft_v1_3_20121001\Nodes_20121001" date="20121001" time="14590800"></copy>
+			</copyHistory>
+		</DataProperties>
+		<SyncDate>20250707</SyncDate>
+		<SyncTime>18333600</SyncTime>
+		<ModDate>20250707</ModDate>
+		<ModTime>18333600</ModTime>
+		<ArcGISProfile>FGDC</ArcGISProfile>
+		<ArcGISstyle>FGDC CSDGM Metadata</ArcGISstyle>
+		<ArcGISFormat>1.0</ArcGISFormat>
+	</Esri>
+	<eainfo>
+		<detailed Name="i12_CalSim3Model_Nodes_20221021">
+			<enttyp>
+				<enttypl Sync="TRUE">i12_CalSim3Model_Nodes_20221021</enttypl>
+				<enttypt Sync="TRUE">Feature Class</enttypt>
+				<enttypc Sync="TRUE">0</enttypc>
+			</enttyp>
+			<attr><attrlabl Sync="TRUE">FID</attrlabl><attalias Sync="TRUE">FID</attalias><attrtype Sync="TRUE">OID</attrtype><attwidth Sync="TRUE">4</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale><attrdef Sync="TRUE">Internal feature number.</attrdef><attrdefs Sync="TRUE">Esri</attrdefs><attrdomv><udom Sync="TRUE">Sequential unique whole numbers that are automatically generated.</udom></attrdomv></attr><attr>
+				<attrlabl Sync="TRUE">Shape</attrlabl>
+				<attalias Sync="TRUE">Shape</attalias>
+				<attrtype Sync="TRUE">Geometry</attrtype>
+				<attwidth Sync="TRUE">0</attwidth>
+				<atprecis Sync="TRUE">0</atprecis>
+				<attscale Sync="TRUE">0</attscale>
+				<attrdef Sync="TRUE">Feature geometry.</attrdef>
+				<attrdefs Sync="TRUE">ESRI</attrdefs>
+				<attrdomv>
+					<udom Sync="TRUE">Coordinates defining the features.</udom>
+				</attrdomv>
+			</attr>
+			<attr>
+				<attrlabl Sync="TRUE">Riv_Mi</attrlabl>
+				<attalias Sync="TRUE">Riv_Mi</attalias>
+				<attrtype Sync="TRUE">Double</attrtype>
+				<attwidth Sync="TRUE">19</attwidth>
+				<atprecis Sync="TRUE">0</atprecis>
+				<attscale Sync="TRUE">0</attscale>
+			</attr>
+			<attr>
+				<attrlabl Sync="TRUE">Riv_Name</attrlabl>
+				<attalias Sync="TRUE">Riv_Name</attalias>
+				<attrtype Sync="TRUE">String</attrtype>
+				<attwidth Sync="TRUE">50</attwidth>
+				<atprecis Sync="TRUE">0</atprecis>
+				<attscale Sync="TRUE">0</attscale>
+			</attr>
+			<attr>
+				<attrlabl Sync="TRUE">Comment</attrlabl>
+				<attalias Sync="TRUE">Comment</attalias>
+				<attrtype Sync="TRUE">String</attrtype>
+				<attwidth Sync="TRUE">254</attwidth>
+				<atprecis Sync="TRUE">0</atprecis>
+				<attscale Sync="TRUE">0</attscale>
+				<attrdef>other descriptive information about the node</attrdef>
+			</attr>
+			<attr>
+				<attrlabl Sync="TRUE">C2VSIM_GW</attrlabl>
+				<attalias Sync="TRUE">C2VSIM_GW</attalias>
+				<attrtype Sync="TRUE">String</attrtype>
+				<attwidth Sync="TRUE">20</attwidth>
+				<atprecis Sync="TRUE">0</atprecis>
+				<attscale Sync="TRUE">0</attscale>
+				<attrdef>The C2VSIM (California Central Valley Groundwater-Surface Water Simulation Model) groundwater node associated with the feature</attrdef>
+			</attr>
+			<attr>
+				<attrlabl Sync="TRUE">C2VSIM_SW</attrlabl>
+				<attalias Sync="TRUE">C2VSIM_SW</attalias>
+				<attrtype Sync="TRUE">String</attrtype>
+				<attwidth Sync="TRUE">20</attwidth>
+				<atprecis Sync="TRUE">0</atprecis>
+				<attscale Sync="TRUE">0</attscale>
+				<attrdef>The C2VSIM (California Central Valley Groundwater-Surface Water Simulation Model) surface water node associated with the feature</attrdef>
+			</attr>
+			<attr>
+				<attrlabl Sync="TRUE">CalSim2_ID</attrlabl>
+				<attalias Sync="TRUE">CalSim2_ID</attalias>
+				<attrtype Sync="TRUE">String</attrtype>
+				<attwidth Sync="TRUE">20</attwidth>
+				<atprecis Sync="TRUE">0</atprecis>
+				<attscale Sync="TRUE">0</attscale>
+				<attrdef>If this feature existed in the CalSim 2 model, this is the name of the node using the CalSim 2 nomenclature</attrdef>
+			</attr>
+			<attr><attrlabl Sync="TRUE">WaterSourc</attrlabl><attalias Sync="TRUE">WaterSourc</attalias><attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">25</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale></attr><attr>
+				<attrlabl Sync="TRUE">Nrest_Gage</attrlabl>
+				<attalias Sync="TRUE">Nrest_Gage</attalias>
+				<attrtype Sync="TRUE">String</attrtype>
+				<attwidth Sync="TRUE">50</attwidth>
+				<atprecis Sync="TRUE">0</atprecis>
+				<attscale Sync="TRUE">0</attscale>
+			</attr>
+			<attr>
+				<attrlabl Sync="TRUE">Strm_Code</attrlabl>
+				<attalias Sync="TRUE">Strm_Code</attalias>
+				<attrtype Sync="TRUE">String</attrtype>
+				<attwidth Sync="TRUE">10</attwidth>
+				<atprecis Sync="TRUE">0</atprecis>
+				<attscale Sync="TRUE">0</attscale>
+			</attr>
+			<attr><attrlabl Sync="TRUE">RM_II_Assi</attrlabl><attalias Sync="TRUE">RM_II_Assi</attalias><attrtype Sync="TRUE">Integer</attrtype><attwidth Sync="TRUE">5</attwidth><atprecis Sync="TRUE">5</atprecis><attscale Sync="TRUE">0</attscale></attr><attr>
+				<attrlabl Sync="TRUE">HR</attrlabl>
+				<attalias Sync="TRUE">HR</attalias>
+				<attrtype Sync="TRUE">String</attrtype>
+				<attwidth Sync="TRUE">20</attwidth>
+				<atprecis Sync="TRUE">0</atprecis>
+				<attscale Sync="TRUE">0</attscale>
+			</attr>
+			<attr>
+				<attrlabl Sync="TRUE">CalSim3_ID</attrlabl>
+				<attalias Sync="TRUE">CalSim3_ID</attalias>
+				<attrtype Sync="TRUE">String</attrtype>
+				<attwidth Sync="TRUE">10</attwidth>
+				<atprecis Sync="TRUE">0</atprecis>
+				<attscale Sync="TRUE">0</attscale>
+			</attr>
+			<attr><attrlabl Sync="TRUE">NodeDescri</attrlabl><attalias Sync="TRUE">NodeDescri</attalias><attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">50</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale></attr><attr><attrlabl Sync="TRUE">Source</attrlabl><attalias Sync="TRUE">Source</attalias><attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">254</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale></attr><attr><attrlabl Sync="TRUE">Last_Modif</attrlabl><attalias Sync="TRUE">Last_Modif</attalias><attrtype Sync="TRUE">Date</attrtype><attwidth Sync="TRUE">8</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale></attr><attr><attrlabl Sync="TRUE">Modified_B</attrlabl><attalias Sync="TRUE">Modified_B</attalias><attrtype Sync="TRUE">String</attrtype><attwidth Sync="TRUE">35</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale></attr><attr><attrlabl Sync="TRUE">Date_Data_</attrlabl><attalias Sync="TRUE">Date_Data_</attalias><attrtype Sync="TRUE">Date</attrtype><attwidth Sync="TRUE">8</attwidth><atprecis Sync="TRUE">0</atprecis><attscale Sync="TRUE">0</attscale></attr></detailed>
+	</eainfo>
+	<mdChar>
+		<CharSetCd value="004"/>
+	</mdChar>
+	<mdHrLv>
+		<ScopeCd value="005"/>
+	</mdHrLv>
+	<mdContact>
+		<rpIndName>Mohammad Hasan</rpIndName>
+		<rpOrgName>California Department of Water Resources | Modeling Support Office</rpOrgName>
+		<rpPosName>Engineer, Water Resources</rpPosName>
+		<rpCntInfo>
+			<cntPhone>
+				<voiceNum>1-916-288-0568</voiceNum>
+			</cntPhone>
+			<cntAddress addressType="both">
+				<delPoint>1516 9th Street</delPoint>
+				<city>Sacramento</city>
+				<adminArea>CA</adminArea>
+				<postCode>95814</postCode>
+				<country>US</country>
+				<eMailAdd>mohammad.hasan@water.ca.gov</eMailAdd>
+			</cntAddress>
+		</rpCntInfo>
+		<role>
+			<RoleCd value="007"/>
+		</role>
+	</mdContact>
+	<mdDateSt>20221108</mdDateSt>
+	<mdStanName>ArcGIS Metadata</mdStanName>
+	<mdStanVer>1.0</mdStanVer>
+	<distInfo>
+		<distributor>
+			<distorCont>
+				<rpIndName>Mohammad Hasan</rpIndName>
+				<rpOrgName>California Department of Water Resources | Modeling Support Office</rpOrgName>
+				<rpPosName>Engineer, Water Resources</rpPosName>
+				<rpCntInfo>
+					<cntPhone>
+						<voiceNum>1-916-288-0568</voiceNum>
+					</cntPhone>
+					<cntAddress addressType="both">
+						<delPoint>2nd Floor</delPoint>
+						<city>Sacramento</city>
+						<adminArea>CA</adminArea>
+						<postCode>95814</postCode>
+						<country>US</country>
+						<eMailAdd>mohammad.hasan@water.ca.gov</eMailAdd>
+					</cntAddress>
+				</rpCntInfo>
+				<role>
+					<RoleCd value="005"/>
+				</role>
+			</distorCont>
+			<distorOrdPrc>
+				<resFees>None</resFees>
+			</distorOrdPrc>
+			<distorFormat>
+				<formatName>Digital Data</formatName>
+			</distorFormat>
+			<distorTran>
+				<onLineSrc>
+					<linkage>https://doi.org/10.5066/xxxxxxxx</linkage>
+				</onLineSrc>
+			</distorTran>
+		</distributor>
+		<distFormat><formatName Sync="TRUE">Shapefile</formatName></distFormat><distTranOps><transSize Sync="TRUE">0.000</transSize></distTranOps></distInfo>
+	<dataIdInfo>
+		<idCitation>
+			<resTitle>i12 CalSim3 Model Nodes</resTitle>
+			<date>
+				<pubDate>2022-10-24</pubDate>
+			</date>
+			<resEd>1.0</resEd>
+			<citRespParty>
+				<rpOrgName>Hydrology Development Group, Modeling Support Office, California Department of Water Resources</rpOrgName>
+				<role>
+					<RoleCd value="006"/>
+				</role>
+			</citRespParty>
+			<citRespParty>
+				<rpOrgName>Mohammad Hasan</rpOrgName>
+				<rpCntInfo>
+					<cntAddress>
+						<delPoint>California Department of Water Resources</delPoint>
+					</cntAddress>
+				</rpCntInfo>
+				<role>
+					<RoleCd value="010"/>
+				</role>
+			</citRespParty>
+			<presForm>
+				<PresFormCd value="005"/>
+			</presForm>
+			<presForm>
+				<fgdcGeoform>vector digital data</fgdcGeoform>
+			</presForm>
+		</idCitation>
+		<idAbs>As part of the QA/QC process for the CalSim 3.0 model, the georeference of the AutoCad Schematic was done by a private consultant. This process seems to have served its purpose as it has both demonstrated the inherent accuracy of the model and brought to light certain areas where some improvement may be realized. It was not possible to fully reference the schematic. The main challenge was that by necessity the model often represents groups of elements as single nodes. Consequently, all arcs designated "diversion, return, inflow, delta net depletion, spill, surface runoff or closure term" were considered conceptual and were not made to conform exactly to the features they represent, although they were placed as closely to those features as possible. This was about an 80% effort as time and budget were committed to referencing the entire schematic and stream channels only represented one portion of the model. 
+The main goal here was simplicity for two reasons. The first was that, due to the reasons discussed above, these arcs are essentially conceptual in nature, often representing systems instead of single paths. Secondly, there was some discussion of creating a network form these data. The stream channels should remain fairly stable over the life of the model, but the demand units, diversions and returns may well vary considerably. This means that edits will become necessary in the future and manipulating networks while retaining topology will be simplified if the number of bends, vertices and crossings are kept to a minimum.</idAbs>
+		<idPurp>These data were created to QA/QC the schematic layout of the CalSim 3 model. To date the model has been conceptual and schematic in nature. The process of georeferencing that schematic helps confirm the logical structure of the model.</idPurp>
+		<idCredit> California Department of Water Resources,  Modeling Support Office, Hydrology Development Group.</idCredit>
+		<idStatus>
+			<ProgCd value="001"/>
+		</idStatus>
+		<idPoC>
+			<rpIndName>Mohammad Hasan</rpIndName>
+			<rpOrgName>California Department of Water Resources</rpOrgName>
+			<rpPosName>Engineer, Water Resources</rpPosName>
+			<rpCntInfo>
+				<cntPhone>
+					<voiceNum>916-288-0568</voiceNum>
+				</cntPhone>
+				<cntAddress addressType="both">
+					<delPoint>715 P St</delPoint>
+					<city>Sacramento</city>
+					<adminArea>California</adminArea>
+					<postCode>95814</postCode>
+					<country>US</country>
+					<eMailAdd>mohammad.hasan@water.ca.gov</eMailAdd>
+				</cntAddress>
+			</rpCntInfo>
+			<role>
+				<RoleCd value="007"/>
+			</role>
+		</idPoC>
+		<resMaint>
+			<maintFreq>
+				<MaintFreqCd value="009"/>
+			</maintFreq>
+		</resMaint>
+		<themeKeys>
+			<keyword>boundaries</keyword>
+			<keyword>location</keyword>
+			<thesaName>
+				<resTitle>ISO 19115 Topic Category</resTitle>
+			</thesaName>
+		</themeKeys>
+		<searchKeys>
+			<keyword>boundaries</keyword>
+			<keyword>location</keyword>
+		</searchKeys>
+		<resConst>
+			<Consts><useLimit>None.  Reference should be made to the California Department of Water Resources,  Modeling Support Office, Hydrology Development Section as the originator of this data. Users are advised to read the dataset's metadata thoroughly to understand appropriate use and data limitations.</useLimit>
+			</Consts>
+		</resConst>
+		<resConst>
+			<LegConsts>
+				<useLimit>Unless otherwise stated, all data, metadata and related materials are considered to satisfy the quality standards relative to the purpose for which the data were collected. Although these data and associated metadata have been reviewed for accuracy and completeness and approved for release by the U.S. Geological Survey (USGS), no warranty expressed or implied is made regarding the display or utility of the data for other purposes, nor on all computer systems, nor shall the act of distribution constitute any such warranty.</useLimit>
+				<accessConsts>
+					<RestrictCd value="008"/>
+				</accessConsts>
+				<othConsts>None.  </othConsts>
+			</LegConsts>
+		</resConst>
+		<tpCat>
+			<TopicCatCd value="003"/>
+		</tpCat>
+		<tpCat>
+			<TopicCatCd value="013"/>
+		</tpCat>
+		<envirDesc>Esri ArcGIS Pro 3.0</envirDesc>
+		<dataExt>
+			<geoEle>
+				<GeoBndBox>
+					<exTypeCode>true</exTypeCode>
+					<westBL>-122.8534</westBL>
+					<eastBL>-116.9012</eastBL>
+					<northBL>40.8343</northBL>
+					<southBL>33.8362</southBL>
+				</GeoBndBox>
+			</geoEle>
+		</dataExt>
+		<dataExt>
+			<exDesc>publication date</exDesc>
+			<tempEle>
+				<TempExtent>
+					<exTemp>
+						<TM_Instant>
+							<tmPosition>2022-10-24</tmPosition>
+						</TM_Instant>
+					</exTemp>
+				</TempExtent>
+			</tempEle>
+			<geoEle/></dataExt>
+		<dataLang><languageCode value="eng" Sync="TRUE"></languageCode><countryCode value="USA" Sync="TRUE"></countryCode></dataLang><spatRpType><SpatRepTypCd value="001" Sync="TRUE"></SpatRepTypCd></spatRpType><dataExt><geoEle><GeoBndBox esriExtentType="search"><exTypeCode Sync="TRUE">1</exTypeCode><westBL Sync="TRUE">-122.853419</westBL><eastBL Sync="TRUE">-119.538763</eastBL><northBL Sync="TRUE">40.834272</northBL><southBL Sync="TRUE">35.982300</southBL></GeoBndBox></geoEle></dataExt></dataIdInfo>
+	<dqInfo>
+		<dqScope>
+			<scpLvl>
+				<ScopeCd value="005"/>
+			</scpLvl>
+		</dqScope>
+		<report type="DQQuanAttAcc">
+			<measDesc>The dataset covers the model domain and updated as needed. The dataset has been completed based on the CalSim3 model domain spatial extent.</measDesc>
+		</report>
+		<report type="DQConcConsis">
+			<measDesc>The actual data with the details are all fall within the expected ranges. There is no data duplication. </measDesc>
+		</report>
+		<report type="DQCompOm">
+			<measDesc>The dataset covers the model domain and updated as needed. The dataset has been completed based on the CalSim3 model domain spatial extent. </measDesc>
+		</report>
+		<report type="DQAbsExtPosAcc" dimension="horizontal">
+			<measDesc>Although every effort has been made to represent these data as completely and accurately as possible, it is important to note that this shapefile does not contain survey quality data and was not developed as part of a GIS deliverable product. It was developed for illustrative purposes only and intended for use in small scale maps. This shapefile may contain information taken from representations or reproductions of data sources with incomplete or missing documentation. As such MWH now part of Stantec cannot definitively determine accuracy of the data contained in the shapefile. The user should be aware that these data do not carry legal authority to define boundaries or locations of fixed points.</measDesc>
+		</report>
+		<dataLineage>
+			<prcStep>
+				<stepDesc>In order to minimize the crossings of diversions to and returns from different conceptual features, their representations were kept as orthogonal as possible. Where that was impossible an attempt was made to at least maintain even half-angles (i.e. 45d and 22.5d). Even so there are a few examples that met neither of these criteria. In the case of channels (both stream and canal varieties) the actual centerline was used. Those centerlines were based on the hydrology data developed by ESRI based on the National Hydrography Dataset (NHD) and delivered with the ArcGIS software. After a review of the available stream centerlines from the NHD, the California Spatial Information Library (CaSIL) and the ESRI product, it was determined that the ESRI data were at least as accurate as the NHD, more accurate than other data available on CaSIL and had the added advantage of being readily queriable without large amounts of preprocessing. Even those data, however, often did not accurately reflect the current centerlines of the relevant streams and rivers. In the Central Valley streams tend to meander a great deal and as those changes affect mileages, the errant centerlines were corrected to available modern aerial imagery. Most often this was 2ft pixel imagery from AirPhotoUSA flown in 2006. Where that imagery was unavailable, older USGS DOQQs were used. These dated from the late 1990's, however they were only used on the periphery of the study area. 
+Stream centerlines were then cut into mile long pieces, attributed, and further processed to extract mile points along the centerline. Those points were used to reference channel nodes from the model. The channel nodes were in turn used to split the original centerlines into channel arcs. Additional nodes were added to represent Water Treatment Plants, Wastewater Treatment Plants, Pump Stations and storage facilities (reservoirs). These were placed at their physical locations. Demand Unit nodes were added as close to their members as possible. CalSim III often represents several widely dispersed water users as a single node. Still other water users are themselves split across several geographic areas. As a result it was necessary to compromise on the locations of these nodes. There are also cases of exclusive groundwater users who return water via septic systems or percolation. In these cases an attempt was made to locate them reasonably close to the features the represent. However, as these nodes did not connect any arcs, they were moved as necessary to reduce the complexity of the schematic. Diversion and return arcs were then drawn connecting these demand units to their various sources and drains of water. 
+Bypasses were also special cases. The Sutter Bypass is fairly well defined by its side canals, but the Yolo Bypass is much more enigmatic. Rather than come up with a unique centerline for these, we elected to use the USACOE delineation. The lines defining these two facilities run directly up their centers except for the downstream extreme of the Yolo Bypass which we aligned with the Lindsey Slough centerline. This was done to accommodate any future change in the way the Barker Slough diversion to the North Bay Aqueduct is depicted. Putah Creek and Cache Creek also had to be extended to meet the Yolo Bypass centerline. Those extensions followed existing water channels found in the aerials.
+</stepDesc>
+				<stepDateTm>2022-10-24</stepDateTm>
+			</prcStep>
+		</dataLineage>
+	</dqInfo>
+	<mdLang><languageCode value="eng" Sync="TRUE"></languageCode><countryCode value="USA" Sync="TRUE"></countryCode></mdLang><mdHrLvName Sync="TRUE">dataset</mdHrLvName><refSysInfo><RefSystem><refSysID><identCode code="0" Sync="TRUE"></identCode></refSysID></RefSystem></refSysInfo><spatRepInfo><VectSpatRep><geometObjs Name="i12_CalSim3Model_Nodes_20221021"><geoObjTyp><GeoObjTypCd value="004" Sync="TRUE"></GeoObjTypCd></geoObjTyp><geoObjCnt Sync="TRUE">0</geoObjCnt></geometObjs><topLvl><TopoLevCd value="001" Sync="TRUE"></TopoLevCd></topLvl></VectSpatRep></spatRepInfo><spdoinfo><ptvctinf><esriterm Name="i12_CalSim3Model_Nodes_20221021"><efeatyp Sync="TRUE">Simple</efeatyp><efeageom code="1" Sync="TRUE"></efeageom><esritopo Sync="TRUE">FALSE</esritopo><efeacnt Sync="TRUE">0</efeacnt><spindex Sync="TRUE">FALSE</spindex><linrefer Sync="TRUE">FALSE</linrefer></esriterm></ptvctinf></spdoinfo></metadata>
