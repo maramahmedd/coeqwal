@@ -412,6 +412,27 @@ def preprocess_demands_deliveries(DemandFilePath, DemandFileTab, DemMin, DemMax,
 
     return annual_dem_df, annual_del_df, mean_annual_dem, mean_annual_del
 
+def fix_sr_leading_zero(col_tuple):
+    # col_tuple is like ('IWFM', 'SR1:L1', ...)
+    part = col_tuple[1]
+    # If 'SR' followed by single digit without leading zero, add zero
+    import re
+    m = re.match(r'SR(\d+)(:L\d+)', part)
+    if m:
+        number = int(m.group(1))
+        fixed_part = f"SR{number:02d}{m.group(2)}"  # Adds leading zero if single digit
+        return (col_tuple[0], fixed_part) + col_tuple[2:]
+    return col_tuple
+    
+def fix_sr_remove_leading_zero(col_tuple):
+    part = col_tuple[1]
+    import re
+    m = re.match(r'SR0*(\d+)(:L\d+)', part)
+    if m:
+        fixed_part = f"SR{int(m.group(1))}{m.group(2)}"
+        return (col_tuple[0], fixed_part) + col_tuple[2:]
+    return col_tuple
+
 def preprocess_GW_data_study_dss(df, dss_name, datetime_start_date, datetime_end_date, addSRlevels=True, num_vars = 66, convertAcFtToTaf = True):
     dvar_list = []
     combined_df = pd.DataFrame()
@@ -450,7 +471,7 @@ def preprocess_GW_data_study_dss(df, dss_name, datetime_start_date, datetime_end
     if addSRlevels:
         # df[('CALCULATED', 'SR10:TOT', 'GW_STORAGE', '1MON', 'GW_STORAGE_AT_CALSIM_REGIONS', 'PER-CUM', 'AC.FT')] = df.loc[:,[('IWFM', 'SR10:L1', 'GW_STORAGE', '1MON', 'GW_STORAGE_AT_CALSIM_REGIONS', 'PER-CUM', 'AC.FT'),('IWFM', 'SR10:L2', 'GW_STORAGE', '1MON', 'GW_STORAGE_AT_CALSIM_REGIONS', 'PER-CUM', 'AC.FT'),('IWFM', 'SR10:L3', 'GW_STORAGE', '1MON', 'GW_STORAGE_AT_CALSIM_REGIONS', 'PER-CUM', 'AC.FT')]].sum(axis=1)
         for i in range(1, num_vars+1):
-            zone = f"SR{i}"
+            zone = f"SR{i:02d}"
             target_col = ('CALCULATED', f'{zone}:TOT', 'GW_STORAGE', '1MON', 'GW_STORAGE_AT_CALSIM_REGIONS', 'PER-CUM', 'AC.FT.')
             
             # Build list of source columns to sum: L1, L2, L3
@@ -460,8 +481,8 @@ def preprocess_GW_data_study_dss(df, dss_name, datetime_start_date, datetime_end
                 ('IWFM', f'{zone}:L3', 'GW_STORAGE', '1MON', 'GW_STORAGE_AT_CALSIM_REGIONS', 'PER-CUM', 'AC.FT.'),
             ]
             
-            df[target_col] = df.loc[:, source_cols].sum(axis=1)
-
+            fixed_source_cols = [fix_sr_remove_leading_zero(c) for c in source_cols]
+            df[target_col] = df.loc[:, fixed_source_cols].sum(axis=1)
 
     new_columns = [(col[0], col[1], *col[2:]) if len(col) > 1 else (col[0], '') for col in df.columns]
     df.columns = pd.MultiIndex.from_tuples(new_columns)
@@ -527,19 +548,46 @@ def preprocess_compound_GW_data_dss(df, ScenarioDir, dss_names, index_names, min
 # create aggregate variables
         if addSRlevels:
             # df[('CALCULATED', 'SR10:TOT', 'GW_STORAGE', '1MON', 'GW_STORAGE_AT_CALSIM_REGIONS', 'PER-CUM', 'AC.FT.')] = df.loc[:,[('IWFM', 'SR10:L1', 'GW_STORAGE', '1MON', 'GW_STORAGE_AT_CALSIM_REGIONS', 'PER-CUM', 'AC.FT.'),('IWFM', 'SR10:L2', 'GW_STORAGE', '1MON', 'GW_STORAGE_AT_CALSIM_REGIONS', 'PER-CUM', 'AC.FT.'),('IWFM', 'SR10:L3', 'GW_STORAGE', '1MON', 'GW_STORAGE_AT_CALSIM_REGIONS', 'PER-CUM', 'AC.FT.')]].sum(axis=1)
-            for i in range(1, num_vars+1):
-                zone = f"SR{i}"
+            for j in range(1, num_vars+1):
+                zone = f"SR{j:02d}"
+                # print("zone: " + zone)
+                # print(df.columns.get_level_values(1).unique())
                 target_col = ('CALCULATED', f'{zone}:TOT', 'GW_STORAGE', '1MON', 'GW_STORAGE_AT_CALSIM_REGIONS', 'PER-CUM', 'AC.FT.')
+                # print("target_col:")
+                # print(target_col)
                 # Build list of source columns to sum: L1, L2, L3
                 source_cols = [
                     ('IWFM', f'{zone}:L1', 'GW_STORAGE', '1MON', 'GW_STORAGE_AT_CALSIM_REGIONS', 'PER-CUM', 'AC.FT.'),
                     ('IWFM', f'{zone}:L2', 'GW_STORAGE', '1MON', 'GW_STORAGE_AT_CALSIM_REGIONS', 'PER-CUM', 'AC.FT.'),
                     ('IWFM', f'{zone}:L3', 'GW_STORAGE', '1MON', 'GW_STORAGE_AT_CALSIM_REGIONS', 'PER-CUM', 'AC.FT.'),
                 ]
-                
-                df[target_col] = df.loc[:, source_cols].sum(axis=1)
+                # print("source_cols:")
+                # print(source_cols)
+                fixed_source_cols = [fix_sr_remove_leading_zero(c) for c in source_cols]
+                # print("df.columns.tolist():")
+                # print(df.columns.tolist())
+
+                # for col in df.columns:
+                #     if col[1].startswith('SR'):
+                #         print(col)
+                        
+                #existing_cols = [col for col in source_cols if col in df.columns]
+                existing_cols = [col for col in fixed_source_cols if col in df.columns]
+                # print("existing_cols:")
+                # print(existing_cols)
+                if existing_cols:
+                    df[target_col] = df.loc[:, existing_cols].sum(axis=1)
+                    print(f"Added {target_col} from {existing_cols}")
+                else:
+                    print(f"Zone {zone}: No matching source columns found.")
+                #df[target_col] = df.loc[:, source_cols].sum(axis=1)
+                df[target_col] = df.loc[:, fixed_source_cols].sum(axis=1)
+                # print("df at iteration " + str(j) + ":")
+                # print(df)
 
         new_columns = [(col[0], f'{col[1]}_{index_name[:]}', *col[2:]) if len(col) > 1 else (col[0], '') for col in df.columns]
+        # print("new_columns:")
+        # print(new_columns)
         df.columns = pd.MultiIndex.from_tuples(new_columns)
         df.columns.names = ['A', 'B', 'C', 'D', 'E', 'F', 'Units']
         combined_df = pd.concat([combined_df, df], axis=1)
@@ -559,6 +607,10 @@ def preprocess_compound_GW_data_dss(df, ScenarioDir, dss_names, index_names, min
 
         # Apply new column names
         combined_df.columns = pd.MultiIndex.from_tuples(renamed_cols)
+        # print("combined_df at iteration " + str(i) + ":")
+        # print(combined_df)
 
+    # print("final combined_df:")
+    # print(combined_df)
     return combined_df
 
