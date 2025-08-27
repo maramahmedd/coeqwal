@@ -341,7 +341,6 @@ def compute_mean(df, variable_list, study_lst, units="TAF", months = None):
     return (df.sum() / len_nonnull_yrs).iloc[-1]
 
 def compute_sd(df, variable_list, varname, months = None, units="TAF"):
-# modified to average over specified months
     subset_df = create_subset_unit(df, variable_list, units)
     if months is not None:
         subset_df = subset_df[subset_df.index.month.isin(months)]
@@ -349,36 +348,14 @@ def compute_sd(df, variable_list, varname, months = None, units="TAF"):
     standard_deviation = subset_df.std().to_frame(name=varname).reset_index(drop=True)
     return standard_deviation
     
-def temp(df, variable_list, varname, months = None, units="TAF", seasonal_average=True):
-# modified to average over specified months
-    if isinstance(variable_list, list) and len(variable_list) == 1:
-        variable_list = variable_list[0]  # use single string for create_subset_unit
-    subset_df = create_subset_unit(df, variable_list, units)
-    if months is not None:
-        subset_df = subset_df[subset_df.index.month.isin(months)]
-
-    if seasonal_average and months is not None:
-        # average over months within each year
-        subset_df = subset_df.groupby(subset_df.index.year).mean()
-
-    mean_vals = subset_df.mean()
-    std_vals = subset_df.std()
-    
-    cv = (std_vals / mean_vals).to_frame(name=varname)
-    cv.index = [scenario[:5] for scenario in cv.index]  # <-- set index correctly here
-    return cv.reset_index(drop=True)    
-
 def compute_cv(df, variable, varname, months=None, units="TAF"):
-    # variable: str, single variable
     subset_df = create_subset_unit(df, variable, units)
 
     if months is not None:
         subset_df = subset_df[subset_df.index.month.isin(months)]
 
-    # Compute CV **per scenario column**
     cv = (subset_df.std(axis=0) / subset_df.mean(axis=0)).to_frame(name=varname)
 
-    # Flatten multi-index columns to match scenario IDs
     cv.index = [col[1][-5:] if isinstance(col, tuple) else col[:5] for col in cv.index]
 
     return cv
