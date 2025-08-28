@@ -622,6 +622,106 @@ def frequency_hitting_level(df, dss_names, var_res, var_fldzn, units, vartitle, 
     else:
         return exceedance_days, exceedance_days_fraction
 
+def frequency_hitting_constantlevel(df, dss_names, var_res, const_fldzn, units, vartitle, floodzone = True, months = None, threshold = None):
+    """
+    Calculate the frequency of hitting the floodzone or deadpool levels
+    Use floodzone = True to calculate probability hitting floodzone, and False to calculate hitting deadpool levels
+    """
+    subset_df_res = create_subset_unit(df, var_res, units)
+
+    if months is not None:
+        subset_df_res = subset_df_res[subset_df_res.index.month.isin(months)]
+
+    multiindex_columns = subset_df_res.columns
+    subset_df_res_comp_values = subset_df_res.values - const_fldzn
+    
+    if floodzone:
+        subset_df_res_comp_values += 0.000001
+
+    subset_df_res_comp = pd.DataFrame(subset_df_res_comp_values, index=subset_df_res.index, columns=multiindex_columns)
+
+    if threshold is not None:
+        days_within_threshold = (abs(subset_df_res_comp_values) <= threshold).sum().sum()
+
+    exceedance_days = count_exceedance_days(subset_df_res_comp, 0)
+    exceedance_days_fraction = exceedance_days / len(subset_df_res_comp)
+    
+    if not floodzone:
+        exceedance_days = 100 - exceedance_days
+
+    exceedance_days = exceedance_days.melt(value_name=vartitle).reset_index(drop=True)[[vartitle]]
+    exceedance_days = set_index(exceedance_days, dss_names)
+
+    exceedance_days_fraction = exceedance_days_fraction.melt(value_name=vartitle).reset_index(drop=True)[[vartitle]]
+    exceedance_days_fraction = set_index(exceedance_days_fraction, dss_names)
+
+    if threshold is not None:
+        return exceedance_days, exceedance_days_fraction, days_within_threshold
+    else:
+        return exceedance_days, exceedance_days_fraction
+
+def frequency_hitting_var_const_level(df, dss_names, var_res, var_fldzn, units, vartitle, floodzone=True, months=None, threshold=None):
+    """
+    Calculate the frequency of hitting the floodzone or deadpool levels.
+    Either var_res or var_fldzn can be a constant (numeric).
+    If string-like, they are treated as DSS variable names and subset via create_subset_unit.
+    """
+    
+    # Helper: get subset or constant dataframe
+    def _get_subset_or_constant(var, ref_df):
+        if isinstance(var, (int, float)):  # constant
+            return pd.DataFrame(var, index=ref_df.index, columns=ref_df.columns)
+        else:  # string variable name
+            return create_subset_unit(df, var, units)
+
+    # Always create subset for res (to establish shape)
+    if isinstance(var_res, (int, float)):
+        # need a reference df to get index/columns
+        ref_df = create_subset_unit(df, var_fldzn, units) if not isinstance(var_fldzn, (int, float)) else df
+        subset_df_res = pd.DataFrame(var_res, index=ref_df.index, columns=ref_df.columns)
+    else:
+        subset_df_res = create_subset_unit(df, var_res, units)
+
+    # Floodzone/threshold reference
+    if isinstance(var_fldzn, (int, float)):
+        subset_df_floodzone = pd.DataFrame(var_fldzn, index=subset_df_res.index, columns=subset_df_res.columns)
+    else:
+        subset_df_floodzone = create_subset_unit(df, var_fldzn, units)
+
+    # Month filtering
+    if months is not None:
+        subset_df_res = subset_df_res[subset_df_res.index.month.isin(months)]
+        subset_df_floodzone = subset_df_floodzone[subset_df_floodzone.index.month.isin(months)]
+
+    # Comparison
+    multiindex_columns = subset_df_res.columns
+    subset_df_res_comp_values = subset_df_res.values - subset_df_floodzone.values
+
+    if floodzone:
+        subset_df_res_comp_values += 0.000001
+
+    subset_df_res_comp = pd.DataFrame(subset_df_res_comp_values, index=subset_df_res.index, columns=multiindex_columns)
+
+    if threshold is not None:
+        days_within_threshold = (abs(subset_df_res_comp_values) <= threshold).sum().sum()
+
+    exceedance_days = count_exceedance_days(subset_df_res_comp, 0)
+    exceedance_days_fraction = exceedance_days / len(subset_df_res_comp)
+
+    if not floodzone:
+        exceedance_days = 100 - exceedance_days
+
+    exceedance_days = exceedance_days.melt(value_name=vartitle).reset_index(drop=True)[[vartitle]]
+    exceedance_days = set_index(exceedance_days, dss_names)
+
+    exceedance_days_fraction = exceedance_days_fraction.melt(value_name=vartitle).reset_index(drop=True)[[vartitle]]
+    exceedance_days_fraction = set_index(exceedance_days_fraction, dss_names)
+
+    if threshold is not None:
+        return exceedance_days, exceedance_days_fraction, days_within_threshold
+    else:
+        return exceedance_days, exceedance_days_fraction
+
 def probability_var1_lt_var2_for_scenario(df, var1_name, var2_name, units="CFS", tolerance=1e-6):
     """
     Returns the probability that var1 < var2 for a single scenario, if both columns exist.
