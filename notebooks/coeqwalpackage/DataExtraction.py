@@ -43,7 +43,7 @@ CREATE DATASETS ACROSS STUDIES
 (Aux functions to read and process studies (for single and multiple studies). Note: contain options to create hard-coded additional compound variables (if more are needed, add to these codes))
 """
 
-def preprocess_study_dss(df, dss_name, datetime_start_date, datetime_end_date, addsl=True, addres = True, addpump = True, adddelcvp = True, adddelcvpag = True, addcvpscex = True, addcvpprf = True, adddelcvpswp = True, add_nod_storage = True, add_sod_storage = True, add_del_nod_ag = True, add_del_nod_mi = True, add_del_sod_mi = True, add_del_sod_ag = True, add_total_exports = True, add_del_swp_total = True):
+def preprocess_study_dss(df, dss_name, datetime_start_date, datetime_end_date, addsl=True, addres = True, addpump = True, adddelcvp = True, adddelcvpag = True, addcvpscex = True, addcvpprf = True, adddelcvpswp = True, add_nod_storage = True, add_sod_storage = True, add_del_nod_ag = True, add_del_nod_mi = True, add_del_sod_mi = True, add_del_sod_ag = True, add_total_exports = True, add_del_swp_total = True, add_awoann_xa = True):
     dvar_list = []
     combined_df = pd.DataFrame()
     
@@ -127,6 +127,9 @@ def preprocess_study_dss(df, dss_name, datetime_start_date, datetime_end_date, a
     if addcvpprf:
         df[('CALCULATED', 'DEL_CVP_PRF_TOTAL', 'DELIVERY-CALC', '1MON', 'L2020A', 'PER-AVER', 'CFS')] = df.loc[:,[('CALSIM', 'DEL_CVP_PRF_N', 'DELIVERY-CVP', '1MON', 'L2020A', 'PER-AVER', 'CFS'),('CALSIM', 'DEL_CVP_PRF_S', 'DELIVERY-CVP', '1MON', 'L2020A', 'PER-AVER', 'CFS')]].sum(axis=1)
 
+    if add_awoann_xa:
+        df[('CALCULATED', 'AWOANN_ALL_DV', 'ANNUAL-APPLIED-WATER-CALC', '1MON', 'L2020A', 'PER-AVER', 'TAF')] = df.loc[:,[('CALSIM', 'AWOANN_64_XADV', 'ANNUAL-APPLIED-WATER', '1MON', 'L2020A', 'PER-AVER', 'TAF'),('CALSIM', 'AWOANN_72_XA1DV', 'ANNUAL-APPLIED-WATER', '1MON', 'L2020A', 'PER-AVER', 'TAF'),('CALSIM', 'AWOANN_72_XA2DV', 'ANNUAL-APPLIED-WATER', '1MON', 'L2020A', 'PER-AVER', 'TAF'),('CALSIM', 'AWOANN_72_XA3DV', 'ANNUAL-APPLIED-WATER', '1MON', 'L2020A', 'PER-AVER', 'TAF'),('CALSIM', 'AWOANN_73_XADV', 'ANNUAL-APPLIED-WATER', '1MON', 'L2020A', 'PER-AVER', 'TAF')]].sum(axis=1)
+
     new_columns = [(col[0], col[1], *col[2:]) if len(col) > 1 else (col[0], '') for col in df.columns]
     df.columns = pd.MultiIndex.from_tuples(new_columns)
     df.columns.names = ['A', 'B', 'C', 'D', 'E', 'F', 'Units']
@@ -135,7 +138,7 @@ def preprocess_study_dss(df, dss_name, datetime_start_date, datetime_end_date, a
     return df
 
 
-def preprocess_compound_data_dss(df, ScenarioDir, dss_names, index_names, min_datetime, max_datetime, addsl=True, addres = True, addpump = True, adddelcvp = True, adddelcvpag = True, addcvpscex = True, addcvpprf = True, adddelcvpswp = True, add_nod_storage = True, add_sod_storage = True, add_del_nod_ag = True, add_del_nod_mi = True, add_del_sod_mi = True, add_del_sod_ag = True, add_total_exports = True, add_del_swp_total = True):
+def preprocess_compound_data_dss(df, ScenarioDir, dss_names, index_names, min_datetime, max_datetime, addsl=True, addres = True, addpump = True, adddelcvp = True, adddelcvpag = True, addcvpscex = True, addcvpprf = True, adddelcvpswp = True, add_nod_storage = True, add_sod_storage = True, add_del_nod_ag = True, add_del_nod_mi = True, add_del_sod_mi = True, add_del_sod_ag = True, add_total_exports = True, add_del_swp_total = True, add_awoann_xa = True):
     dvar_list = []
     combined_df = pd.DataFrame()
     
@@ -219,6 +222,9 @@ def preprocess_compound_data_dss(df, ScenarioDir, dss_names, index_names, min_da
 
         if addcvpprf:
             df[('CALCULATED', 'DEL_CVP_PRF_TOTAL', 'DELIVERY-CALC', '1MON', 'L2020A', 'PER-AVER', 'CFS')] = df.loc[:,[('CALSIM', 'DEL_CVP_PRF_N', 'DELIVERY-CVP', '1MON', 'L2020A', 'PER-AVER', 'CFS'),('CALSIM', 'DEL_CVP_PRF_S', 'DELIVERY-CVP', '1MON', 'L2020A', 'PER-AVER', 'CFS')]].sum(axis=1)
+
+        if add_awoann_xa:
+            df[('CALCULATED', 'AWOANN_ALL_DV', 'ANNUAL-APPLIED-WATER-CALC', '1MON', 'L2020A', 'PER-AVER', 'TAF')] = df.loc[:,[('CALSIM', 'AWOANN_64_XADV', 'ANNUAL-APPLIED-WATER', '1MON', 'L2020A', 'PER-AVER', 'TAF'),('CALSIM', 'AWOANN_72_XA1DV', 'ANNUAL-APPLIED-WATER', '1MON', 'L2020A', 'PER-AVER', 'TAF'),('CALSIM', 'AWOANN_72_XA2DV', 'ANNUAL-APPLIED-WATER', '1MON', 'L2020A', 'PER-AVER', 'TAF'),('CALSIM', 'AWOANN_72_XA3DV', 'ANNUAL-APPLIED-WATER', '1MON', 'L2020A', 'PER-AVER', 'TAF'),('CALSIM', 'AWOANN_73_XADV', 'ANNUAL-APPLIED-WATER', '1MON', 'L2020A', 'PER-AVER', 'TAF')]].sum(axis=1)
 
         new_columns = [(col[0], f'{col[1]}_{index_name[:]}', *col[2:]) if len(col) > 1 else (col[0], '') for col in df.columns]
         df.columns = pd.MultiIndex.from_tuples(new_columns)
