@@ -320,7 +320,7 @@ def preprocess_demands_deliveries(DemandFilePath, DemandFileTab, DemMin, DemMax,
                                         adddelcvpswp = False, add_nod_storage = False, add_sod_storage = False, 
                                         add_del_nod_ag = False, add_del_nod_mi = False, add_del_sod_mi = False, 
                                         add_del_sod_ag = False, add_total_exports = False, 
-                                        add_del_swp_total = False)
+                                        add_del_swp_total = False, add_awoann_xa = False)
     # we can get the demands from the DV file too
     demands_dv_df = preprocess_study_dss(demand_var_dv_df, dv_fp, datetime_start_date, datetime_end_date,
                                         addsl=False, addres = False, addpump = False, adddelcvp = False, 
@@ -328,7 +328,7 @@ def preprocess_demands_deliveries(DemandFilePath, DemandFileTab, DemMin, DemMax,
                                         adddelcvpswp = False, add_nod_storage = False, add_sod_storage = False, 
                                         add_del_nod_ag = False, add_del_nod_mi = False, add_del_sod_mi = False, 
                                         add_del_sod_ag = False, add_total_exports = False, 
-                                        add_del_swp_total = False)
+                                        add_del_swp_total = False, add_awoann_xa = False)
 
     # combine the two demands files together
     demands_df = pd.concat([demands_sv_df, demands_dv_df], axis=1)
