@@ -359,7 +359,7 @@ def preprocess_demands_deliveries(DemandFilePath, DemandFileTab, DemMin, DemMax,
                                         adddelcvpswp = False, add_nod_storage = False, add_sod_storage = False, 
                                         add_del_nod_ag = False, add_del_nod_mi = False, add_del_sod_mi = False, 
                                         add_del_sod_ag = False, add_total_exports = False, 
-                                        add_del_swp_total = False)
+                                        add_del_swp_total = False, add_awoann_xa = False)
 
     #%% check for missing data
 
