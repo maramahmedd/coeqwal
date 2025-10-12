@@ -322,6 +322,38 @@ def set_index(df, dss_names):
 
 """MEAN, SD, IQR, SUM FUNCTIONS"""
 
+def create_subset_tucp(df: pd.DataFrame, scenario: int, tucp_var: str, tucp_wy_month_count: int = 1) -> pd.DataFrame:
+
+    suffix = f"s{int(scenario):04d}"
+    lvl1 = df.columns.get_level_values(1).astype(str)
+
+    name_mask = lvl1.str.contains(tucp_var, regex=False)
+    scen_mask = lvl1.str.endswith(suffix)
+    mask = name_mask & scen_mask
+
+    if mask.sum() == 0:
+        mask = name_mask
+
+    trigger_df = df.loc[:, mask]
+    
+    # print("Columns in df:", df.columns)
+    # print("Mask:", mask)
+    # print("trigger_df shape:", trigger_df.shape)  
+    
+    trigger_series = pd.to_numeric(trigger_df.iloc[:, 0], errors="coerce")
+    triggered = trigger_series >= 1
+    wy_index = trigger_series.index.year + (trigger_series.index.month >= 10)
+    months_per_wy = triggered.groupby(wy_index).sum(min_count=1)
+    selected_wys = months_per_wy[months_per_wy >= int(tucp_wy_month_count)].index
+
+    if len(selected_wys) == 0:
+        return df.iloc[0:0].copy()
+
+    all_wy = df.index.year + (df.index.month >= 10)
+    row_mask = np.isin(all_wy, selected_wys)
+
+    return df.loc[row_mask].copy()
+    
 def compute_annual_means(df, var, study_lst = None, units = "TAF", months = None):
     subset_df = create_subset_unit(df, var, units)
     if study_lst is not None:
