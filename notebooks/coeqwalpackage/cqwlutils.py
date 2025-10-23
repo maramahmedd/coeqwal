@@ -238,3 +238,40 @@ def read_init_file(CtrlFile, CtrlTab):
  
     # return info
     return ScenarioListFile, ScenarioListTab, ScenarioListPath, DVDssNamesOutPath, SVDssNamesOutPath, ScenarioIndicesOutPath, DssDirsOutPath, VarListPath, VarListFile, VarListTab, VarOutPath, DataOutPath, ConvertDataOutPath, ExtractionSubPath, DemandDeliverySubPath, ModelSubPath, GroupDataDirPath, ScenarioDir, DVDssMin, DVDssMax, SVDssMin, SVDssMax, NameMin, NameMax, DirMin, DirMax, IndexMin, IndexMax, StartMin, StartMax, EndMin, EndMax, VarMin, VarMax, DemandFilePath, DemandFileName, DemandFileTab, DemMin, DemMax, InflowOutSubPath, InflowFilePath, InflowFileName, InflowFileTab, InflowMin, InflowMax
+
+def convert_all_cfs_to_taf(df):
+    """
+    Convert all columns with units 'CFS' to 'TAF'
+    Conversion: 1 CFS-month = 0.001984 * (days_in_month) TAF
+
+    Parameters:
+        df (pd.DataFrame): Main data DataFrame with MultiIndex columns.
+
+    Returns:
+        pd.DataFrame: DataFrame with converted columns (new columns labeled as 'TAF').
+    """
+
+    # Precompute days in each month
+    days_in_month = df.index.days_in_month.to_numpy()
+
+    columns_to_convert = []
+
+    for col in df.columns:
+        part_a, part_b, *_, data_unit = col
+
+        if data_unit != "CFS":
+            continue
+
+        columns_to_convert.append(col)
+
+    #print(f"\nConverting {len(columns_to_convert)} columns from CFS to TAF...")
+
+    # Perform conversion
+    for col in columns_to_convert:
+        new_col = list(col)
+        new_col[-1] = "TAF"
+        new_col = tuple(new_col)
+        df[new_col] = df[col].to_numpy() * 0.001984 * days_in_month
+        #print(f"  ✓ {col} → {new_col}")
+
+    return df
