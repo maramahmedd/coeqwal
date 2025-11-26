@@ -78,135 +78,6 @@ def add_sum_column(df, new_col, required_cols, verbose=True):
         return df
 
 
-# def add_combined_column_if_exists(
-#     df,
-#     target_col,
-#     add_cols=None,
-#     sub_cols=None,
-#     multiplier=1.0,
-#     divisor_col=None
-# ):
-#     """
-#     Create a calculated column:
-#         ((sum(add_cols) - sum(sub_cols)) / divisor_col) * multiplier
-#     if all referenced columns exist.
-
-#     Parameters
-#     ----------
-#     df : pd.DataFrame
-#         DataFrame with MultiIndex columns.
-#     target_col : tuple
-#         MultiIndex key for new column.
-#     add_cols : list of tuples
-#         Columns to sum.
-#     sub_cols : list of tuples
-#         Columns to subtract.
-#     multiplier : float
-#         Scalar multiplier applied after addition/subtraction/division.
-#     divisor_col : tuple or None
-#         Optional column (or DataFrame) to divide the result by.
-
-#     Returns
-#     -------
-#     df : pd.DataFrame
-#         Modified DataFrame (in place).
-#     """
-
-#     add_cols = add_cols or []
-#     sub_cols = sub_cols or []
-
-#     # Check for missing columns
-#     required_cols = add_cols + sub_cols
-#     if divisor_col is not None:
-#         required_cols.append(divisor_col)
-
-#     missing = [col for col in required_cols if col not in df.columns]
-#     if missing:
-#         print(f"Skipping {target_col}: missing columns:")
-#         for col in missing:
-#             print(f"   - {col}")
-#         return df
-
-#     # Helper to reduce DataFrame to Series if necessary
-#     def reduce_df(x):
-#         if isinstance(x, pd.DataFrame):
-#             if x.shape[1] == 1:
-#                 return x.iloc[:, 0]
-#             elif x.shape[1] == 2:
-#                 return x.iloc[:, 0] + x.iloc[:, 1]
-#             else:
-#                 # If 3+ columns, divide first two by the third
-#                 return (x.iloc[:, 0] + x.iloc[:, 1]) / x.iloc[:, 2]
-#         return x  # already Series
-
-#     # Compute numerator
-#     numerator = sum(reduce_df(df[c]) for c in add_cols)
-#     if sub_cols:
-#         numerator -= sum(reduce_df(df[c]) for c in sub_cols)
-
-#     # Apply divisor if provided
-#     if divisor_col is not None:
-#         divisor = reduce_df(df[divisor_col])
-#         numerator = numerator / divisor
-
-#     # Apply multiplier
-#     result = numerator * multiplier
-
-#     # Assign to target column
-#     df[target_col] = result
-
-#     return df
-
-#     def to_series(obj):
-#         """Ensure obj is a Series. If DataFrame, take first column."""
-#         if isinstance(obj, pd.DataFrame):
-#             return obj.iloc[:, 0]
-#         return obj
-
-#     add_cols = add_cols or []
-#     sub_cols = sub_cols or []
-
-#     # Label for printout
-#     label = target_col[1] if len(target_col) > 1 else str(target_col)
-
-#     # Check column existence
-#     required_cols = add_cols + sub_cols + ([divisor_col] if divisor_col else [])
-#     missing = [col for col in required_cols if col not in df.columns]
-
-#     if missing:
-#         print(f"Skipping {label}: missing columns:")
-#         for col in missing:
-#             print(f"   - {col}")
-#         return df
-
-#     # Begin with zero series
-#     result = pd.Series(0.0, index=df.index, dtype="float64")
-
-#     # Add terms
-#     for col in add_cols:
-#         result = result + to_series(df[col])
-
-#     # Subtract terms
-#     for col in sub_cols:
-#         result = result - to_series(df[col])
-
-#     # Apply multiplier
-#     result = result * multiplier
-
-#     # Divide if divisor_col exists
-#     if divisor_col is not None:
-#         result = result / to_series(df[divisor_col])
-
-#     # Store
-#     df[target_col] = result
-
-#     print(
-#         f"Added {label}: +{len(add_cols)} cols, -{len(sub_cols)} cols, "
-#         f"multiplier={multiplier}, divisor_col={divisor_col} → {target_col}"
-#     )
-
-#     return df
-
 def add_combined_column_if_exists(
     df,
     target_col,
@@ -215,6 +86,7 @@ def add_combined_column_if_exists(
     multiplier=1.0,
     divisor_col=None,
     record_used_cols=None,
+    verbose=True
 ):
     # Track all components referenced
     used = []
@@ -228,7 +100,7 @@ def add_combined_column_if_exists(
 
     missing = [c for c in required_cols if c not in df.columns]
     if missing:
-        print(f"Skipping {target_col}: missing columns:")
+        print(f"⚠️ Skipping {target_col}: missing columns:")
         for col in missing:
             print(f"  - {col}")
         return df
@@ -265,42 +137,14 @@ def add_combined_column_if_exists(
     # Apply multiplier
     df[target_col] = numerator * multiplier
 
+    if verbose:
+        print(f"✅ Added column {target_col} from {len(required_cols)} inputs")
+
     return df
 
 # ----------------------------------------------------------------------
 # Helper for:  (A+B)/X  +  (C+D)/Y
 # ----------------------------------------------------------------------
-# def add_two_term_ratio_if_exists(
-#         df,
-#         target_col,
-#         term1_num_cols,
-#         term1_den_col,
-#         term2_num_cols,
-#         term2_den_col,
-# ):
-#     missing = []
-#     for c in term1_num_cols + [term1_den_col] + term2_num_cols + [term2_den_col]:
-#         if c not in df.columns:
-#             missing.append(c)
-
-#     if missing:
-#         print(f"Skipping {target_col}: missing columns:")
-#         for m in missing:
-#             print(f"   - {m}")
-#         return df
-
-#     # Compute safely
-#     num1 = df[term1_num_cols[0]] + df[term1_num_cols[1]]
-#     den1 = df[term1_den_col]
-#     term1 = num1 / den1
-
-#     num2 = df[term2_num_cols[0]] + df[term2_num_cols[1]]
-#     den2 = df[term2_den_col]
-#     term2 = num2 / den2
-
-#     df[target_col] = term1 + term2
-#     print(f"Created {target_col}")
-#     return df
 
 def add_two_term_ratio_if_exists(
     df,
@@ -308,6 +152,7 @@ def add_two_term_ratio_if_exists(
     term1_num_cols, term1_den_col,
     term2_num_cols, term2_den_col,
     record_used_cols=None,
+    verbose=True
 ):
     used = []
 
@@ -315,7 +160,7 @@ def add_two_term_ratio_if_exists(
     missing = [c for c in required_cols if c not in df.columns]
 
     if missing:
-        print(f"Skipping {target_col}: missing columns:")
+        print(f"⚠️ Skipping {target_col}: missing columns:")
         for col in missing:
             print(f"  - {col}")
         return df
@@ -338,6 +183,9 @@ def add_two_term_ratio_if_exists(
     term2 = num2 / den2
 
     df[target_col] = term1 + term2
+    
+    if verbose:
+        print(f"✅ Added column {target_col} from {len(required_cols)} inputs")
 
     return df
 
@@ -1123,7 +971,7 @@ def preprocess_demands_deliveries(DemandFilePath, DemandFileTab, DemMin, DemMax,
         ]        
         demands_df = add_combined_column_if_exists(
             demands_df,
-            target_col=('CALCULATED','D_MWD','URBAN-DEMAND','1MON','L2020A','PER-CUM','CFS'),
+            target_col=('CALCULATED','D_MWD_PMI','URBAN-DEMAND','1MON','L2020A','PER-CUM','CFS'),
             add_cols=cols_d_mwd,
             sub_cols=None,
             multiplier=1.0,
@@ -1306,7 +1154,7 @@ def preprocess_demands_deliveries(DemandFilePath, DemandFileTab, DemMin, DemMax,
         )
 
         # --- DEM_ACFC ---
-        # dem_ACFC = (short_D_SBA009_ACFC_PMI + D_SBA009_ACFC_PMI)/perdv_swp_1 + (short_D_SBA020_ACFC_PMI + D_SBA020_ACFC_PMI)/perdv_swp_2
+        # dem_ACFC_PMI = (short_D_SBA009_ACFC_PMI + D_SBA009_ACFC_PMI)/perdv_swp_1 + (short_D_SBA020_ACFC_PMI + D_SBA020_ACFC_PMI)/perdv_swp_2
         demands_df = add_two_term_ratio_if_exists(
             demands_df,
             target_col=('CALCULATED','DEM_ACFC','URBAN-DEMAND','1MON','L2020A','PER-CUM','CFS'),
@@ -1482,10 +1330,153 @@ def preprocess_demands_deliveries(DemandFilePath, DemandFileTab, DemMin, DemMax,
     # aggregate delivery variables
     if aggregate_deliveries:      
 
-        # --- D_CACWD ---
+        # --- DN_06_NA ---
         delivs_cfs_df = add_combined_column_if_exists(
             delivs_cfs_df,
-            target_col=('CALCULATED','D_CACWD','URBAN-DEMAND','1MON','L2020A','PER-CUM','CFS'),
+            target_col=('CALCULATED','DN_06_NA','SW_DELIVERY-NET','1MON','L2020A','PER-CUM','CFS'),
+            add_cols=[
+                ('CALSIM', 'GP_06_NA', 'GW-PUMPING', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
+                ('CALSIM', 'RU_06_NA', 'REUSE', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
+            ],
+            record_used_cols=used_cols,
+        )
+                
+        # --- DN_07N_NA ---
+        delivs_cfs_df = add_combined_column_if_exists(
+            delivs_cfs_df,
+            target_col=('CALCULATED','DN_07N_NA','SW_DELIVERY-NET','1MON','L2020A','PER-CUM','CFS'),
+            add_cols=[
+                ('CALSIM', 'GP_07N_NA', 'GW-PUMPING', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
+                ('CALSIM', 'RU_07N_NA', 'REUSE', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
+            ],
+            record_used_cols=used_cols,
+        )
+                
+        # --- DN_07S_NA ---
+        delivs_cfs_df = add_combined_column_if_exists(
+            delivs_cfs_df,
+            target_col=('CALCULATED','DN_07S_NA','SW_DELIVERY-NET','1MON','L2020A','PER-CUM','CFS'),
+            add_cols=[
+                ('CALSIM', 'GP_07S_NA', 'GW-PUMPING', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
+                ('CALSIM', 'RU_07S_NA', 'REUSE', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
+            ],
+            record_used_cols=used_cols,
+        )
+                
+        # --- DN_15N_NA1 ---
+        delivs_cfs_df = add_combined_column_if_exists(
+            delivs_cfs_df,
+            target_col=('CALCULATED','DN_15N_NA1','SW_DELIVERY-NET','1MON','L2020A','PER-CUM','CFS'),
+            add_cols=[
+                ('CALSIM', 'GP_15N_NA1', 'GW-PUMPING', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
+                ('CALSIM', 'RU_15N_NA1', 'REUSE', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
+            ],
+            record_used_cols=used_cols,
+        )
+                
+        # --- DN_15S_NA1 ---
+        delivs_cfs_df = add_combined_column_if_exists(
+            delivs_cfs_df,
+            target_col=('CALCULATED','DN_15S_NA1','SW_DELIVERY-NET','1MON','L2020A','PER-CUM','CFS'),
+            add_cols=[
+                ('CALSIM', 'GP_15S_NA1', 'GW-PUMPING', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
+                ('CALSIM', 'RU_15S_NA1', 'REUSE', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
+            ],
+            record_used_cols=used_cols,
+        )
+                
+        # --- DN_16_NA1 ---
+        delivs_cfs_df = add_combined_column_if_exists(
+            delivs_cfs_df,
+            target_col=('CALCULATED','DN_16_NA1','SW_DELIVERY-NET','1MON','L2020A','PER-CUM','CFS'),
+            add_cols=[
+                ('CALSIM', 'GP_16_NA1', 'GW-PUMPING', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
+                ('CALSIM', 'RU_16_NA1', 'REUSE', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
+            ],
+            record_used_cols=used_cols,
+        )
+                
+        # --- DN_17N_NA ---
+        delivs_cfs_df = add_combined_column_if_exists(
+            delivs_cfs_df,
+            target_col=('CALCULATED','DN_17N_NA','SW_DELIVERY-NET','1MON','L2020A','PER-CUM','CFS'),
+            add_cols=[
+                ('CALSIM', 'GP_17N_NA', 'GW-PUMPING', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
+                ('CALSIM', 'RU_17N_NA', 'REUSE', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
+            ],
+            record_used_cols=used_cols,
+        )
+                
+        # --- DN_20_NA2 ---
+        delivs_cfs_df = add_combined_column_if_exists(
+            delivs_cfs_df,
+            target_col=('CALCULATED','DN_20_NA2','SW_DELIVERY-NET','1MON','L2020A','PER-CUM','CFS'),
+            add_cols=[
+                ('CALSIM', 'GP_20_NA2', 'GW-PUMPING', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
+                ('CALSIM', 'RU_20_NA2', 'REUSE', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
+            ],
+            record_used_cols=used_cols,
+        )
+                
+        # --- DN_26S_NA ---
+        delivs_cfs_df = add_combined_column_if_exists(
+            delivs_cfs_df,
+            target_col=('CALCULATED','DN_26S_NA','SW_DELIVERY-NET','1MON','L2020A','PER-CUM','CFS'),
+            add_cols=[
+                ('CALSIM', 'GP_26S_NA', 'GW-PUMPING', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
+                ('CALSIM', 'RU_26S_NA', 'REUSE', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
+            ],
+            record_used_cols=used_cols,
+        )
+                
+        # --- DN_60S_NA1 ---
+        delivs_cfs_df = add_combined_column_if_exists(
+            delivs_cfs_df,
+            target_col=('CALCULATED','DN_60S_NA1','SW_DELIVERY-NET','1MON','L2020A','PER-CUM','CFS'),
+            add_cols=[
+                ('CALSIM', 'GP_60S_NA1', 'GW-PUMPING', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
+                ('CALSIM', 'RU_60S_NA1', 'REUSE', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
+            ],
+            record_used_cols=used_cols,
+        )
+                
+        # --- DN_60S_NA2 ---
+        delivs_cfs_df = add_combined_column_if_exists(
+            delivs_cfs_df,
+            target_col=('CALCULATED','DN_60S_NA2','SW_DELIVERY-NET','1MON','L2020A','PER-CUM','CFS'),
+            add_cols=[
+                ('CALSIM', 'GP_60S_NA2', 'GW-PUMPING', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
+                ('CALSIM', 'RU_60S_NA2', 'REUSE', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
+            ],
+            record_used_cols=used_cols,
+        )
+                
+        # --- D_AMCYN ---
+        delivs_cfs_df = add_combined_column_if_exists(
+            delivs_cfs_df,
+            target_col=('CALCULATED','D_AMADR_NU','FLOW-DELIVERY','1MON','L2020A','PER-CUM','CFS'),
+            add_cols=[
+                ('CALSIM', 'D_WTPAMC_AMCYN', 'DIVERSION', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
+                ('CALSIM', 'D_WTPJAC_AMCYN', 'DIVERSION', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
+            ],
+            record_used_cols=used_cols,
+        )
+                
+        # --- D_AMADR_NU ---
+        delivs_cfs_df = add_combined_column_if_exists(
+            delivs_cfs_df,
+            target_col=('CALCULATED','D_AMADR_NU','FLOW-DELIVERY','1MON','L2020A','PER-CUM','CFS'),
+            add_cols=[
+                ('CALSIM', 'D_TGC003_AMADR_NU', 'DIVERSION', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
+                ('CALSIM', 'D_TBAUD_AMADR_NU', 'DIVERSION', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
+            ],
+            record_used_cols=used_cols,
+        )
+                
+         # --- D_CACWD ---
+        delivs_cfs_df = add_combined_column_if_exists(
+            delivs_cfs_df,
+            target_col=('CALCULATED','D_CACWD','FLOW-DELIVERY','1MON','L2020A','PER-CUM','CFS'),
             add_cols=[
                 ('CALSIM', 'D_MFM007_WSPNT_NU', 'DIVERSION', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
                 ('CALSIM', 'D_BCM003_WSPNT_NU', 'DIVERSION', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
@@ -1493,10 +1484,10 @@ def preprocess_demands_deliveries(DemandFilePath, DemandFileTab, DemMin, DemMax,
             record_used_cols=used_cols,
         )
                 
-        # --- D_CSTIC ---
+        # --- D_VNTRA_MPMI ---
         delivs_cfs_df = add_combined_column_if_exists(
             delivs_cfs_df,
-            target_col=('CALCULATED','D_CSTIC','URBAN-DEMAND','1MON','L2020A','PER-CUM','CFS'),
+            target_col=('CALCULATED','D_VNTRA_PMI','FLOW-DELIVERY','1MON','L2020A','PER-CUM','CFS'),
             add_cols=[
                 ('CALSIM', 'D_CSTIC_VNTRA_PMI', 'FLOW-DELIVERY', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
                 ('CALSIM', 'D_PYRMD_VNTRA_PMI', 'FLOW-DELIVERY', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
@@ -1504,10 +1495,10 @@ def preprocess_demands_deliveries(DemandFilePath, DemandFileTab, DemMin, DemMax,
             record_used_cols=used_cols,
         )
                 
-        # --- D_ACFC ---
+        # --- D_ACFC_PMI ---
         delivs_cfs_df = add_combined_column_if_exists(
             delivs_cfs_df,
-            target_col=('CALCULATED','D_ACFC','URBAN-DEMAND','1MON','L2020A','PER-CUM','CFS'),
+            target_col=('CALCULATED','D_ACFC_PMI','FLOW-DELIVERY','1MON','L2020A','PER-CUM','CFS'),
             add_cols=[
                 ('CALSIM', 'D_SBA009_ACFC_PMI', 'FLOW-DELIVERY', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
                 ('CALSIM', 'D_SBA020_ACFC_PMI', 'FLOW-DELIVERY', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
@@ -1518,7 +1509,7 @@ def preprocess_demands_deliveries(DemandFilePath, DemandFileTab, DemMin, DemMax,
         # --- D_AMADR_NU ---
         delivs_cfs_df = add_combined_column_if_exists(
             delivs_cfs_df,
-            target_col=('CALCULATED','D_AMADR_NU','URBAN-DEMAND','1MON','L2020A','PER-CUM','CFS'),
+            target_col=('CALCULATED','D_AMADR_NU','FLOW-DELIVERY','1MON','L2020A','PER-CUM','CFS'),
             add_cols=[
                 ('CALSIM', 'D_TGC003_AMADR_NU', 'DIVERSION', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
                 ('CALSIM', 'D_TBAUD_AMADR_NU', 'DIVERSION', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
@@ -1529,7 +1520,7 @@ def preprocess_demands_deliveries(DemandFilePath, DemandFileTab, DemMin, DemMax,
         # --- D_AMCYN ---
         delivs_cfs_df = add_combined_column_if_exists(
             delivs_cfs_df,
-            target_col=('CALCULATED','D_AMCYN','URBAN-DEMAND','1MON','L2020A','PER-CUM','CFS'),
+            target_col=('CALCULATED','D_AMCYN','FLOW-DELIVERY','1MON','L2020A','PER-CUM','CFS'),
             add_cols=[
                 ('CALSIM', 'D_WTPAMC_AMCYN', 'DIVERSION', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
                 ('CALSIM', 'D_WTPJAC_AMCYN', 'DIVERSION', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
@@ -1540,7 +1531,7 @@ def preprocess_demands_deliveries(DemandFilePath, DemandFileTab, DemMin, DemMax,
         # --- D_ANTOC ---
         delivs_cfs_df = add_combined_column_if_exists(
             delivs_cfs_df,
-            target_col=('CALCULATED','D_ANTOC','URBAN-DEMAND','1MON','L2020A','PER-CUM','CFS'),
+            target_col=('CALCULATED','D_ANTOC','FLOW-DELIVERY','1MON','L2020A','PER-CUM','CFS'),
             add_cols=[
                 ('CALSIM', 'D_SJR006_ANTOC', 'DIVERSION', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
                 ('CALSIM', 'D_CCC007_ANTOC', 'DIVERSION', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
@@ -1551,7 +1542,7 @@ def preprocess_demands_deliveries(DemandFilePath, DemandFileTab, DemMin, DemMax,
         # --- D_FRFLD ---
         delivs_cfs_df = add_combined_column_if_exists(
             delivs_cfs_df,
-            target_col=('CALCULATED','D_FRFLD','URBAN-DEMAND','1MON','L2020A','PER-CUM','CFS'),
+            target_col=('CALCULATED','D_FRFLD','FLOW-DELIVERY','1MON','L2020A','PER-CUM','CFS'),
             add_cols=[
                 ('CALSIM', 'D_WTPNBR_FRFLD', 'DIVERSION', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
                 ('CALSIM', 'D_WTPWMN_FRFLD', 'DIVERSION', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
@@ -1562,7 +1553,7 @@ def preprocess_demands_deliveries(DemandFilePath, DemandFileTab, DemMin, DemMax,
         # --- D_GRSVL ---
         delivs_cfs_df = add_combined_column_if_exists(
             delivs_cfs_df,
-            target_col=('CALCULATED','D_GRSVL','URBAN-DEMAND','1MON','L2020A','PER-CUM','CFS'),
+            target_col=('CALCULATED','D_GRSVL','FLOW-DELIVERY','1MON','L2020A','PER-CUM','CFS'),
             add_cols=[
                 ('CALSIM', 'D_CSD014_GRSVL', 'DIVERSION', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
                 ('CALSIM', 'D_DES006_GRSVL', 'DIVERSION', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
@@ -1573,10 +1564,21 @@ def preprocess_demands_deliveries(DemandFilePath, DemandFileTab, DemMin, DemMax,
         # --- D_WSPNT_NU ---
         delivs_cfs_df = add_combined_column_if_exists(
             delivs_cfs_df,
-            target_col=('CALCULATED','D_WSPNT_NU','URBAN-DEMAND','1MON','L2020A','PER-CUM','CFS'),
+            target_col=('CALCULATED','D_WSPNT_NU','FLOW-DELIVERY','1MON','L2020A','PER-CUM','CFS'),
             add_cols=[
                 ('CALSIM', 'D_MFM007_WSPNT_NU', 'DIVERSION', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
                 ('CALSIM', 'D_BCM003_WSPNT_NU', 'DIVERSION', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
+            ],
+            record_used_cols=used_cols,
+        )
+        
+        # --- D_ACFC_PMI ---
+        delivs_cfs_df = add_combined_column_if_exists(
+            delivs_cfs_df,
+            target_col=('CALCULATED','D_ACFC_PMI','FLOW-DELIVERY','1MON','L2020A','PER-CUM','CFS'),
+            add_cols=[
+                ('CALSIM', 'D_SBA009_ACFC_PMI', 'FLOW-DELIVERY', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
+                ('CALSIM', 'D_SBA020_ACFC_PMI', 'FLOW-DELIVERY', '1MON', 'L2020A', 'PER-AVER', 'CFS'),
             ],
             record_used_cols=used_cols,
         )
@@ -1651,81 +1653,6 @@ def preprocess_demands_deliveries(DemandFilePath, DemandFileTab, DemMin, DemMax,
     # mean_annual_dem.to_csv(ofp2, header=True) # writes out a "mean of all years" file
 
     return demands_taf_df, delivs_taf_df, annual_dem_df, annual_del_df, mean_annual_dem, mean_annual_del
-
-# def to_series(df_or_series):
-#     """
-#     Ensure input is a pandas Series, not a multi-column DataFrame.
-#     If input is a DataFrame with 1 column, returns it as a Series.
-#     If input is already a Series, returns it unchanged.
-#     """
-#     if isinstance(df_or_series, pd.DataFrame):
-#         if df_or_series.shape[1] != 1:
-#             raise ValueError(f"Expected single-column DataFrame or Series, got {df_or_series.shape}")
-#         return df_or_series.iloc[:, 0]
-#     return df_or_series
-
-# def preprocess_demands_deliveries(DemandFilePath, DemandFileTab, DemMin, DemMax,
-#                                   study_name, dvdss_name, svdss_name,
-#                                   datetime_start_date, datetime_end_date,
-#                                   aggregate_demands=False, aggregate_deliveries=False):
-#     """
-#     Extracts, calculates, and returns demand and delivery data as single-column DataFrames.
-#     """
-
-#     # --- Load raw demand and delivery data ---
-#     demands_df = pd.read_excel(DemandFilePath, sheet_name=DemandFileTab, index_col=0, parse_dates=True)
-#     deliveries_df = pd.read_excel(DemandFilePath, sheet_name=DemandFileTab, index_col=0, parse_dates=True)
-    
-#     # Example of pre-processing step: enforce min/max
-#     demands_df = demands_df.clip(lower=DemMin, upper=DemMax)
-
-#     # --- Calculated demands/deliveries ---
-#     # Wrap all inputs in to_series() to ensure single-column operations
-#     try:
-#         demands_df[('CALCULATED','DEM_VNTRA_PMI','URBAN-DEMAND','1MON','L2020A','PER-CUM','CFS')] = (
-#             (to_series(demands_df.get('short_D_CSTIC_VNTRA_PMI', pd.Series(0))) +
-#              to_series(demands_df.get('D_CSTIC_VNTRA_PMI', pd.Series(0)))) /
-#             to_series(demands_df.get('PERDV_SWP_39', pd.Series(1)))
-#         ).squeeze()
-#     except Exception as e:
-#         print(f"Error calculating DEM_VNTRA_PMI: {e}")
-#         demands_df[('CALCULATED','DEM_VNTRA_PMI','URBAN-DEMAND','1MON','L2020A','PER-CUM','CFS')] = pd.Series(0)
-
-#     # Repeat for other calculated demands
-#     # Example: DEM_D_CSB103_BRBRA_PMI
-#     try:
-#         demands_df[('CALCULATED','DEM_D_CSB103_BRBRA_PMI','URBAN-DEMAND','1MON','L2020A','PER-CUM','CFS')] = (
-#             to_series(demands_df.get('PERDV_SWP_34', pd.Series(0)))
-#         ).squeeze()
-#     except Exception as e:
-#         print(f"Error calculating DEM_D_CSB103_BRBRA_PMI: {e}")
-#         demands_df[('CALCULATED','DEM_D_CSB103_BRBRA_PMI','URBAN-DEMAND','1MON','L2020A','PER-CUM','CFS')] = pd.Series(0)
-
-#     # Example: DEM_D_CSB038_OBISPO_PMI
-#     try:
-#         demands_df[('CALCULATED','DEM_D_CSB038_OBISPO_PMI','URBAN-DEMAND','1MON','L2020A','PER-CUM','CFS')] = (
-#             to_series(demands_df.get('PERDV_SWP_35', pd.Series(0)))
-#         ).squeeze()
-#     except Exception as e:
-#         print(f"Error calculating DEM_D_CSB038_OBISPO_PMI: {e}")
-#         demands_df[('CALCULATED','DEM_D_CSB038_OBISPO_PMI','URBAN-DEMAND','1MON','L2020A','PER-CUM','CFS')] = pd.Series(0)
-
-#     # --- Optionally aggregate ---
-#     if aggregate_demands:
-#         annual_dem_df = demands_df.resample('A').sum()
-#         mean_annual_dem = annual_dem_df.mean()
-#     else:
-#         annual_dem_df = demands_df
-#         mean_annual_dem = demands_df.mean()
-
-#     if aggregate_deliveries:
-#         annual_del_df = deliveries_df.resample('A').sum()
-#         mean_annual_del = annual_del_df.mean()
-#     else:
-#         annual_del_df = deliveries_df
-#         mean_annual_del = deliveries_df.mean()
-
-#     return demands_df, deliveries_df, annual_dem_df, annual_del_df, mean_annual_dem, mean_annual_del
 
 def fix_sr_leading_zero(col_tuple):
     # col_tuple is like ('IWFM', 'SR1:L1', ...)
