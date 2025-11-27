@@ -839,6 +839,9 @@ def preprocess_demands_deliveries(DemandFilePath, DemandFileTab, DemMin, DemMax,
     # combine the two demands files together
     demands_df = pd.concat([demands_sv_df, demands_dv_df], axis=1)
 
+    # drop duplicate columns
+    demands_df = demands_df.loc[:, ~demands_df.columns.duplicated()]
+
     # record all the intermediate columns used in aggregation
     used_cols = []
 
@@ -920,12 +923,73 @@ def preprocess_demands_deliveries(DemandFilePath, DemandFileTab, DemMin, DemMax,
     demands_df[('MANUAL-ADD','U_CPLT','URBAN-DEMAND','1MON','L2020A','PER-CUM','CFS')] = CPLT_monthly_cfs_value
     demands_df[('MANUAL-ADD','TABLEA_CONTRACT_MWD','URBAN-DEMAND','1MON','L2020A','PER-CUM','CFS')] = ((MWD_yearly_taf_value / 12) * 1000 * 43560) / (86400 * demands_df.index.days_in_month)
 
-    # drop duplicate columns
-    demands_df = demands_df.loc[:, ~demands_df.columns.duplicated()]
+# define D_ANC000_ANGLS_DEM { !units CFS 
+# 	case october  {condition month == oct
+# 		value 2.6}
+# 	case november {condition month == nov
+# 		value 1.7} 
+# 	case december {condition month == dec
+# 		value 1.3}
+# 	case january  {condition month == jan
+# 		value 1.3}
+# 	case february {condition month == feb
+# 		value 1.4}
+# 	case march    {condition month == mar
+# 		value 1.3}
+# 	case april    {condition month == apr
+# 		value 2.}
+# 	case mmay     {condition month == may
+# 		value 2.9}
+# 	case june     {condition month == jun
+# 		value 4.}
+# 	case july     {condition month == jul
+# 		value 5.2}
+# 	case august   {condition month == aug
+# 		value 4.9}
+# 	case sept     {condition month == sep
+# 		value 4.4}}    
+
+    # make dictionary
+    month_to_value = {
+        10: 2.6,  # Oct
+        11: 1.7,  # Nov
+        12: 1.3,  # Dec
+         1: 1.3,  # Jan
+         2: 1.4,  # Feb
+         3: 1.3,  # Mar
+         4: 2.0,  # Apr
+         5: 2.9,  # May
+         6: 4.0,  # Jun
+         7: 5.2,  # Jul
+         8: 4.9,  # Aug
+         9: 4.4,  # Sep
+}
+
+    # ensure datetime index
+    demands_df.index = pd.to_datetime(demands_df.index)
+    
+    # compute 1D array of monthly values
+    upang_values = demands_df.index.month.map(month_to_value)
+    
+    # ensure it's a 1D Series
+    upang_values = pd.Series(upang_values, index=demands_df.index)
+    
+    # assign values
+    col = ('MANUAL-ADD','D_ANC000_ANGLS_DEM','URBAN-DEMAND','1MON','L2020A','PER-CUM','CFS')
+    demands_df[col] = upang_values.values  # always 1D
+    
+    # check assignment
+    # test = pd.DataFrame({
+    #     "date": demands_df.index,
+    #     "month": demands_df.index.month,
+    #     "assigned_value": demands_df[col]
+    # })    
+    # print(test.head(20))
+    # print("Shape of assigned column:", demands_df[col].shape)
 
     # print("demands_df:")
     # print(demands_df.head(5))
-    demands_df.to_csv("demands_df.csv")
+    # demands_df.to_csv("demands_df.csv")
     
     # aggregate demand variables
     if aggregate_demands:
