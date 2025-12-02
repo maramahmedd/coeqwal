@@ -809,7 +809,7 @@ def preprocess_demands_deliveries(DemandFilePath, DemandFileTab, DemMin, DemMax,
 
     # print('demand_var_dv_df:')
     # print(demand_var_dv_df)
-    demand_var_dv_df.to_csv("demand_var_dv_df.csv")
+    # demand_var_dv_df.to_csv("demand_var_dv_df.csv")
     
     demand_var_sv_df = pd.DataFrame(data=sv_list, columns=['Part B:'])   
     demand_var_sv_df['Part C:'] = [""]*len(demand_var_sv_df)   
@@ -881,33 +881,34 @@ def preprocess_demands_deliveries(DemandFilePath, DemandFileTab, DemMin, DemMax,
     taf_to_cfs = 1233481.84 / (demands_df.index.days_in_month * 86400)
     demands_df[('MANUAL-ADD','UD_PLMAS','URBAN-DEMAND','1MON','L2020A','PER-CUM','CFS')] = (0.672 * taf_to_cfs * (np.array(PLMASPatt)[demands_df.index.month - 1]))
 
- #    define D_ANC000_ANGLS_DEM { !units CFS 
-	# case october  {condition month == oct
-	# 	value 2.6}
-	# case november {condition month == nov
-	# 	value 1.7} 
-	# case december {condition month == dec
-	# 	value 1.3}
-	# case january  {condition month == jan
-	# 	value 1.3}
-	# case february {condition month == feb
-	# 	value 1.4}
-	# case march    {condition month == mar
-	# 	value 1.3}
-	# case april    {condition month == apr
-	# 	value 2.}
-	# case mmay     {condition month == may
-	# 	value 2.9}
-	# case june     {condition month == jun
-	# 	value 4.}
-	# case july     {condition month == jul
-	# 	value 5.2}
-	# case august   {condition month == aug
-	# 	value 4.9}
-	# case sept     {condition month == sep
-	# 	value 4.4}}
-    ANGLS_DEM = [15.84,15.90,12.61,8.32,4.19,3.55,3.56,3.22,4.41,5.47,9.55,13.38]
-    demands_df[('MANUAL-ADD','D_ANC000_ANGLS_DEM','URBAN-DEMAND','1MON','L2020A','PER-CUM','CFS')] = np.array(ANGLS_DEM)[demands_df.index.month - 1]
+ # #    define D_ANC000_ANGLS_DEM { !units CFS 
+	# # case october  {condition month == oct
+	# # 	value 2.6}
+	# # case november {condition month == nov
+	# # 	value 1.7} 
+	# # case december {condition month == dec
+	# # 	value 1.3}
+	# # case january  {condition month == jan
+	# # 	value 1.3}
+	# # case february {condition month == feb
+	# # 	value 1.4}
+	# # case march    {condition month == mar
+	# # 	value 1.3}
+	# # case april    {condition month == apr
+	# # 	value 2.}
+	# # case mmay     {condition month == may
+	# # 	value 2.9}
+	# # case june     {condition month == jun
+	# # 	value 4.}
+	# # case july     {condition month == jul
+	# # 	value 5.2}
+	# # case august   {condition month == aug
+	# # 	value 4.9}
+	# # case sept     {condition month == sep
+	# # 	value 4.4}}
+ #    # CORRECT TABLE
+ #    ANGLS_DEM = [15.84,15.90,12.61,8.32,4.19,3.55,3.56,3.22,4.41,5.47,9.55,13.38]
+ #    demands_df[('MANUAL-ADD','D_ANC000_ANGLS_DEM','URBAN-DEMAND','1MON','L2020A','PER-CUM','CFS')] = np.array(ANGLS_DEM)[demands_df.index.month - 1]
 
     # add a flat demand for MWD and ANTOC and CPLT
     MWD_yearly_taf_value = 1911.5
@@ -1661,12 +1662,6 @@ def preprocess_demands_deliveries(DemandFilePath, DemandFileTab, DemMin, DemMax,
     # preserve MultiIndex column names (auto-match level count)
     if isinstance(delivs_taf_df.columns, pd.MultiIndex):
         delivs_taf_df.columns = delivs_taf_df.columns.set_names(expected_names[:delivs_taf_df.columns.nlevels])
-    # Annualize: convert any CFS data into TAF, then aggregate to annual
-    # print("Monthly deliveries:")
-    # print(delivs_cfs_df.head(5))
-
-    # print("delivs_taf_df:")
-    # print(delivs_taf_df.head(5))
     
     annual_del_data = []
     for c in delivs_cfs_df.columns:
@@ -1676,21 +1671,17 @@ def preprocess_demands_deliveries(DemandFilePath, DemandFileTab, DemMin, DemMax,
         annual_del_data.append(dd)
         
     annual_del_df = pd.concat(annual_del_data, axis=1)
+    annual_del_df.index = annual_del_df.index.year
+
     # print("Annual deliveries:")
     # print(annual_del_df.head(5))
+    
+    # mean_annual_del = annual_del_df.mean(axis=0) # caclualte the mean across all years
+    mean_annual_del = annual_del_df.mean(axis=0).to_frame().T
 
-    # # TODO: change output location to be in the "ExtractedData" folders within each scenario
-    # ofp = os.path.join(outdir, f'{run_name_long}_DELIVERY-ANNUAL.csv') 
-
-    # annual_del_df.to_csv(ofp, header=True) # write out annual totals to csv file
-
-    mean_annual_del = annual_del_df.mean(axis=0) # caclualte the mean across all years
-    # # TODO: change output location to be in the "ExtractedData" folders within each scenario
-    # ofp2 = os.path.join(outdir,f'{run_name_long}_DELIVERY-ANNUAL-MEAN.csv')
-    # mean_annual_del.to_csv(ofp2, header=True) # writes out a "mean of all years" file
-
-    #%% Demand Data - the same CFS-to-TAF conversion and write out to CSV needs ot happen here
-
+    # print("Mean annual deliveries:")
+    # print(mean_annual_del.head(5))
+    
     # preserve MultiIndex column names (auto-match level count)
     if isinstance(demands_taf_df.columns, pd.MultiIndex):
         demands_taf_df.columns = demands_taf_df.columns.set_names(expected_names[:demands_taf_df.columns.nlevels])
@@ -1703,18 +1694,15 @@ def preprocess_demands_deliveries(DemandFilePath, DemandFileTab, DemMin, DemMax,
         # print('Appending annualized column')
         annual_dem_data.append(dd)
     annual_dem_df = pd.concat(annual_dem_data, axis=1)
+    annual_dem_df.index = annual_dem_df.index.year
     # print("Annual demands:")
     # print(annual_dem_df.head(5))
 
-    # # TODO: change output location to be in the "ExtractedData" folders within each scenario
-    # ofp = os.path.join(outdir, f'{run_name_long}_DEMANDS-ANNUAL.csv') 
+    # mean_annual_dem = annual_dem_df.mean(axis=0) # caclualte the mean across all years
+    mean_annual_dem = annual_dem_df.mean(axis=0).to_frame().T
+    # print("Mean annual demands:")
+    # print(mean_annual_dem.head(5))
 
-    # annual_dem_df.to_csv(ofp, header=True) # write out annual totals to csv file
-
-    mean_annual_dem = annual_dem_df.mean(axis=0) # caclualte the mean across all years
-    # # TODO: change output location to be in the "ExtractedData" folders within each scenario
-    # ofp2 = os.path.join(outdir,f'{run_name_long}_DEMANDS-ANNUAL-MEAN.csv')
-    # mean_annual_dem.to_csv(ofp2, header=True) # writes out a "mean of all years" file
 
     return demands_taf_df, delivs_taf_df, annual_dem_df, annual_del_df, mean_annual_dem, mean_annual_del
 
